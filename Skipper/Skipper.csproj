@@ -12,7 +12,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="C:\lib\DataBlocks\DataBlocksGenerators\DataBlocksGenerators.csproj" />
       <ProjectReference Include="C:\lib\DataBlocks\DataBlocks\DataBlocks.csproj" />
       <ProjectReference Include="C:\lib\DataBlocks\ScheMigrator\ScheMigrator.csproj" />
     </ItemGroup>

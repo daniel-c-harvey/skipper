@@ -5,6 +5,7 @@ namespace Skipper.DataModels;
 [ScheModel]
 public class SlipClassification
 {
+    [ScheKey("classification_id")]
     public int ClassificationId { get; set; }
     public string SlipName { get; set; }
     public decimal MaxLength { get; set; }
