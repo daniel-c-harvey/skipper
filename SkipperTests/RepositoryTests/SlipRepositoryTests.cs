@@ -1,6 +1,6 @@
 using Skipper.Data.Repositories;
-using Skipper.Domain;
-using Skipper.Domain.Entities;
+using SkipperModels;
+using SkipperModels.Entities;
 
 namespace SkipperTests.RepositoryTests;
 

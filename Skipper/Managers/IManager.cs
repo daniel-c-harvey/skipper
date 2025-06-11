@@ -1,8 +1,7 @@
 ﻿using System.Linq.Expressions;
 using NetBlocks.Models;
 using Skipper.Common;
-using Skipper.Data.Repositories;
-using Skipper.Domain.Entities;
+using SkipperModels.Entities;
 
 namespace Skipper.Managers;
 

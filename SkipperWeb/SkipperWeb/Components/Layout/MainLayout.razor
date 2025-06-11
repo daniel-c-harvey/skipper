@@ -1,0 +1,37 @@
+﻿@inherits LayoutComponentBase
+
+<PagesNavMenu NavigationItems="navMenuItems" />
+
+<div class="container position-relative d-flex flex-column">
+    <main class="container">
+        <article class="px-4 py-2 my-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+<NavFooter />
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+@code {
+
+    private static readonly List<NavMenuItem> navMenuItems = 
+    [
+        new()
+        {
+            Href="/vessels",
+            Text = "Vessels"
+        },
+        new()
+        {
+            Href = "/slips",
+            Text = "Slips"
+        }
+    ];
+
+}

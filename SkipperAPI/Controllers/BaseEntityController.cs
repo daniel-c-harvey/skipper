@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Skipper.Domain.Entities;
 using Skipper.Managers;
 using Skipper.Common;
 using System.Linq.Expressions;
-using System.Collections.Generic;
+using SkipperModels.Entities;
 
 namespace SkipperAPI.Controllers
 {

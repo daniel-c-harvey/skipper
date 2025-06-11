@@ -1,6 +1,6 @@
 using Skipper.Common;
-using Skipper.Domain;
-using Skipper.Domain.Entities;
+using SkipperModels;
+using SkipperModels.Entities;
 
 namespace Skipper.Data.Repositories;
 
