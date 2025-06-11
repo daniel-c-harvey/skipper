@@ -1,0 +1,6 @@
+@SkipperAPI_HostAddress = http://localhost:5092
+
+GET {{SkipperAPI_HostAddress}}/api/vessel/
+Accept: application/json
+
+###

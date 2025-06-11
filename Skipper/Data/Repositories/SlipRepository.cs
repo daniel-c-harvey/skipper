@@ -1,3 +1,4 @@
+using Skipper.Common;
 using Skipper.Domain;
 using Skipper.Domain.Entities;
 
@@ -12,9 +13,19 @@ public class SlipRepository : Repository<Slip>
         return await FindAsync(s => s.Status == status);
     }
 
+    public async Task<PagedResult<Slip>> GetByStatusPagedAsync(SlipStatus status, PagingParameters<Slip> pagingParameters)
+    {
+        return await GetPagedAsync(s => s.Status == status, pagingParameters);
+    }
+
     public async Task<IEnumerable<Slip>> GetAvailableAsync()
     {
         return await GetByStatusAsync(SlipStatus.Available);
+    }
+
+    public async Task<PagedResult<Slip>> GetAvailablePagedAsync(PagingParameters<Slip> pagingParameters)
+    {
+        return await GetByStatusPagedAsync(SlipStatus.Available, pagingParameters);
     }
 
     public async Task<Slip?> GetBySlipNumberAsync(string slipNumber)

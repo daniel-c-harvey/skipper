@@ -28,3 +28,28 @@ public class SkipperContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 }
+
+public static class SkipperContextBuilder
+{
+    /// <summary>
+    /// Creates a SkipperContext with the provided connection string for console applications
+    /// </summary>
+    /// <param name="connectionString">Database connection string</param>
+    /// <returns>Configured SkipperContext instance</returns>
+    public static SkipperContext CreateContext(string connectionString)
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<SkipperContext>();
+        optionsBuilder.UseNpgsql(connectionString);
+        return new SkipperContext(optionsBuilder.Options);
+    }
+
+    /// <summary>
+    /// Creates a SkipperContext with custom DbContextOptions for console applications
+    /// </summary>
+    /// <param name="options">Pre-configured DbContextOptions</param>
+    /// <returns>SkipperContext instance</returns>
+    public static SkipperContext CreateContext(DbContextOptions<SkipperContext> options)
+    {
+        return new SkipperContext(options);
+    }
+}

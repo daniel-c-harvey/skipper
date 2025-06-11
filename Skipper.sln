@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetBlocks", "C:\lib\NetBloc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperTests", "SkipperTests\SkipperTests.csproj", "{1ECF3656-D7C0-4DC2-9955-8396381EFDFF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperAPI", "SkipperAPI\SkipperAPI.csproj", "{79F8BD1F-B1C8-4DC1-8EAE-8B3AABDEAF8E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{1ECF3656-D7C0-4DC2-9955-8396381EFDFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1ECF3656-D7C0-4DC2-9955-8396381EFDFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1ECF3656-D7C0-4DC2-9955-8396381EFDFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79F8BD1F-B1C8-4DC1-8EAE-8B3AABDEAF8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79F8BD1F-B1C8-4DC1-8EAE-8B3AABDEAF8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79F8BD1F-B1C8-4DC1-8EAE-8B3AABDEAF8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79F8BD1F-B1C8-4DC1-8EAE-8B3AABDEAF8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
