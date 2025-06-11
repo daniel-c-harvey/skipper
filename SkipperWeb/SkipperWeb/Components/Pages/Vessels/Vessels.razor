@@ -1,8 +1,30 @@
-﻿@page "/vessels"
+﻿@using SkipperModels.Common
+@using SkipperModels.Entities
+@using SkipperWeb.ApiClients
+
+@inject VesselClient client
+
+@page "/vessels"
+
 <h3>Vessels</h3>
 
 
+@if (page != null)
+{
+    <ul>
+    @foreach (Vessel vessel in page.Items)
+    {
+        <li>@vessel.Name</li>
+    }
+    </ul>
+}
 
 @code {
-    
+
+    private PagedResult<Vessel> page;
+
+    protected async override Task OnInitializedAsync()
+    {
+        page = await client.GetByPage(new PagedQuery());
+    }
 }

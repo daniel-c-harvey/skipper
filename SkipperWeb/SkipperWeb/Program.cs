@@ -1,3 +1,7 @@
+using NetBlocks.Models.Environment;
+using NetBlocks.Utilities.Environment;
+using SkipperModels.Entities;
+using SkipperWeb.ApiClients;
 using SkipperWeb.Components;
 
 namespace SkipperWeb;
@@ -8,6 +12,8 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        LoadSkipperServices(builder.Services);
+        
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents()
@@ -39,5 +45,14 @@ public class Program
             .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
 
         app.Run();
+    }
+
+    private static void LoadSkipperServices(IServiceCollection builderServices)
+    {
+        ApiEndpoint skipperEndpoint = EndpointsTools.LoadFromFile("environment/endpoints.json", "skipper-api");
+        VesselClientConfig vesselClientConfig = new(skipperEndpoint.ApiUrl);
+        
+        builderServices.AddSingleton(vesselClientConfig);
+        builderServices.AddScoped<VesselClient>();
     }
 }

@@ -73,7 +73,7 @@ namespace SkipperAPI.Controllers
         /// Override in derived classes for entity-specific search
         /// </summary>
         protected virtual Expression<Func<T, bool>> BuildSearchPredicate(string? search) 
-            => string.IsNullOrEmpty(search) ? e => true : e => true;
+            => e => true;
 
         /// <summary>
         /// Add a sort expression using nameof() for type safety

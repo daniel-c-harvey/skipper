@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using NetBlocks.Models;
 using SkipperModels.Common;
 using SkipperModels.Entities;
@@ -24,10 +25,12 @@ where TEntity : BaseEntity, new()
                 { nameof(query.Desc).ToLower(), query.Desc.ToString() }
             };
             
-            var uri = QueryHelpers.AddQueryString($"/api/{config.ControllerName}", queryMap);
+            var uri = QueryHelpers.AddQueryString($"api/{config.ControllerName}", queryMap);
             
-            return await http.GetFromJsonAsync<PagedResult<TEntity>>(uri) 
-                   ?? throw new HttpRequestException(HttpRequestError.InvalidResponse);
+            var result = await http.GetFromJsonAsync<PagedResult<TEntity>>(uri)
+                   ?? throw new HttpRequestException("Failed to deserialize response");
+
+            return result;
         }
         catch (Exception e)
         {

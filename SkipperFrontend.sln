@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperModels", "SkipperModels\SkipperModels.csproj", "{3EB6FF31-006E-4388-B25F-7F271A239B36}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperWeb", "SkipperWeb\SkipperWeb\SkipperWeb.csproj", "{0A1CBA1C-C017-4E32-822F-C3F391334D24}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperWeb.Client", "SkipperWeb\SkipperWeb.Client\SkipperWeb.Client.csproj", "{190FDF50-B3EE-49B9-AC91-6F7C201E6A2B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3EB6FF31-006E-4388-B25F-7F271A239B36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EB6FF31-006E-4388-B25F-7F271A239B36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EB6FF31-006E-4388-B25F-7F271A239B36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EB6FF31-006E-4388-B25F-7F271A239B36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A1CBA1C-C017-4E32-822F-C3F391334D24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A1CBA1C-C017-4E32-822F-C3F391334D24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A1CBA1C-C017-4E32-822F-C3F391334D24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A1CBA1C-C017-4E32-822F-C3F391334D24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{190FDF50-B3EE-49B9-AC91-6F7C201E6A2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{190FDF50-B3EE-49B9-AC91-6F7C201E6A2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{190FDF50-B3EE-49B9-AC91-6F7C201E6A2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{190FDF50-B3EE-49B9-AC91-6F7C201E6A2B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -6,5 +6,5 @@ namespace SkipperWeb.ApiClients;
 
 public class VesselClient : EntityControllerClient<Vessel, EntityControllerClientConfig>
 {
-    public VesselClient(EntityControllerClientConfig config) : base(config) { } // TODO register the client and test the API
+    public VesselClient(VesselClientConfig config) : base(config) { }
 }
