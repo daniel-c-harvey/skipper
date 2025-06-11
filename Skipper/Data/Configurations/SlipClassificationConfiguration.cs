@@ -1,0 +1,35 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Skipper.Domain.Entities;
+
+namespace Skipper.Data.Configurations;
+
+public class SlipClassificationConfiguration : BaseEntityConfiguration<SlipClassification>
+{
+    protected override void ConfigureEntity(EntityTypeBuilder<SlipClassification> builder)
+    {
+        builder.ToTable("slip_classifications");
+        
+        builder.Property(e => e.Name)
+            .HasMaxLength(255)
+            .IsRequired();
+            
+        builder.Property(e => e.MaxLength)
+            .HasPrecision(19, 5)
+            .IsRequired();
+            
+        builder.Property(e => e.MaxBeam)
+            .HasPrecision(19, 5)
+            .IsRequired();
+            
+        builder.Property(e => e.BasePrice)
+            .IsRequired();
+            
+        builder.Property(e => e.Description);
+        
+        // Indexes for better query performance
+        builder.HasIndex(e => e.Name);
+        
+        builder.HasIndex(e => e.BasePrice);
+    }
+}

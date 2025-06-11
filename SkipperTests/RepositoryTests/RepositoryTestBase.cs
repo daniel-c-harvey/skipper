@@ -1,0 +1,23 @@
+using Microsoft.EntityFrameworkCore;
+using Skipper.Data;
+using Skipper.Domain.Entities;
+
+namespace SkipperTests.RepositoryTests;
+
+[TestFixture]
+public abstract class RepositoryTestBase<T> where T : BaseEntity
+{
+    protected SkipperContext Context;
+
+    [SetUp]
+    public virtual void SetUp()
+    {
+        Context = ContextSetup.CreateContext();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        Context?.Dispose();
+    }
+} 

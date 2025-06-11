@@ -7,13 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skipper", "Skipper\Skipper.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperCLI", "SkipperCLI\SkipperCLI.csproj", "{B7B10D90-F658-422D-BC72-1D49FC210671}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperData", "SkipperData\SkipperData.csproj", "{84BEA18E-A8D4-430B-98DC-8B2F0DB43F50}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetBlocks", "C:\lib\NetBlocks\NetBlocks.csproj", "{7D7594A4-78C6-4908-9FF2-1F512BB9F262}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataBlocks", "C:\lib\DataBlocks\DataBlocks\DataBlocks.csproj", "{B1C78137-DCF7-41AE-B7FE-C160EB1A31DD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScheMigrator", "C:\lib\DataBlocks\ScheMigrator\ScheMigrator.csproj", "{F0B3D651-D2C2-4BE9-AE09-64C28643F7BD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperTests", "SkipperTests\SkipperTests.csproj", "{1ECF3656-D7C0-4DC2-9955-8396381EFDFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,22 +25,14 @@ Global
 		{B7B10D90-F658-422D-BC72-1D49FC210671}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7B10D90-F658-422D-BC72-1D49FC210671}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7B10D90-F658-422D-BC72-1D49FC210671}.Release|Any CPU.Build.0 = Release|Any CPU
-		{84BEA18E-A8D4-430B-98DC-8B2F0DB43F50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{84BEA18E-A8D4-430B-98DC-8B2F0DB43F50}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{84BEA18E-A8D4-430B-98DC-8B2F0DB43F50}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{84BEA18E-A8D4-430B-98DC-8B2F0DB43F50}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7D7594A4-78C6-4908-9FF2-1F512BB9F262}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7D7594A4-78C6-4908-9FF2-1F512BB9F262}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D7594A4-78C6-4908-9FF2-1F512BB9F262}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D7594A4-78C6-4908-9FF2-1F512BB9F262}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B1C78137-DCF7-41AE-B7FE-C160EB1A31DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B1C78137-DCF7-41AE-B7FE-C160EB1A31DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B1C78137-DCF7-41AE-B7FE-C160EB1A31DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B1C78137-DCF7-41AE-B7FE-C160EB1A31DD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F0B3D651-D2C2-4BE9-AE09-64C28643F7BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F0B3D651-D2C2-4BE9-AE09-64C28643F7BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F0B3D651-D2C2-4BE9-AE09-64C28643F7BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F0B3D651-D2C2-4BE9-AE09-64C28643F7BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ECF3656-D7C0-4DC2-9955-8396381EFDFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ECF3656-D7C0-4DC2-9955-8396381EFDFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ECF3656-D7C0-4DC2-9955-8396381EFDFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ECF3656-D7C0-4DC2-9955-8396381EFDFF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

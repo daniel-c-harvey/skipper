@@ -8,21 +8,10 @@
 
     <ItemGroup>
       <Folder Include="Controllers\" />
-      <Folder Include="Models\" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="C:\lib\DataBlocks\DataBlocks\DataBlocks.csproj" />
-      <ProjectReference Include="C:\lib\DataBlocks\ScheMigrator\ScheMigrator.csproj" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     </ItemGroup>
-
-    <UsingTask TaskName="ScheMigrator.DDLGeneratorTask"
-               AssemblyFile="C:\lib\DataBlocks\ScheMigrator\$(OutputPath)ScheMigrator.dll" />
-
-    <Target Name="GenerateDDL" AfterTargets="Build">
-        <DDLGeneratorTask
-                AssemblyPath="$(TargetPath)"
-                OutputPath="$(ProjectDir)SQL"
-                Implementation="PostgreSQL"/>
-    </Target>
 </Project>
