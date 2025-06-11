@@ -1,5 +1,5 @@
-using Skipper.Common;
 using SkipperModels;
+using SkipperModels.Common;
 using SkipperModels.Entities;
 
 namespace Skipper.Data.Repositories;

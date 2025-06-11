@@ -1,4 +1,4 @@
-namespace Skipper.Common;
+namespace SkipperModels.Common;
 
 public class PagedResult<T>
 {

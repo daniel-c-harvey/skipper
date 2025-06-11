@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using Skipper.Common;
+using SkipperModels.Common;
 using SkipperModels.Entities;
 
 namespace Skipper.Data.Repositories;

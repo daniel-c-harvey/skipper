@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Skipper.Managers;
-using Skipper.Common;
 using System.Linq.Expressions;
+using SkipperModels.Common;
 using SkipperModels.Entities;
 
 namespace SkipperAPI.Controllers
@@ -31,7 +31,7 @@ namespace SkipperAPI.Controllers
         /// Get entities - returns existing PagedResult<T> directly
         /// </summary>
         [HttpGet]
-        public virtual async Task<ActionResult<PagedResult<T>>> Get([FromQuery] SimpleQuery query)
+        public virtual async Task<ActionResult<PagedResult<T>>> Get([FromQuery] PagedQuery query)
         {
             var paging = new PagingParameters<T>
             {
@@ -44,18 +44,16 @@ namespace SkipperAPI.Controllers
             var predicate = BuildSearchPredicate(query.Search);
             var result = await Manager.GetPage(predicate, paging);
             
-            // TODO: Handle NetBlocks Result<T> properly once we know the API
-            return Ok(result); // This will need to be result.Data or similar
+            return Ok(result.Value); // This will need to be result.Data or similar
         }
 
         /// <summary>
         /// Get entity by ID
         /// </summary>
-        [HttpGet("{id}")]
+        [HttpGet("{id:long}")]
         public virtual async Task<ActionResult<T>> Get(long id)
         {
             var result = await Manager.GetPage(e => e.Id == id, new PagingParameters<T> { PageSize = 1 });
-            // TODO: Handle NetBlocks Result<T> properly
             var entity = result?.Value?.Items?.FirstOrDefault();
             return entity == null ? NotFound() : Ok(entity);
         }
@@ -95,17 +93,5 @@ namespace SkipperAPI.Controllers
                 
             return _sortExpressions.TryGetValue(sort, out var expression) ? expression : null;
         }
-    }
-
-    /// <summary>
-    /// Minimal query parameters - reuses existing validation from PagingParameters<T>
-    /// </summary>
-    public class SimpleQuery
-    {
-        public int Page { get; set; } = 1;
-        public int PageSize { get; set; } = 10;
-        public string? Search { get; set; }
-        public string? Sort { get; set; }
-        public bool Desc { get; set; }
     }
 } 

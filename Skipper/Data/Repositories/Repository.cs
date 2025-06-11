@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using Skipper.Common;
+using SkipperModels.Common;
 using SkipperModels.Entities;
 
 namespace Skipper.Data.Repositories;
