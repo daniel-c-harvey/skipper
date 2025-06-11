@@ -8,7 +8,7 @@
         <div class="collapse navbar-collapse justify-content-center" id="navbarPages">
             <div class="navbar-nav">
                 <div class="nav-item px-3">
-                    <a class="nav-link text-secondary" href="">
+                    <a class="nav-link text-white" href="">
                         <span class="bi bi-house" aria-hidden="true"></span>
                         <span>&nbsp;</span>
                         <span>Home</span>
@@ -19,7 +19,7 @@
                 @foreach (var item in NavigationItems)
                 {
                     <div class="nav-item px-3">
-                        <a class="nav-link text-secondary" href="@item.Href">
+                        <a class="nav-link text-white navbar-text" href="@item.Href">
                             @if (!string.IsNullOrEmpty(item.Icon))
                             {
                                 <span class="@item.Icon" aria-hidden="true"></span>

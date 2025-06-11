@@ -5,28 +5,29 @@
 @inject VesselClient Client
 @inject NavigationManager Nav
 
+@rendermode InteractiveServer
+
 @page "/vessels"
 
-<h3>Vessels</h3>
+<h4>Vessels</h4>
 
 <div class="container d-flex gap-2 align-items-center flex-row mb-2">
     <div class="flex-fill mr-2">
-        <div class="form-floating">
+        <div class="input-group input-group">
+            <span class="input-group-text">
+                <i class="bi bi-search"></i>
+            </span>
             <InputText 
-                class="form-control px-2" 
-                id="search"
+                class="form-control" 
+                placeholder="Search vessels..."
                 @bind-Value="ViewModel.SearchTerm" /> 
-            <label for="search">Search</label>
         </div>
     </div>
     <div class="flex-shrink-1">
-        <div class="form-floating py-2">
-            <button class="btn btn-primary form-control text-center py-0"
-                    id="newVessel"
+        <button class="btn bg-primary btn-dark"
                 @onclick="NewVessel">
-                Enter New Vessel <span class="bi bi-plus-circle"></span>
-            </button>
-        </div>
+            Enter New Vessel <span class="bi bi-plus-circle"></span>
+        </button>
     </div>
 </div>
 
@@ -52,6 +53,7 @@
     private void NewVessel()
     {
         Nav.NavigateTo("/vessels/new");
+
     }
 
 }
