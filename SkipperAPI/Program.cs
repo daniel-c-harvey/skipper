@@ -1,7 +1,7 @@
 using NetBlocks.Models.Environment;
 using NetBlocks.Utilities.Environment;
-using Skipper.Data;
-using Skipper.Managers;
+using SkipperData.Data;
+using SkipperData.Managers;
 
 namespace SkipperAPI;
 
@@ -27,7 +27,8 @@ public class Program
             app.MapOpenApi();
         }
 
-        app.UseHttpsRedirection();
+        // For now the API is only running locally behind firewall, keep things simple for now
+        // app.UseHttpsRedirection();
 
         app.UseAuthorization();
 

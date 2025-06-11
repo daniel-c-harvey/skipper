@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Skipper.Managers;
+using SkipperData.Managers;
 using System.Linq.Expressions;
 using SkipperModels.Entities;
 

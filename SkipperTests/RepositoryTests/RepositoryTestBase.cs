@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Skipper.Data;
+using SkipperData.Data;
 using SkipperModels.Entities;
 
 namespace SkipperTests.RepositoryTests;

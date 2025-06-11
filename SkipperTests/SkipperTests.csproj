@@ -24,7 +24,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\SkipperModels\SkipperModels.csproj" />
-        <ProjectReference Include="..\Skipper\Skipper.csproj"/>
+        <ProjectReference Include="..\SkipperData\SkipperData.csproj" />
     </ItemGroup>
 
 </Project>

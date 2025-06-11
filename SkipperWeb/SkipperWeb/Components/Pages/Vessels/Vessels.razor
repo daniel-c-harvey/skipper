@@ -2,17 +2,38 @@
 @using SkipperModels.Entities
 @using SkipperWeb.ApiClients
 
-@inject VesselClient client
+@inject VesselClient Client
+@inject NavigationManager Nav
 
 @page "/vessels"
 
 <h3>Vessels</h3>
 
+<div class="container d-flex gap-2 align-items-center flex-row mb-2">
+    <div class="flex-fill mr-2">
+        <div class="form-floating">
+            <InputText 
+                class="form-control px-2" 
+                id="search"
+                @bind-Value="ViewModel.SearchTerm" /> 
+            <label for="search">Search</label>
+        </div>
+    </div>
+    <div class="flex-shrink-1">
+        <div class="form-floating py-2">
+            <button class="btn btn-primary form-control text-center py-0"
+                    id="newVessel"
+                @onclick="NewVessel">
+                Enter New Vessel <span class="bi bi-plus-circle"></span>
+            </button>
+        </div>
+    </div>
+</div>
 
-@if (page != null)
+@if (ViewModel.Page != null)
 {
     <ul>
-    @foreach (Vessel vessel in page.Items)
+    @foreach (Vessel vessel in ViewModel.Page.Items)
     {
         <li>@vessel.Name</li>
     }
@@ -21,10 +42,16 @@
 
 @code {
 
-    private PagedResult<Vessel> page;
+    private VesselsViewModel ViewModel { get; } = new();
 
     protected async override Task OnInitializedAsync()
     {
-        page = await client.GetByPage(new PagedQuery());
+        ViewModel.Page = await Client.GetByPage(new PagedQuery { Page = ViewModel.PageNumber });
     }
+
+    private void NewVessel()
+    {
+        Nav.NavigateTo("/vessels/new");
+    }
+
 }

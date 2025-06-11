@@ -1,4 +1,4 @@
-using Skipper.Data.Repositories;
+using SkipperData.Data.Repositories;
 using SkipperModels;
 using SkipperModels.Entities;
 

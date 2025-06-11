@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Skipper\Skipper.csproj" />
+      <ProjectReference Include="..\SkipperData\SkipperData.csproj" />
     </ItemGroup>
 
     <ItemGroup>
