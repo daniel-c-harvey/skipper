@@ -6,10 +6,6 @@ using SkipperModels.Entities;
 
 namespace SkipperAPI.Controllers
 {
-    /// <summary>
-    /// Ultra-simplified base controller - uses ONLY existing infrastructure
-    /// Zero duplication, zero custom wrappers, maximum reuse
-    /// </summary>
     [ApiController] 
     public abstract class BaseEntityController<T> : ControllerBase where T : BaseEntity, new()
     {

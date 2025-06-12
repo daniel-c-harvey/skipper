@@ -1,5 +1,33 @@
-﻿@page "/vessels/new"
+﻿@using NetBlocks.Models
 @using SkipperModels
+@using SkipperModels.Entities
+@using SkipperWeb.ApiClients
+@using SkipperWeb.Shared.Modal
+@using SkipperWeb.Shared.UI
+
+@rendermode InteractiveServer
+
+@inject VesselClient Client
+
+@page "/vessels/new"
+
+<Modal @ref="resultModal" Title="Submitting Vessel">
+    @if (serverValidationMessage is null)
+    {
+        <div class="container justify-content-center m-auto p-4">
+            <Spinner />
+        </div>
+    }
+    else if (serverValidationMessage == string.Empty)
+    {
+        <p>Vessel has been <span class="text-success">submitted</span>.</p>
+    }
+    else
+    {
+        <p>Vessel was <span class="text-warning">NOT</span> submitted</p>
+        <p class="text-danger">@serverValidationMessage</p>
+    }
+</Modal>
 
 <div class="container-fluid">
     <div class="row">
@@ -21,8 +49,8 @@
                             <div class="col-md-6">
                                 <div class="form-floating">
                                     <InputText @bind-Value="Input.RegistrationNumber" 
-                                             id="Input.RegistrationNumber" 
-                                             class="form-control"/>
+                                    id="Input.RegistrationNumber" 
+                                    class="form-control"/>
                                     <label for="Input.RegistrationNumber">
                                         <i class="bi bi-card-text me-1"></i>Registration Number
                                     </label>
@@ -34,8 +62,8 @@
                             <div class="col-md-6">
                                 <div class="form-floating">
                                     <InputText @bind-Value="Input.Name" 
-                                             id="Input.Name" 
-                                             class="form-control"/>
+                                    id="Input.Name" 
+                                    class="form-control"/>
                                     <label for="Input.Name">
                                         <i class="bi bi-ship me-1"></i>Vessel Name
                                     </label>
@@ -47,10 +75,10 @@
                             <div class="col-md-4">
                                 <div class="form-floating">
                                     <InputNumber @bind-Value="Input.Length" 
-                                               id="Input.Length" 
-                                               class="form-control"
-                                               placeholder="0.00"
-                                               step="1"/>
+                                    id="Input.Length" 
+                                    class="form-control"
+                                    placeholder="0.00"
+                                    step="1"/>
                                     <label for="Input.Length">
                                         <i class="bi bi-arrows-expand me-1"></i>Length (m)
                                     </label>
@@ -62,10 +90,10 @@
                             <div class="col-md-4">
                                 <div class="form-floating">
                                     <InputNumber @bind-Value="Input.Beam" 
-                                               id="Input.Beam" 
-                                               class="form-control"
-                                               placeholder="0.00"
-                                               step="1"/>
+                                    id="Input.Beam" 
+                                    class="form-control"
+                                    placeholder="0.00"
+                                    step="1"/>
                                     <label for="Input.Beam">
                                         <i class="bi bi-arrows-expand-vertical me-1"></i>Beam (m)
                                     </label>
@@ -77,8 +105,8 @@
                             <div class="col-md-4">
                                 <div class="form-floating">
                                     <InputSelect @bind-Value="Input.VesselType" 
-                                               id="Input.VesselType" 
-                                               class="form-select">
+                                    id="Input.VesselType" 
+                                    class="form-select">
                                         <option value="">Select vessel type...</option>
                                         <option value="@VesselType.Sailboat">Sailboat</option>
                                         <option value="@VesselType.Motorboat">Motorboat</option>
@@ -116,11 +144,35 @@
 
 @code {
     [SupplyParameterFromForm] private NewVesselInputModel Input { get; set; } = new();
-    
-    public Task Post(EditContext editContext)
+
+    private Modal resultModal = default!;
+    private string? serverValidationMessage = null;
+
+    public async Task Post(EditContext editContext)
     {
-        // Handle form submission logic here
-        // Navigate back to vessels list or show success message
-        return Task.CompletedTask;
+        serverValidationMessage = null;
+        await resultModal.Open();
+
+        await Task.Delay(6000);
+
+        Vessel newVessel = new()
+        {
+            RegistrationNumber = Input.RegistrationNumber,
+            Name = Input.Name,
+            Length = Input.Length,
+            Beam = Input.Beam,
+            VesselType = Input.VesselType
+        };
+
+        ResultContainer<Vessel> result = await Client.Add(newVessel);
+        if (result.Success)
+        {
+            serverValidationMessage = string.Empty;
+        }
+        else
+        {
+            serverValidationMessage = result.GetMessage();
+            @* editContext.AddValidationMessage(() => Input.RegistrationNumber, result.Message); *@
+        }
     }
 }

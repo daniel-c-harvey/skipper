@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using NetBlocks.Models;
 using SkipperModels.Common;
 using SkipperModels.Entities;
+using System.Text.Json;
 
 namespace SkipperWeb.ApiClients;
 
@@ -37,6 +38,28 @@ where TEntity : BaseEntity, new()
             // TODO better error handling
             Console.WriteLine(e);
             throw;
+        }
+    }
+
+    public async Task<ResultContainer<TEntity>> Add(TEntity entity)
+    {
+        try
+        {
+            var response = await http.PostAsJsonAsync($"api/{config.ControllerName}", entity);
+            if (response == null) throw new HttpRequestException(HttpRequestError.InvalidResponse);
+            if (!response.IsSuccessStatusCode) throw new HttpRequestException(response.StatusCode.ToString());
+            
+            Stream newEntityStream = await response.Content.ReadAsStreamAsync();
+            
+            TEntity newEntity = await JsonSerializer.DeserializeAsync<TEntity>(newEntityStream) 
+                ?? throw new HttpRequestException("Failed to deserialize response");
+
+            return new ResultContainer<TEntity>(newEntity);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return ResultContainer<TEntity>.CreateFailResult(e.Message);
         }
     }
 }

@@ -2,11 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperModels", "SkipperModels\SkipperModels.csproj", "{9EFEA77F-7FC3-4C4F-A449-84A0A69499C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skipper", "Skipper\Skipper.csproj", "{17DA62AE-5EC6-402D-8DA6-AEA4E0641F06}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperAPI", "SkipperAPI\SkipperAPI.csproj", "{11D9C5F8-FA61-46DB-AA1E-DDAC0F13437C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperTests", "SkipperTests\SkipperTests.csproj", "{3A63B83A-49BC-46C2-9D40-9BBACE117590}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperData", "SkipperData\SkipperData.csproj", "{AB29BC26-4777-488E-8C25-F02C88BA584C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,10 +18,6 @@ Global
 		{9EFEA77F-7FC3-4C4F-A449-84A0A69499C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9EFEA77F-7FC3-4C4F-A449-84A0A69499C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9EFEA77F-7FC3-4C4F-A449-84A0A69499C5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{17DA62AE-5EC6-402D-8DA6-AEA4E0641F06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{17DA62AE-5EC6-402D-8DA6-AEA4E0641F06}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{17DA62AE-5EC6-402D-8DA6-AEA4E0641F06}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{17DA62AE-5EC6-402D-8DA6-AEA4E0641F06}.Release|Any CPU.Build.0 = Release|Any CPU
 		{11D9C5F8-FA61-46DB-AA1E-DDAC0F13437C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{11D9C5F8-FA61-46DB-AA1E-DDAC0F13437C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11D9C5F8-FA61-46DB-AA1E-DDAC0F13437C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -30,5 +26,9 @@ Global
 		{3A63B83A-49BC-46C2-9D40-9BBACE117590}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A63B83A-49BC-46C2-9D40-9BBACE117590}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A63B83A-49BC-46C2-9D40-9BBACE117590}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB29BC26-4777-488E-8C25-F02C88BA584C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB29BC26-4777-488E-8C25-F02C88BA584C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB29BC26-4777-488E-8C25-F02C88BA584C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB29BC26-4777-488E-8C25-F02C88BA584C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

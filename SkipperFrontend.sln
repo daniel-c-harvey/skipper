@@ -1,10 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperModels", "SkipperModels\SkipperModels.csproj", "{3EB6FF31-006E-4388-B25F-7F271A239B36}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperWeb", "SkipperWeb\SkipperWeb\SkipperWeb.csproj", "{0A1CBA1C-C017-4E32-822F-C3F391334D24}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperWeb.Client", "SkipperWeb\SkipperWeb.Client\SkipperWeb.Client.csproj", "{190FDF50-B3EE-49B9-AC91-6F7C201E6A2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperWeb.Shared", "SkipperWeb.Shared\SkipperWeb.Shared.csproj", "{740E86C3-2599-45AD-8C71-3B428D19F8C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +29,12 @@ Global
 		{190FDF50-B3EE-49B9-AC91-6F7C201E6A2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{190FDF50-B3EE-49B9-AC91-6F7C201E6A2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{190FDF50-B3EE-49B9-AC91-6F7C201E6A2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{740E86C3-2599-45AD-8C71-3B428D19F8C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{740E86C3-2599-45AD-8C71-3B428D19F8C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{740E86C3-2599-45AD-8C71-3B428D19F8C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{740E86C3-2599-45AD-8C71-3B428D19F8C1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

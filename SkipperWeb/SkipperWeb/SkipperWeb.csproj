@@ -8,8 +8,9 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\SkipperModels\SkipperModels.csproj" />
-        <ProjectReference Include="..\SkipperWeb.Client\SkipperWeb.Client.csproj"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.0"/>
+        <ProjectReference Include="..\..\SkipperWeb.Shared\SkipperWeb.Shared.csproj" />
+        <ProjectReference Include="..\SkipperWeb.Client\SkipperWeb.Client.csproj" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.6" />
         <ProjectReference Include="C:\lib\NetBlocks\NetBlocks.csproj" />
     </ItemGroup>
 

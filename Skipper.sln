@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperWeb.Client", "Skippe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperModels", "SkipperModels\SkipperModels.csproj", "{3B8B445B-82BF-4348-94BF-1DC0C24D10F8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperWeb.Shared", "SkipperWeb.Shared\SkipperWeb.Shared.csproj", "{D36AFAD0-89F7-4FCB-9908-7C0BB40E85E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{3B8B445B-82BF-4348-94BF-1DC0C24D10F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B8B445B-82BF-4348-94BF-1DC0C24D10F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B8B445B-82BF-4348-94BF-1DC0C24D10F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D36AFAD0-89F7-4FCB-9908-7C0BB40E85E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D36AFAD0-89F7-4FCB-9908-7C0BB40E85E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D36AFAD0-89F7-4FCB-9908-7C0BB40E85E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D36AFAD0-89F7-4FCB-9908-7C0BB40E85E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
