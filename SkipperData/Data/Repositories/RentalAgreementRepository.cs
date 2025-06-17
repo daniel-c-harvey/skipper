@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using SkipperModels;
 using SkipperModels.Common;
 using SkipperModels.Entities;
@@ -6,7 +7,7 @@ namespace SkipperData.Data.Repositories;
 
 public class RentalAgreementRepository : Repository<RentalAgreement>
 {
-    public RentalAgreementRepository(SkipperContext context) : base(context) { }
+    public RentalAgreementRepository(SkipperContext context, ILogger<RentalAgreementRepository> logger) : base(context, logger) { }
 
     public async Task<IEnumerable<RentalAgreement>> GetByStatusAsync(RentalStatus status)
     {

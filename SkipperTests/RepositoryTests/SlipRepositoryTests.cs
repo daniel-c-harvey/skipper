@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using SkipperData.Data.Repositories;
 using SkipperModels;
 using SkipperModels.Entities;
@@ -8,12 +9,14 @@ namespace SkipperTests.RepositoryTests;
 public class SlipRepositoryTests : RepositoryTestBase<Slip>
 {
     private SlipRepository _repository;
+    protected ILogger<SlipRepository> Logger;
 
     [SetUp]
     public override void SetUp()
     {
         base.SetUp();
-        _repository = new SlipRepository(Context);
+        Logger = TestSetup.CreateLogger<SlipRepository>();
+        _repository = new SlipRepository(Context, Logger);
     }
 
     #region Helper Methods

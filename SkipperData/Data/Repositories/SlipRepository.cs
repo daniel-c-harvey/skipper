@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using SkipperModels;
 using SkipperModels.Common;
 using SkipperModels.Entities;
@@ -6,7 +7,7 @@ namespace SkipperData.Data.Repositories;
 
 public class SlipRepository : Repository<Slip>
 {
-    public SlipRepository(SkipperContext context) : base(context) { }
+    public SlipRepository(SkipperContext context, ILogger<SlipRepository> logger) : base(context, logger) { }
 
     public async Task<IEnumerable<Slip>> GetByStatusAsync(SlipStatus status)
     {

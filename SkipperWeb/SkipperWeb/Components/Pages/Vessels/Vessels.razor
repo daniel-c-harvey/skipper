@@ -25,7 +25,7 @@
     </div>
     <div class="flex-shrink-1">
         <button class="btn bg-primary btn-dark"
-                @onclick="NewVessel">
+        @onclick="NewVessel">
             Enter New Vessel <span class="bi bi-plus-circle"></span>
         </button>
     </div>
@@ -34,10 +34,10 @@
 @if (ViewModel.Page != null)
 {
     <ul>
-    @foreach (Vessel vessel in ViewModel.Page.Items)
-    {
-        <li>@vessel.Name</li>
-    }
+        @foreach (Vessel vessel in ViewModel.Page.Items)
+        {
+            <li>@vessel.Name</li>
+        }
     </ul>
 }
 
@@ -47,7 +47,8 @@
 
     protected async override Task OnInitializedAsync()
     {
-        ViewModel.Page = await Client.GetByPage(new PagedQuery { Page = ViewModel.PageNumber });
+        var result = await Client.GetByPage(new PagedQuery { Page = ViewModel.PageNumber });
+        if (result.Success) { ViewModel.Page = result.Value; } // TODO show the error
     }
 
     private void NewVessel()

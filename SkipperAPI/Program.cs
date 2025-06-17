@@ -41,9 +41,7 @@ public class Program
     private static void LoadSkipperServices(IServiceCollection builderServices)
     {
         Connection connection = LoadConnection();
-        SkipperContext context = SkipperContextBuilder.CreateContext(connection.ConnectionString);
-        
-        builderServices.AddSingleton(context);
+        builderServices.AddScoped(_ => SkipperContextBuilder.CreateContext(connection.ConnectionString));
         builderServices.AddRepositories();
         builderServices.AddManagers();
     }

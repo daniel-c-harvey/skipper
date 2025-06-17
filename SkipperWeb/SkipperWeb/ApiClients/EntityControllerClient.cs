@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using NetBlocks.Models;
 using SkipperModels.Common;
 using SkipperModels.Entities;
-using System.Text.Json;
+
 
 namespace SkipperWeb.ApiClients;
 
@@ -13,7 +13,7 @@ where TEntity : BaseEntity, new()
 {
     protected EntityControllerClient(TConfig config) : base(config) { }
 
-    public async Task<PagedResult<TEntity>> GetByPage(PagedQuery query)
+    public async Task<ApiResult<PagedResult<TEntity>>> GetByPage(PagedQuery query)
     {
         try
         {
@@ -28,38 +28,34 @@ where TEntity : BaseEntity, new()
             
             var uri = QueryHelpers.AddQueryString($"api/{config.ControllerName}", queryMap);
             
-            var result = await http.GetFromJsonAsync<PagedResult<TEntity>>(uri)
+            var result = await http.GetFromJsonAsync<ApiResult<PagedResult<TEntity>>>(uri)
                    ?? throw new HttpRequestException("Failed to deserialize response");
 
             return result;
         }
         catch (Exception e)
         {
-            // TODO better error handling
             Console.WriteLine(e);
-            throw;
+            return ApiResult<PagedResult<TEntity>>.CreateFailResult(e.Message);
         }
     }
 
-    public async Task<ResultContainer<TEntity>> Add(TEntity entity)
+    public async Task<ApiResult<TEntity>> Add(TEntity entity)
     {
         try
         {
             var response = await http.PostAsJsonAsync($"api/{config.ControllerName}", entity);
             if (response == null) throw new HttpRequestException(HttpRequestError.InvalidResponse);
-            if (!response.IsSuccessStatusCode) throw new HttpRequestException(response.StatusCode.ToString());
             
-            Stream newEntityStream = await response.Content.ReadAsStreamAsync();
-            
-            TEntity newEntity = await JsonSerializer.DeserializeAsync<TEntity>(newEntityStream) 
+            ApiResultDto<TEntity> newEntityResult = await response.Content.ReadFromJsonAsync<ApiResultDto<TEntity>>() //await JsonSerializer.DeserializeAsync<ApiResultDto<TEntity>>(newEntityStream)
                 ?? throw new HttpRequestException("Failed to deserialize response");
 
-            return new ResultContainer<TEntity>(newEntity);
+            return newEntityResult.From();
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return ResultContainer<TEntity>.CreateFailResult(e.Message);
+            return ApiResult<TEntity>.CreateFailResult(e.Message);
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using NetBlocks.Models;
 using SkipperModels.Common;
 using SkipperModels.Entities;
 
@@ -20,5 +21,5 @@ public interface IRepository<T> where T : BaseEntity
     
     // Essentials only
     Task<bool> ExistsAsync(long id);
-    Task<int> SaveChangesAsync();
+    Task<Result> SaveChangesAsync();
 } 

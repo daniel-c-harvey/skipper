@@ -4,3 +4,20 @@ GET {{SkipperAPI_HostAddress}}/api/vessel/
 Accept: application/json
 
 ###
+
+POST {{SkipperAPI_HostAddress}}/api/vessel/
+Content-Type: application/json 
+
+{
+		"RegistrationNumber": "3",
+		"Name": "Full Deck II",
+		"Length": 42,
+		"Beam": 22,
+		"VesselType": 1,
+		"Id": 0,
+		"CreatedAt": "2025-06-17T17:33:17.3744877Z",
+		"UpdatedAt": "2025-06-17T17:33:17.3744881Z",
+		"IsDeleted": false
+}
+
+###

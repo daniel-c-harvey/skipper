@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using SkipperData.Data.Repositories;
 using SkipperModels;
 using SkipperModels.Entities;
@@ -8,12 +9,14 @@ namespace SkipperTests.RepositoryTests;
 public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement>
 {
     private RentalAgreementRepository _repository;
+    protected ILogger<RentalAgreementRepository> Logger;
 
     [SetUp]
     public override void SetUp()
     {
         base.SetUp();
-        _repository = new RentalAgreementRepository(Context);
+        Logger = TestSetup.CreateLogger<RentalAgreementRepository>();
+        _repository = new RentalAgreementRepository(Context, Logger);
     }
 
     #region Helper Methods

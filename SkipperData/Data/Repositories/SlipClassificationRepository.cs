@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using SkipperModels.Common;
 using SkipperModels.Entities;
 
@@ -5,7 +6,7 @@ namespace SkipperData.Data.Repositories;
 
 public class SlipClassificationRepository : Repository<SlipClassification>
 {
-    public SlipClassificationRepository(SkipperContext context) : base(context) { }
+    public SlipClassificationRepository(SkipperContext context, ILogger<SlipClassificationRepository> logger) : base(context, logger) { }
 
     public async Task<SlipClassification?> GetByNameAsync(string name)
     {
@@ -21,7 +22,7 @@ public class SlipClassificationRepository : Repository<SlipClassification>
         if (string.IsNullOrEmpty(searchTerm))
             return Enumerable.Empty<SlipClassification>();
             
-         return await FindAsync(sc => sc.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+        return await FindAsync(sc => sc.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
     }
 
     public async Task<PagedResult<SlipClassification>> SearchByNamePagedAsync(string searchTerm, PagingParameters<SlipClassification> pagingParameters)

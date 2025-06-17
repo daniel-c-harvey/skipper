@@ -21,8 +21,7 @@ where TEntity : BaseEntity
         try
         {
             await _repository.AddAsync(vessel);
-            await _repository.SaveChangesAsync();
-            return Result.CreatePassResult();
+            return await _repository.SaveChangesAsync();
         }
         catch (Exception ex)
         {

@@ -1,5 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using NetBlocks.Models;
 using SkipperModels.Common;
 using SkipperModels.Entities;
 
@@ -9,11 +11,13 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
 {
     protected readonly SkipperContext _context;
     protected readonly DbSet<T> _dbSet;
+    protected readonly ILogger<Repository<T>> _logger;
 
-    public Repository(SkipperContext context)
+    public Repository(SkipperContext context, ILogger<Repository<T>> logger)
     {
         _context = context;
         _dbSet = context.Set<T>();
+        _logger = logger;
     }
 
     public async Task<T?> GetByIdAsync(long id)
@@ -101,8 +105,19 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
         return await _dbSet.AnyAsync(e => e.Id == id && !e.IsDeleted);
     }
 
-    public async Task<int> SaveChangesAsync()
+    public async Task<Result> SaveChangesAsync()
     {
-        return await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+            return Result.CreatePassResult();
+        }
+        catch (Exception ex)
+        {
+            
+            _context.ChangeTracker.Clear();
+            _logger.LogError(ex, ex.Message);
+            return Result.CreateFailResult("A database error occured while saving changes.");
+        }
     }
 } 

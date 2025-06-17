@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SkipperData.Managers;
 using System.Linq.Expressions;
+using NetBlocks.Models;
 using SkipperModels.Common;
 using SkipperModels.Entities;
 
@@ -27,7 +28,7 @@ namespace SkipperAPI.Controllers
         /// Get entities - returns existing PagedResult<T> directly
         /// </summary>
         [HttpGet]
-        public virtual async Task<ActionResult<PagedResult<T>>> Get([FromQuery] PagedQuery query)
+        public virtual async Task<ActionResult<ApiResult<PagedResult<T>>>> Get([FromQuery] PagedQuery query)
         {
             var paging = new PagingParameters<T>
             {
@@ -40,17 +41,28 @@ namespace SkipperAPI.Controllers
             var predicate = BuildSearchPredicate(query.Search);
             var result = await Manager.GetPage(predicate, paging);
             
-            return Ok(result.Value); // This will need to be result.Data or similar
+            if (!result.Success)
+            {
+                return StatusCode(500, result);
+            }
+                
+            return Ok(result);
         }
 
         /// <summary>
         /// Get entity by ID
         /// </summary>
         [HttpGet("{id:long}")]
-        public virtual async Task<ActionResult<T>> Get(long id)
+        public virtual async Task<ActionResult<ApiResult<T>>> Get(long id)
         {
-            var result = await Manager.GetPage(e => e.Id == id, new PagingParameters<T> { PageSize = 1 });
-            var entity = result?.Value?.Items?.FirstOrDefault();
+            var pageResult = await Manager.GetPage(e => e.Id == id, new PagingParameters<T> { PageSize = 1 });
+            
+            ApiResult<T> result = ApiResult<T>.From(pageResult); 
+            result.Value = pageResult?.Value?.Items.FirstOrDefault();
+            
+            if (!result.Success) { return StatusCode(500, result); }
+            
+            var entity = result.Value;
             return entity == null ? NotFound() : Ok(entity);
         }
 
@@ -58,11 +70,22 @@ namespace SkipperAPI.Controllers
         /// Create entity - accepts domain entity directly
         /// </summary>
         [HttpPost]
-        public virtual async Task<ActionResult<T>> Post([FromBody] T entity)
+        public virtual async Task<ActionResult<ApiResult<T>>> Post([FromBody] T entity)
         {
-            var result = await Manager.Add(entity);
-            // TODO: Handle NetBlocks Result properly once we know the API
-            return CreatedAtAction(nameof(Get), new { id = entity.Id }, entity);
+            var addResult = await Manager.Add(entity);
+            ApiResult<T> result = ApiResult<T>.From(addResult);
+            result.Value = entity;
+            
+            ApiResultDto<T> dto = new(result);
+            
+            if (result.Success)
+            {
+                return CreatedAtAction(nameof(Get), new { id = entity.Id }, dto);
+            }
+            else
+            {
+                return StatusCode(500, dto);
+            }
         }
 
         /// <summary>
