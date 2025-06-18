@@ -1,6 +1,6 @@
-﻿@using SkipperModels.Common
-@using SkipperModels.Entities
+﻿@using SkipperModels.Entities
 @using SkipperWeb.ApiClients
+@using SkipperWeb.Shared.Pagination
 
 @inject VesselClient Client
 @inject NavigationManager Nav
@@ -33,28 +33,58 @@
 
 @if (ViewModel.Page != null)
 {
-    <ul>
-        @foreach (Vessel vessel in ViewModel.Page.Items)
-        {
-            <li>@vessel.Name</li>
-        }
-    </ul>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Reg. No.</th>
+                <th scope="col">Name</th>
+                <th scope="col">Length</th>
+                <th scope="col">Beam</th>
+                <th scope="col">Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Vessel vessel in ViewModel.Page.Items)
+            {
+                <tr>
+                    <td>@vessel.RegistrationNumber</td>
+                    <td>@vessel.Name</td>
+                    <td>@vessel.Length</td>
+                    <td>@vessel.Beam</td>
+                    <td>@vessel.VesselType</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <Pagination 
+        Page="ViewModel.Page.Page" 
+        PageCount="ViewModel.Page.TotalPages"
+        OnPageChanged="PageChanged"
+    />
 }
 
 @code {
 
-    private VesselsViewModel ViewModel { get; } = new();
+    [SupplyParameterFromQuery]
+    public int Page { get; set; } = 1;
+
+    private VesselsViewModel ViewModel { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
-        var result = await Client.GetByPage(new PagedQuery { Page = ViewModel.PageNumber });
-        if (result.Success) { ViewModel.Page = result.Value; } // TODO show the error
+        ViewModel = new(Client);
+        await ViewModel.SetPage(Page);
+    }
+
+    protected async Task PageChanged(int page)
+    {
+        await ViewModel.SetPage(page);
     }
 
     private void NewVessel()
     {
         Nav.NavigateTo("/vessels/new");
-
     }
 
 }

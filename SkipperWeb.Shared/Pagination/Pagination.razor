@@ -1,0 +1,61 @@
+﻿<nav>
+    <ul class="pagination justify-content-center">
+        <PaginationArrow
+            Direction="ArrowDirection.Left"
+            Disabled="Page <= 1"
+            OnClick="() => PreviousPage()"/>
+
+        @foreach (int page in Pages)
+        {
+            string label = page.ToString();
+            bool spacer = false;
+
+            switch (page)
+            {
+                case MAX_PAGES:
+                    label = PageCount.ToString();
+                    break;
+                case MAX_PAGES - 1:
+                    spacer = true;
+                    label = "...";
+                    break;
+            }
+
+            <PaginationNumber
+                Active="Page == page"
+                Spacer="spacer"
+                PageLabel="@label"/>
+        }
+
+        <PaginationArrow
+            Direction="ArrowDirection.Right"
+            Disabled="Page >= PageCount"
+            OnClick="() => NextPage()"/>
+    </ul>
+</nav>
+
+@code {
+    private const int MAX_PAGES = 8;
+    
+    [Parameter]
+    public required int Page { get; set; }
+    [Parameter]
+    public required int PageCount { get; set; }
+    [Parameter] 
+    public required EventCallback<int> OnPageChanged { get; set; }
+
+    private IEnumerable<int> Pages => Enumerable.Range(1, Math.Min(MAX_PAGES, PageCount));
+    
+    private async Task PreviousPage()
+    {
+        Page -= 1;
+        await OnPageChanged.InvokeAsync(Page);
+    }
+
+    private async Task NextPage()
+    {
+        Page += 1;
+        await OnPageChanged.InvokeAsync(Page); 
+    }
+
+}
