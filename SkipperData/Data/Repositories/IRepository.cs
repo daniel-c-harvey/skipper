@@ -16,6 +16,7 @@ public interface IRepository<T> where T : BaseEntity
     Task DeleteAsync(long id);
     
     // Paged fetching with ordering
+    Task<int> GetPageCountAsync(Expression<Func<T, bool>> predicate, PagingParameters<T> pagingParameters);
     Task<PagedResult<T>> GetPagedAsync(PagingParameters<T> pagingParameters);
     Task<PagedResult<T>> GetPagedAsync(Expression<Func<T, bool>> predicate, PagingParameters<T> pagingParameters);
     

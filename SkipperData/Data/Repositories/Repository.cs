@@ -35,6 +35,16 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
         return await _dbSet.Where(e => !e.IsDeleted).Where(predicate).ToListAsync();
     }
 
+    public async Task<int> GetPageCountAsync(PagingParameters<T> pagingParameters)
+    {
+        return await _dbSet.CountAsync(e => !e.IsDeleted);
+    }
+    
+    public async Task<int> GetPageCountAsync(Expression<Func<T, bool>> predicate, PagingParameters<T> pagingParameters)
+    {
+        return await _dbSet.Where(e => !e.IsDeleted).CountAsync(predicate);
+    }
+    
     public async Task<PagedResult<T>> GetPagedAsync(PagingParameters<T> pagingParameters)
     {
         var query = _dbSet.Where(e => !e.IsDeleted);

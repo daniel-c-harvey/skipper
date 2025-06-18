@@ -9,5 +9,6 @@ public interface IManager<TEntity>
 where TEntity : BaseEntity
 {
     Task<Result> Add(TEntity vessel);
+    Task<ResultContainer<int>> GetPageCount(Expression<Func<TEntity, bool>> predicate,  PagingParameters<TEntity> pagingParameters);
     Task<ResultContainer<PagedResult<TEntity>>> GetPage(Expression<Func<TEntity, bool>> predicate, PagingParameters<TEntity> pagingParameters);
 }

@@ -29,6 +29,21 @@ where TEntity : BaseEntity
         }
     }
 
+    public async Task<ResultContainer<int>> GetPageCount(Expression<Func<TEntity, bool>> predicate, PagingParameters<TEntity> pagingParameters)
+    {
+        try
+        {
+            return ResultContainer<int>.CreatePassResult
+            (
+                await _repository.GetPageCountAsync(predicate, pagingParameters)
+            );
+        }
+        catch (Exception e)
+        {
+            return ResultContainer<int>.CreateFailResult(e.Message);
+        }
+    }
+
     public virtual async Task<ResultContainer<PagedResult<TEntity>>> GetPage(Expression<Func<TEntity, bool>> predicate, PagingParameters<TEntity> pagingParameters)
     {
         try
@@ -40,8 +55,7 @@ where TEntity : BaseEntity
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            return  ResultContainer<PagedResult<TEntity>>.CreateFailResult(e.Message);
         }
     }
 }

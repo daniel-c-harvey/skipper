@@ -28,7 +28,7 @@ namespace SkipperAPI.Controllers
         /// Get entities - returns existing PagedResult<T> directly
         /// </summary>
         [HttpGet]
-        public virtual async Task<ActionResult<ApiResult<PagedResult<T>>>> Get([FromQuery] PagedQuery query)
+        public virtual async Task<ActionResult<ApiResultDto<PagedResult<T>>>> Get([FromQuery] PagedQuery query)
         {
             var paging = new PagingParameters<T>
             {
@@ -39,38 +39,66 @@ namespace SkipperAPI.Controllers
             };
 
             var predicate = BuildSearchPredicate(query.Search);
-            var result = await Manager.GetPage(predicate, paging);
+            var pageResult = await Manager.GetPage(predicate, paging);
+            
+            var result = ApiResult<PagedResult<T>>.From(pageResult);
+            result.Value = pageResult.Value;
+            ApiResultDto<PagedResult<T>> dto = new(result);
             
             if (!result.Success)
             {
-                return StatusCode(500, result);
+                return StatusCode(500, dto);
             }
                 
-            return Ok(result);
+            return Ok(dto);
         }
 
         /// <summary>
         /// Get entity by ID
         /// </summary>
         [HttpGet("{id:long}")]
-        public virtual async Task<ActionResult<ApiResult<T>>> Get(long id)
+        public virtual async Task<ActionResult<ApiResultDto<T>>> Get(long id)
         {
             var pageResult = await Manager.GetPage(e => e.Id == id, new PagingParameters<T> { PageSize = 1 });
             
             ApiResult<T> result = ApiResult<T>.From(pageResult); 
             result.Value = pageResult?.Value?.Items.FirstOrDefault();
             
-            if (!result.Success) { return StatusCode(500, result); }
+            ApiResultDto<T> dto = new(result);
+            
+            if (!result.Success) { return StatusCode(500, dto); }
             
             var entity = result.Value;
-            return entity == null ? NotFound() : Ok(entity);
+            return entity == null ? NotFound(dto) : Ok(dto);
+        }
+
+        [HttpGet("count")]
+        public virtual async Task<ActionResult<ApiResultDto<int>>> GetCount([FromQuery] PagedQuery query)
+        {
+            var paging = new PagingParameters<T>
+            {
+                Page = query.Page,
+                PageSize = query.PageSize,
+                OrderBy = GetSortExpression(query.Sort),
+                IsDescending = query.Desc
+            };
+            var predicate = BuildSearchPredicate(query.Search);
+            var countResult = await Manager.GetPageCount(predicate, paging);
+            ApiResult<int> result = ApiResult<int>.From(countResult);
+            result.Value = countResult.Value;
+            
+            ApiResultDto<int> dto = new(result);
+
+            return result.Success ? 
+                Ok(dto) : 
+                StatusCode(500, dto);
         }
 
         /// <summary>
         /// Create entity - accepts domain entity directly
         /// </summary>
         [HttpPost]
-        public virtual async Task<ActionResult<ApiResult<T>>> Post([FromBody] T entity)
+        public virtual async Task<ActionResult<ApiResultDto<T>>> Post([FromBody] T entity)
         {
             var addResult = await Manager.Add(entity);
             ApiResult<T> result = ApiResult<T>.From(addResult);
@@ -78,14 +106,9 @@ namespace SkipperAPI.Controllers
             
             ApiResultDto<T> dto = new(result);
             
-            if (result.Success)
-            {
-                return CreatedAtAction(nameof(Get), new { id = entity.Id }, dto);
-            }
-            else
-            {
-                return StatusCode(500, dto);
-            }
+            return result.Success ? 
+                CreatedAtAction(nameof(Get), new { id = entity.Id }, dto) :
+                StatusCode(500, dto);
         }
 
         /// <summary>
