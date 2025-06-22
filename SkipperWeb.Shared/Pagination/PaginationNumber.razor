@@ -14,8 +14,8 @@
 }
 
 <li class="page-item @css">
-    <a class="page-link" href="#">
-        <span>@PageLabel</span>
+    <a class="page-link" @onclick="async _ => await OnClick.InvokeAsync(int.Parse(PageLabel))">
+        <label>@PageLabel</label>
     </a>
 </li>
 
@@ -30,5 +30,5 @@
     [Parameter]
     public EventCallback<int> OnClick { get; set; }
 
-    private bool Disabled => Active || Spacer;
+    private bool Disabled => Spacer;
 }

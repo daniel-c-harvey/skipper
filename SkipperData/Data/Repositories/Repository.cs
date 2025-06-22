@@ -42,7 +42,8 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
     
     public async Task<int> GetPageCountAsync(Expression<Func<T, bool>> predicate, PagingParameters<T> pagingParameters)
     {
-        return await _dbSet.Where(e => !e.IsDeleted).CountAsync(predicate);
+        double rowCount = (double)(await _dbSet.Where(e => !e.IsDeleted).CountAsync(predicate)) / pagingParameters.PageSize;
+        return (int)Math.Ceiling(rowCount);
     }
     
     public async Task<PagedResult<T>> GetPagedAsync(PagingParameters<T> pagingParameters)

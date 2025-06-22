@@ -1,8 +1,8 @@
 using NetBlocks.Models.Environment;
 using NetBlocks.Utilities.Environment;
-using SkipperModels.Entities;
 using SkipperWeb.ApiClients;
 using SkipperWeb.Components;
+using SkipperWeb.Components.Pages.Vessels;
 
 namespace SkipperWeb;
 
@@ -55,5 +55,8 @@ public class Program
         
         builderServices.AddSingleton(vesselClientConfig);
         builderServices.AddScoped<VesselClient>();
+        
+        // Add ViewModels as scoped services
+        builderServices.AddScoped<VesselsViewModel>();
     }
 }

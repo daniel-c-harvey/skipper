@@ -37,7 +37,7 @@ namespace SkipperAPI.Controllers
                 OrderBy = GetSortExpression(query.Sort),
                 IsDescending = query.Desc
             };
-
+            
             var predicate = BuildSearchPredicate(query.Search);
             var pageResult = await Manager.GetPage(predicate, paging);
             

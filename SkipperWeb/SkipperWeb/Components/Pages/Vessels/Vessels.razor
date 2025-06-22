@@ -1,11 +1,14 @@
 ﻿@using SkipperModels.Entities
+@using SkipperModels.Common
 @using SkipperWeb.ApiClients
 @using SkipperWeb.Shared.Pagination
+@using SkipperWeb.Shared.Skeleton
 
 @inject VesselClient Client
 @inject NavigationManager Nav
+@inject VesselsViewModel ViewModel
 
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 @page "/vessels"
 
@@ -18,9 +21,9 @@
                 <i class="bi bi-search"></i>
             </span>
             <InputText 
-                class="form-control" 
-                placeholder="Search vessels..."
-                @bind-Value="ViewModel.SearchTerm" /> 
+            class="form-control" 
+            placeholder="Search vessels..."
+            @bind-Value="ViewModel.SearchTerm" /> 
         </div>
     </div>
     <div class="flex-shrink-1">
@@ -31,7 +34,7 @@
     </div>
 </div>
 
-@if (ViewModel.Page != null)
+@if (ViewModel.Page != null && !_pageChanging)
 {
     <table class="table table-striped">
         <thead>
@@ -41,50 +44,108 @@
                 <th scope="col">Length</th>
                 <th scope="col">Beam</th>
                 <th scope="col">Type</th>
+                <th scope="col"><b class="bi bi-pencil"></b></th>
             </tr>
         </thead>
         <tbody>
             @foreach (Vessel vessel in ViewModel.Page.Items)
             {
                 <tr>
-                    <td>@vessel.RegistrationNumber</td>
-                    <td>@vessel.Name</td>
-                    <td>@vessel.Length</td>
-                    <td>@vessel.Beam</td>
-                    <td>@vessel.VesselType</td>
+                    <td scope="row">@vessel.RegistrationNumber</td>
+                    <td scope="row">@vessel.Name</td>
+                    <td scope="row">@vessel.Length</td>
+                    <td scope="row">@vessel.Beam.ToString("N1")</td>
+                    <td scope="row">@vessel.VesselType</td>
+                    <td scope="row">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" />
+                        </div>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
 
-    <Pagination 
-        Page="ViewModel.Page.Page" 
-        PageCount="ViewModel.Page.TotalPages"
-        OnPageChanged="PageChanged"
-    />
+    <Pagination PageChanged="PageChanged"
+    PageSizeChanged="OnPageSizeChanged"
+    Page="ViewModel.Page.Page" 
+    PageSize="PageSize.GetValueOrDefault(10)"
+    PageCount="ViewModel.Page.TotalPages"/>
+}
+else
+{
+    <TableSkeleton Rows="PageSize.GetValueOrDefault(10)" Columns="@VesselColumns"/>
 }
 
 @code {
+    [SupplyParameterFromQuery]
+    public int? Page { get; set; }
 
     [SupplyParameterFromQuery]
-    public int Page { get; set; } = 1;
+    public int? PageSize { get; set; }
 
-    private VesselsViewModel ViewModel { get; set; }
-
-    protected async override Task OnInitializedAsync()
+    private static readonly Dictionary<string, int> VesselColumns = new()
     {
-        ViewModel = new(Client);
-        await ViewModel.SetPage(Page);
+        { "Reg. No.", 5 },
+        { "Name", 9 },
+        { "Length", 4 },
+        { "Beam", 4 },
+        { "Type", 6 }
+    };
+
+    private bool _pageChanging = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // If parameters are missing, set defaults and update URL
+        if (Page == null || PageSize == null)
+        {
+            UpdatePageWithUrl(Page ?? 1, PageSize ?? 10, replace: true);
+            return; // URL change will trigger OnParametersSetAsync again with proper values
+        }
+
+        _pageChanging = true;
+        StateHasChanged();
+        (int page, int pageSize) = await ViewModel.SetPage(Page.Value, PageSize.Value);
+
+        if (page != Page || pageSize != PageSize)
+        {
+            UpdatePageWithUrl(page, pageSize, replace: true);
+        }
+
+        _pageChanging = false;
     }
 
-    protected async Task PageChanged(int page)
+    protected void PageChanged(int page)
     {
-        await ViewModel.SetPage(page);
+        UpdatePageWithUrl(page, PageSize.GetValueOrDefault(10));
+    }
+    
+    protected void OnPageSizeChanged(int pageSize)
+    {
+        UpdatePageWithUrl(1, pageSize); // Reset to page 1 when page size changes
+    }
+
+    private void UpdatePageWithUrl(int page, int pageSize, bool replace = false)
+    {
+        var currentPage = Page;
+        var currentPageSize = PageSize;
+        
+        if (currentPage == page && currentPageSize == pageSize) return;
+        
+        // Update URL - use replace: true to avoid adding to browser history for each page change
+        var queryParams = new Dictionary<string, object?>
+        {
+            ["Page"] = page,
+            ["PageSize"] = pageSize
+        };
+
+        var queryString = Nav.GetUriWithQueryParameters(queryParams);
+        Nav.NavigateTo(queryString, forceLoad: false, replace: replace);
     }
 
     private void NewVessel()
     {
         Nav.NavigateTo("/vessels/new");
     }
-
 }
