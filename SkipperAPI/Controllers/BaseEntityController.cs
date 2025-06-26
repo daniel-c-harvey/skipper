@@ -100,8 +100,6 @@ namespace SkipperAPI.Controllers
             result.Value = entity;
             
             ApiResultDto<T> dto = new(result);
-
-            await Task.Delay(1000);            
             
             return result.Success ? 
                 CreatedAtAction(nameof(Get), new { id = entity.Id }, dto) :
