@@ -1,16 +1,26 @@
 ﻿@inherits LayoutComponentBase
 
-<PagesNavMenu NavigationItems="navMenuItems" />
+<MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode"/>
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-<div class="container position-relative d-flex flex-column">
-    <main class="container">
-        <article class="px-4 py-2 my-4">
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h6">Skipper</MudText>
+        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="@_drawerOpen" Elevation="2">
+        <NavMenu NavigationItems="NavMenuItems"/>
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large">
             @Body
-        </article>
-    </main>
-</div>
-
-<NavFooter />
+        </MudContainer>
+        @* <NavFooter /> *@
+    </MudMainContent>
+</MudLayout>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
@@ -19,19 +29,181 @@
 </div>
 
 @code {
-
-    private static readonly List<NavMenuItem> navMenuItems = 
+    private static readonly List<MudNavMenuItem> NavMenuItems = 
     [
-        new()
+        new MudNavMenuItem()
         {
             Href="/vessels",
-            Text = "Vessels"
+            Text = "Vessels",
+            Icon = MudBlazor.Icons.Material.Filled.DirectionsBoat
         },
-        new()
+        new MudNavMenuItem()
         {
             Href = "/slips",
-            Text = "Slips"
+            Text = "Slips",
+            Icon = Icons.Material.Filled.Dock
         }
     ];
+    
+    bool _drawerOpen = false;
+    private bool _isDarkMode = true;
+    private MudTheme? _theme = null;
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _theme = new()
+        {
+            PaletteLight = _lightPalette,
+            PaletteDark = _darkPalette,
+            LayoutProperties = new LayoutProperties()
+        };
+    }
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private void DarkModeToggle()
+    {
+        _isDarkMode = !_isDarkMode;
+    }
+
+    private readonly PaletteLight _lightPalette = new()
+    {
+        Primary = "#00796B",
+        PrimaryContrastText = "#ffffff",
+        PrimaryDarken = "#004D40",
+        PrimaryLighten = "#009688",
+        Secondary = "#546E7A",
+        SecondaryContrastText = "#ffffff",
+        SecondaryDarken = "#455A64",
+        SecondaryLighten = "#607D8B",
+        Tertiary = "#0D5457",
+        TertiaryContrastText = "#ffffff",
+        Surface = "#f5f5f5",
+        Background = "#fafafa",
+        BackgroundGray = "#f0f0f0",
+        AppbarText = "#37474F",
+        AppbarBackground = "rgba(240,240,240,0.9)",
+        DrawerBackground = "#f5f5f5",
+        DrawerText = "#37474F",
+        DrawerIcon = "#455A64",
+        TextPrimary = "#37474F",
+        TextSecondary = "#546E7A",
+        TextDisabled = "#00000061",
+        ActionDefault = "#e0e0e0",
+        ActionDisabled = "#00000026",
+        ActionDisabledBackground = "#0000001f",
+        GrayDefault = "#bdbdbd",
+        GrayLight = "#e0e0e0",
+        GrayLighter = "#f5f5f5",
+        GrayDark = "#9e9e9e",
+        GrayDarker = "#757575",
+        Info = "#1976D2",
+        InfoContrastText = "#ffffff",
+        InfoDarken = "#0D47A1",
+        InfoLighten = "#2196F3",
+        Success = "#00796B",
+        SuccessContrastText = "#ffffff",
+        SuccessDarken = "#004D40",
+        SuccessLighten = "#009688",
+        Warning = "#F57C00",
+        WarningContrastText = "#ffffff",
+        WarningDarken = "#E65100",
+        WarningLighten = "#FF9800",
+        Error = "#C62828",
+        ErrorContrastText = "#ffffff",
+        ErrorDarken = "#B71C1C",
+        ErrorLighten = "#D32F2F",
+        Dark = "#424242",
+        DarkContrastText = "#ffffff",
+        DarkLighten = "#616161",
+        DarkDarken = "#212121",
+        LinesDefault = "#e0e0e0",
+        LinesInputs = "#bdbdbd",
+        TableLines = "#e0e0e0",
+        TableStriped = "#f9f9f9",
+        TableHover = "#f5f5f5",
+        Divider = "#e0e0e0",
+        DividerLight = "#f0f0f0",
+        OverlayDark = "#00000052",
+        OverlayLight = "#ffffff80",
+        HoverOpacity = 0.04,
+        RippleOpacity = 0.1,
+        Black = "#37474F",
+        White = "#ffffff",
+    };
+
+    private readonly PaletteDark _darkPalette = new()
+    {
+        Primary = "#009688",
+        PrimaryContrastText = "#ECEFF1",
+        PrimaryDarken = "#00796B",
+        PrimaryLighten = "#0fa794",
+        Secondary = "#668784",
+        SecondaryContrastText = "#ECEFF1",
+        SecondaryDarken = "#4F6864",
+        SecondaryLighten = "#679a94",
+        Tertiary = "#156b73",
+        TertiaryContrastText = "#ECEFF1",
+        Surface = "#37474F",
+        Background = "#263238",
+        BackgroundGray = "#2C393F",
+        AppbarText = "#B0BEC5",
+        AppbarBackground = "rgba(44,57,63,0.8)",
+        DrawerBackground = "#2C393F",
+        DrawerText = "#B0BEC5",
+        DrawerIcon = "#B0BEC5",
+        TextPrimary = "#B0BEC5",
+        TextSecondary = "#80CBC4",
+        TextDisabled = "#ffffff33",
+        ActionDefault = "#455A64",
+        ActionDisabled = "#9999994d",
+        ActionDisabledBackground = "#605f6d4d",
+        GrayDefault = "#455A64",
+        GrayLight = "#546E7A",
+        GrayLighter = "#37474F",
+        GrayDark = "#2C393F",
+        GrayDarker = "#263238",
+        Info = "#4160a0",
+        InfoContrastText = "#ECEFF1",
+        InfoDarken = "#2E4570",
+        InfoLighten = "#247aa5",
+        Success = "#009688",
+        SuccessContrastText = "#ECEFF1",
+        SuccessDarken = "#00796B",
+        SuccessLighten = "#0fa794",
+        Warning = "#ffb545",
+        WarningContrastText = "#263238",
+        WarningDarken = "#FF8F00",
+        WarningLighten = "#FFD54F",
+        Error = "#876666",
+        ErrorContrastText = "#ECEFF1",
+        ErrorDarken = "#6D4C4C",
+        ErrorLighten = "#947070",
+        Dark = "#263238",
+        DarkContrastText = "#B0BEC5",
+        DarkLighten = "#2C393F",
+        DarkDarken = "#1C262A",
+        LinesDefault = "#205b7a",
+        LinesInputs = "#205b7a",
+        TableLines = "#205b7a",
+        TableStriped = "#324447",
+        TableHover = "#293d47",
+        Divider = "#2C393F",
+        DividerLight = "#37474F",
+        OverlayDark = "#00000080",
+        OverlayLight = "#26323880",
+        HoverOpacity = 0.06,
+        RippleOpacity = 0.1,
+    };
+
+    public string DarkLightModeButtonIcon => _isDarkMode switch
+    {
+        false => Icons.Material.Rounded.LightMode,
+        true => Icons.Material.Outlined.DarkMode,
+    };
 }

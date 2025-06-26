@@ -1,0 +1,19 @@
+﻿<MudNavMenu>
+    <MudStack Row AlignItems="AlignItems.Center" Class="pa-3 ma-1">
+        <MudIcon Icon="@Icons.Material.Rounded.Person"/>
+        <MudText>User: skipper</MudText>
+    </MudStack>
+    <MudSpacer />
+    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.House">Home</MudNavLink>
+
+    @foreach (var item in NavigationItems)
+    {
+        <MudNavLink Href="@item.Href" Match="@item.Match" Icon="@item.Icon">@item.Text</MudNavLink>
+    }
+</MudNavMenu>
+
+@code {
+
+    [Parameter] public IEnumerable<NavMenuItem> NavigationItems { get; set; } = [];
+
+}

@@ -23,7 +23,7 @@ namespace SkipperData.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("SkipperData.Domain.Entities.RentalAgreement", b =>
+            modelBuilder.Entity("SkipperModels.Entities.RentalAgreement", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -78,7 +78,7 @@ namespace SkipperData.Data.Migrations
                     b.ToTable("rental_agreements", "skipper");
                 });
 
-            modelBuilder.Entity("SkipperData.Domain.Entities.Slip", b =>
+            modelBuilder.Entity("SkipperModels.Entities.Slip", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -127,7 +127,7 @@ namespace SkipperData.Data.Migrations
                     b.ToTable("slips", "skipper");
                 });
 
-            modelBuilder.Entity("SkipperData.Domain.Entities.SlipClassification", b =>
+            modelBuilder.Entity("SkipperModels.Entities.SlipClassification", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -177,7 +177,7 @@ namespace SkipperData.Data.Migrations
                     b.ToTable("slip_classifications", "skipper");
                 });
 
-            modelBuilder.Entity("SkipperData.Domain.Entities.Vessel", b =>
+            modelBuilder.Entity("SkipperModels.Entities.Vessel", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -232,15 +232,15 @@ namespace SkipperData.Data.Migrations
                     b.ToTable("vessels", "skipper");
                 });
 
-            modelBuilder.Entity("SkipperData.Domain.Entities.RentalAgreement", b =>
+            modelBuilder.Entity("SkipperModels.Entities.RentalAgreement", b =>
                 {
-                    b.HasOne("SkipperData.Domain.Entities.Slip", "Slip")
+                    b.HasOne("SkipperModels.Entities.Slip", "Slip")
                         .WithMany()
                         .HasForeignKey("SlipId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("SkipperData.Domain.Entities.Vessel", "Vessel")
+                    b.HasOne("SkipperModels.Entities.Vessel", "Vessel")
                         .WithMany()
                         .HasForeignKey("VesselId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -251,9 +251,9 @@ namespace SkipperData.Data.Migrations
                     b.Navigation("Vessel");
                 });
 
-            modelBuilder.Entity("SkipperData.Domain.Entities.Slip", b =>
+            modelBuilder.Entity("SkipperModels.Entities.Slip", b =>
                 {
-                    b.HasOne("SkipperData.Domain.Entities.SlipClassification", "SlipClassification")
+                    b.HasOne("SkipperModels.Entities.SlipClassification", "SlipClassification")
                         .WithMany()
                         .HasForeignKey("SlipClassificationId")
                         .OnDelete(DeleteBehavior.Restrict)

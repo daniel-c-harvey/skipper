@@ -10,178 +10,108 @@
 
 @inject VesselClient Client
 @inject NavigationManager Navigation
+@inject IDialogService DialogService
 
 @page "/vessels/new"
 
-<Modal @ref="resultModal" Title="Submitting Vessel" IsVisibleChanged="OnModalChanged">
-    @if (submitResult is null)
-    {
-        <div class="container justify-content-center m-auto p-4">
-            <Spinner />
-        </div>
-    }
-    else if (submitResult.Success)
-    {
-        <p>Vessel has been <span class="text-success">submitted</span>.</p>
-    }
-    else
-    {
-        <p>Vessel was <span class="text-warning">NOT</span> submitted</p>
-
-        <ResultDetails Result="submitResult" />
-    }
-    </Modal>
-
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0">
-                            <i class="bi bi-plus-circle me-2"></i>
+<MudContainer Class="pa-5">
+        <EditForm Model="Input" method="post" OnValidSubmit="Post" FormName="new-vessel">
+            <DataAnnotationsValidator/>
+            <MudCard>
+                <MudCardHeader>
+                    <MudStack Row AlignItems="AlignItems.Center">
+                        <MudText Color="Color.Primary" Typo="Typo.h4">
+                            <MudIcon Icon="@Icons.Material.Outlined.AddCircleOutline" />
                             New Vessel Entry
-                        </h4>
-                    </div>
-                    <div class="card-body">
-                        <EditForm Model="Input" method="post" OnValidSubmit="Post" FormName="new-vessel">
-                            <DataAnnotationsValidator/>
-                            <ValidationSummary class="alert alert-danger px-4" />
+                        </MudText>
+                    </MudStack>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid Spacing="3">
+                        <MudItem xs="12" md="6">
+                            <MudTextField Label="Registration No."
+                                          Adornment="Adornment.Start"
+                                          AdornmentIcon="@Icons.Material.Outlined.Receipt"
+                                          @bind-Value="Input.RegistrationNumber"
+                                          For="() => Input.RegistrationNumber" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudTextField Label="Vessel Name"
+                                          Adornment="Adornment.Start"
+                                          AdornmentIcon="@Icons.Material.Outlined.DirectionsBoat"
+                                          @bind-Value="Input.Name"
+                                          For="() => Input.Name" />
+                        </MudItem>
+                        
+                        <MudItem xs="6" md="4">
+                            <MudNumericField Label="Length"
+                                             @bind-Value="Input.Length"
+                                             For="() => Input.Length"/>
+                        </MudItem>
+                        <MudItem xs="6" md="4">
+                            <MudNumericField Label="Beam"
+                                             @bind-Value="Input.Beam"
+                                             For="() => Input.Beam"/>
+                        </MudItem>
+                        <MudItem xs="6" md="4">
+                            <MudSelect Label="Select Vessel Type"
+                                       @bind-Value="Input.VesselType"
+                                       For="() => Input.VesselType">
+                                @foreach (VesselType vesselType in Enum.GetValues<VesselType>())
+                                {
+                                    <MudSelectItem Value="@vesselType">@vesselType</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Href="/vessels" StartIcon="@Icons.Material.Outlined.ArrowBack" Color="Color.Secondary" Variant="Variant.Filled">Back to Vessels</MudButton>
+                    <MudSpacer />
+                    <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" Variant="Variant.Filled">Save Vessel</MudButton>
+                </MudCardActions>
+            </MudCard>
+            <MudSpacer/>
+            <MudPaper Class="my-2">
+            <ValidationSummary class="mx-2 pa-5" />
+            </MudPaper>
+        </EditForm>
+    </MudContainer>
 
-                            <div class="row g-3">
-                                <!-- Registration Number -->
-                                <div class="col-md-6">
-                                    <div class="form-floating">
-                                        <InputText @bind-Value="Input.RegistrationNumber" 
-                                        id="Input.RegistrationNumber" 
-                                        class="form-control"/>
-                                        <label for="Input.RegistrationNumber">
-                                            <i class="bi bi-card-text me-1"></i>Registration Number
-                                        </label>
-                                        <ValidationMessage For="() => Input.RegistrationNumber" class="text-danger small mt-1"/>
-                                    </div>
-                                </div>
-
-                                <!-- Vessel Name -->
-                                <div class="col-md-6">
-                                    <div class="form-floating">
-                                        <InputText @bind-Value="Input.Name" 
-                                        id="Input.Name" 
-                                        class="form-control"/>
-                                        <label for="Input.Name">
-                                            <i class="bi bi-ship me-1"></i>Vessel Name
-                                        </label>
-                                        <ValidationMessage For="() => Input.Name" class="text-danger small mt-1"/>
-                                    </div>
-                                </div>
-
-                                <!-- Length -->
-                                <div class="col-md-4">
-                                    <div class="form-floating">
-                                        <InputNumber @bind-Value="Input.Length" 
-                                        id="Input.Length" 
-                                        class="form-control"
-                                        placeholder="0.00"
-                                        step="1"/>
-                                        <label for="Input.Length">
-                                            <i class="bi bi-arrows-expand me-1"></i>Length (m)
-                                        </label>
-                                        <ValidationMessage For="() => Input.Length" class="text-danger small mt-1"/>
-                                    </div>
-                                </div>
-
-                                <!-- Beam -->
-                                <div class="col-md-4">
-                                    <div class="form-floating">
-                                        <InputNumber @bind-Value="Input.Beam" 
-                                        id="Input.Beam" 
-                                        class="form-control"
-                                        placeholder="0.00"
-                                        step="1"/>
-                                        <label for="Input.Beam">
-                                            <i class="bi bi-arrows-expand-vertical me-1"></i>Beam (m)
-                                        </label>
-                                        <ValidationMessage For="() => Input.Beam" class="text-danger small mt-1"/>
-                                    </div>
-                                </div>
-
-                                <!-- Vessel Type -->
-                                <div class="col-md-4">
-                                    <div class="form-floating">
-                                        <InputSelect @bind-Value="Input.VesselType" 
-                                        id="Input.VesselType" 
-                                        class="form-select">
-                                            <option value="">Select vessel type...</option>
-                                            <option value="@VesselType.Sailboat">Sailboat</option>
-                                            <option value="@VesselType.Motorboat">Motorboat</option>
-                                            <option value="@VesselType.Other">Other</option>
-                                        </InputSelect>
-                                        <label for="Input.VesselType">
-                                            <i class="bi bi-gear me-1"></i>Vessel Type
-                                        </label>
-                                        <ValidationMessage For="() => Input.VesselType" class="text-danger small mt-1"/>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Action Buttons -->
-                            <div class="row mt-4">
-                                <div class="col-12">
-                                    <div class="d-flex justify-content-between">
-                                        <a href="/vessels" class="btn btn-outline-secondary">
-                                            <i class="bi bi-arrow-left me-1"></i>
-                                            Back to Vessels
-                                        </a>
-                                        <button type="submit" class="btn btn-dark bg-primary">
-                                            <i class="bi bi-check-circle me-1"></i>
-                                            Save Vessel
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </EditForm>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    @code {
-
-
-
-    [SupplyParameterFromForm] private NewVesselInputModel Input { get; set; } = new();
-
-    private Modal resultModal = default!;
-    private Result? submitResult = null;
+@code {
+    [SupplyParameterFromForm]
+    private NewVesselInputModel Input { get; set; } = new();
 
     public async Task Post(EditContext editContext)
     {
-        submitResult = null;
-        await resultModal.Open();
-
-        Vessel newVessel = new()
+        Task<Result> resultTask = Task<Result>.Run(async () =>
         {
-            RegistrationNumber = Input.RegistrationNumber,
-            Name = Input.Name,
-            Length = Input.Length,
-            Beam = Input.Beam,
-            VesselType = Input.VesselType
-        };
 
-        ApiResult<Vessel> result = await Client.Add(newVessel);
-        if (result.Success)
-        {
-            submitResult = Result.CreatePassResult();
-        }
-        else
-        {
-            submitResult = Result.From(result);
-        }
-    }
+            Vessel newVessel = new()
+                {
+                    RegistrationNumber = Input.RegistrationNumber,
+                    Name = Input.Name,
+                    Length = Input.Length,
+                    Beam = Input.Beam,
+                    VesselType = Input.VesselType
+                };
 
-    public void OnModalChanged(bool visible)
-    {
-        if(!visible && (submitResult?.Success ?? false))
+            ApiResult<Vessel> addResult = await Client.Add(newVessel);
+            return addResult.Success ? Result.CreatePassResult() : Result.From(addResult);
+        });
+
+        var parameters = new DialogParameters<VesselSubmittedModal>
+            { { x => x.ResultTask, resultTask } };
+        var options = new DialogOptions { CloseButton = true, FullWidth = true };
+
+        // Post and show results
+        var dialog = await DialogService.ShowAsync<VesselSubmittedModal>("Submit Vessel Result", parameters, options);
+        var dialogResult = await dialog.Result;
+
+        if(dialogResult != null && 
+           !dialogResult.Canceled && 
+           dialogResult.Data is Result result &&
+            result.Success)
         {
             Navigation.NavigateTo("/vessels");
         }

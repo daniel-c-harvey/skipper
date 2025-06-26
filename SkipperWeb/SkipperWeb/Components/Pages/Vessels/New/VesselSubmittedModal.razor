@@ -1,0 +1,50 @@
+﻿@using NetBlocks.Models
+@using SkipperWeb.Shared.UI
+@using SkipperWeb.Shared.Result
+
+<MudDialog>
+    <DialogContent>    
+        @if (!ResultTask.IsCompleted || result is null)
+        {
+            <MudContainer Class="justify-content-center ma-auto pa-4">
+                <Spinner />
+            </MudContainer>
+        }
+        else if (result.Success)
+        {
+            <MudText>Vessel has been <MudText Inline="true" Color="Color.Success">submitted</MudText>.</MudText>
+        }
+        else
+        {
+            <MudText>Vessel was <MudText Inline="true" Color="Color.Warning">NOT</MudText> submitted</MudText>
+            <MudContainer Class="pa-5">
+                <ResultDetails Result="result" />
+            </MudContainer>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Close" Disabled="@(result is null)">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter] 
+    public required Task<Result> ResultTask { get; set; }
+
+    private Result? result = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        result = await ResultTask;
+    }
+
+
+    private void Close()
+    {
+        if (result is null) return;
+        MudDialog.Close(DialogResult.Ok<Result>(result));
+    }
+}

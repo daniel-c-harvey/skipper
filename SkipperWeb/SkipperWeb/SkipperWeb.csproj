@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="MudBlazor" Version="8.8.0" />
         <ProjectReference Include="..\..\SkipperModels\SkipperModels.csproj" />
         <ProjectReference Include="..\..\SkipperWeb.Shared\SkipperWeb.Shared.csproj" />
         <ProjectReference Include="..\SkipperWeb.Client\SkipperWeb.Client.csproj" />

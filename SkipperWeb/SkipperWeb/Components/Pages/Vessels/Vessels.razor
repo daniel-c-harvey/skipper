@@ -8,140 +8,129 @@
 @inject NavigationManager Nav
 @inject VesselsViewModel ViewModel
 
-@rendermode @(new InteractiveServerRenderMode(prerender: false))
-
 @page "/vessels"
 
-<h4>Vessels</h4>
+<MudText Typo="Typo.h2">Vessels</MudText>
 
-<div class="container d-flex gap-2 align-items-center flex-row mb-2">
-    <div class="flex-fill mr-2">
-        <div class="input-group input-group">
-            <span class="input-group-text">
-                <i class="bi bi-search"></i>
-            </span>
-            <InputText 
-            class="form-control" 
-            placeholder="Search vessels..."
-            @bind-Value="ViewModel.SearchTerm" /> 
-        </div>
-    </div>
-    <div class="flex-shrink-1">
-        <button class="btn bg-primary btn-dark"
-        @onclick="NewVessel">
-            Enter New Vessel <span class="bi bi-plus-circle"></span>
-        </button>
-    </div>
-</div>
 
-@if (ViewModel.Page != null && !_pageChanging)
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th scope="col">Reg. No.</th>
-                <th scope="col">Name</th>
-                <th scope="col">Length</th>
-                <th scope="col">Beam</th>
-                <th scope="col">Type</th>
-                <th scope="col"><b class="bi bi-pencil"></b></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (Vessel vessel in ViewModel.Page.Items)
-            {
-                <tr>
-                    <td scope="row">@vessel.RegistrationNumber</td>
-                    <td scope="row">@vessel.Name</td>
-                    <td scope="row">@vessel.Length</td>
-                    <td scope="row">@vessel.Beam.ToString("N1")</td>
-                    <td scope="row">@vessel.VesselType</td>
-                    <td scope="row">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" />
-                        </div>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+<MudGrid Class="my-5">
+    <MudItem xs="12" md="9">
+        <MudTextField Adornment="Adornment.Start" 
+                      AdornmentIcon="@Icons.Material.Filled.Search" 
+                      Placeholder="Seach vessels..." 
+                      Clearable="true"
+                      @bind-Value="SearchTerm"
+                      DebounceInterval="300"
+                      OnDebounceIntervalElapsed="OnSearchChanged"/>
+    </MudItem>
+    <MudItem xs="3" Class="d-flex justify-end">
+        <MudButton Color="Color.Primary" EndIcon="@Icons.Material.Outlined.AddCircleOutline" Variant="Variant.Filled" OnClick="NewVessel">
+            Enter New Vessel
+        </MudButton>
+    </MudItem>
+</MudGrid>
+    
 
-    <Pagination PageChanged="PageChanged"
-    PageSizeChanged="OnPageSizeChanged"
-    Page="ViewModel.Page.Page" 
-    PageSize="PageSize.GetValueOrDefault(10)"
-    PageCount="ViewModel.Page.TotalPages"/>
-}
-else
-{
-    <TableSkeleton Rows="PageSize.GetValueOrDefault(10)" Columns="@VesselColumns"/>
-}
+<MudDataGrid @ref="vesselGrid"
+                T="Vessel" 
+                ServerData="LoadGridServerData"
+                ReadOnly="true"
+                CurrentPage="@(Page.GetValueOrDefault(10) - 1)"
+                RowsPerPage="@(PageSize.GetValueOrDefault(10))">
+    <Columns>
+        <PropertyColumn Property="x => x.RegistrationNumber" Title="Reg. No." />
+        <PropertyColumn Property="x => x.Name" />
+        <PropertyColumn Property="x => x.Length" />
+        <PropertyColumn Property="x => x.Beam" />
+        <PropertyColumn Property="x => x.VesselType" Title="Type" />
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="Vessel" 
+                            PageSizeOptions="@(new[] { 5, 10, 15, 25, 50})" 
+                            RowsPerPageString="Vessels per page"
+                            InfoFormat="{first_item}-{last_item} of {all_items}"/>
+    </PagerContent>
+</MudDataGrid>
+
 
 @code {
+
+
+
     [SupplyParameterFromQuery]
     public int? Page { get; set; }
 
     [SupplyParameterFromQuery]
     public int? PageSize { get; set; }
 
-    private static readonly Dictionary<string, int> VesselColumns = new()
-    {
-        { "Reg. No.", 5 },
-        { "Name", 9 },
-        { "Length", 4 },
-        { "Beam", 4 },
-        { "Type", 6 }
-    };
+    [SupplyParameterFromQuery]
+    public string? SearchTerm { get; set; }
 
-    private bool _pageChanging = false;
+    private MudDataGrid<Vessel>? vesselGrid;
+    private bool _updatingParameters = false;
 
     protected override async Task OnParametersSetAsync()
     {
         // If parameters are missing, set defaults and update URL
-        if (Page == null || PageSize == null)
+        if (Page == null || PageSize == null || SearchTerm is null)
         {
-            UpdatePageWithUrl(Page ?? 1, PageSize ?? 10, replace: true);
+            UpdatePageWithUrl(Page ?? 1, PageSize ?? 10, SearchTerm ?? string.Empty, replace: true);
             return; // URL change will trigger OnParametersSetAsync again with proper values
         }
 
-        _pageChanging = true;
-        StateHasChanged();
-        (int page, int pageSize) = await ViewModel.SetPage(Page.Value, PageSize.Value);
-
-        if (page != Page || pageSize != PageSize)
-        {
-            UpdatePageWithUrl(page, pageSize, replace: true);
-        }
-
-        _pageChanging = false;
-    }
-
-    protected void PageChanged(int page)
-    {
-        UpdatePageWithUrl(page, PageSize.GetValueOrDefault(10));
+        _updatingParameters = true;
+        if (vesselGrid != null) await vesselGrid.ReloadServerData();
+        _updatingParameters = false;
     }
     
-    protected void OnPageSizeChanged(int pageSize)
+    private void OnSearchChanged(string searchTerm)
     {
-        UpdatePageWithUrl(1, pageSize); // Reset to page 1 when page size changes
+        UpdatePageWithUrl(1, PageSize ?? 10, searchTerm);
     }
 
-    private void UpdatePageWithUrl(int page, int pageSize, bool replace = false)
+    private async Task<GridData<Vessel>> LoadGridServerData(GridState<Vessel> state)
+    {
+        if (!_updatingParameters) UpdatePageWithUrl(state.Page + 1, state.PageSize, ViewModel.SearchTerm);
+        await LoadServerData(Page ?? 1, PageSize ?? 10 , SearchTerm ?? string.Empty);
+
+        return new GridData<Vessel>()
+        {
+            Items = ViewModel.Page?.Items ?? Enumerable.Empty<Vessel>(),
+            TotalItems = ViewModel.Page?.TotalCount ?? 0
+        };
+    }
+    
+    private void UpdatePageWithUrl(int page, int pageSize, string searchTerm, bool replace = false)
     {
         var currentPage = Page;
         var currentPageSize = PageSize;
+        var currentSearchTerm = ViewModel.SearchTerm;
+
+        if (currentPage == page && currentPageSize == pageSize && currentSearchTerm == searchTerm) 
+            return;
         
-        if (currentPage == page && currentPageSize == pageSize) return;
-        
-        // Update URL - use replace: true to avoid adding to browser history for each page change
         var queryParams = new Dictionary<string, object?>
         {
             ["Page"] = page,
-            ["PageSize"] = pageSize
+            ["PageSize"] = pageSize,
+            ["SearchTerm"] = searchTerm
         };
 
         var queryString = Nav.GetUriWithQueryParameters(queryParams);
         Nav.NavigateTo(queryString, forceLoad: false, replace: replace);
+    }
+
+    private async Task LoadServerData(int page, int pageSize, string searchTerm)
+    {
+
+        // Ensure ViewModel has the latest data
+        (page, pageSize) = await ViewModel.SetPage(page, pageSize, searchTerm);
+
+        // if page was coerced, update again
+        if (page != Page || pageSize != PageSize)
+        {
+            UpdatePageWithUrl(page, pageSize, searchTerm);
+        }
     }
 
     private void NewVessel()

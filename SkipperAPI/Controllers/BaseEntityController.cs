@@ -45,12 +45,7 @@ namespace SkipperAPI.Controllers
             result.Value = pageResult.Value;
             ApiResultDto<PagedResult<T>> dto = new(result);
             
-            if (!result.Success)
-            {
-                return StatusCode(500, dto);
-            }
-                
-            return Ok(dto);
+            return result.Success ? Ok(dto) : StatusCode(500, dto);
         }
 
         /// <summary>
@@ -105,6 +100,8 @@ namespace SkipperAPI.Controllers
             result.Value = entity;
             
             ApiResultDto<T> dto = new(result);
+
+            await Task.Delay(1000);            
             
             return result.Success ? 
                 CreatedAtAction(nameof(Get), new { id = entity.Id }, dto) :

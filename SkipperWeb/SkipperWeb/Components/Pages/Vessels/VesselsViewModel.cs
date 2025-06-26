@@ -1,4 +1,5 @@
-﻿using SkipperModels.Common;
+﻿using NetBlocks.Utilities;
+using SkipperModels.Common;
 using SkipperModels.Entities;
 using SkipperWeb.ApiClients;
 using System.Diagnostics;
@@ -7,12 +8,14 @@ namespace SkipperWeb.Components.Pages.Vessels;
 
 public class VesselsViewModel
 {
-    public string SearchTerm { get; set; } = string.Empty;
     public PagedResult<Vessel>? Page { get; private set; }
+
+    public string SearchTerm => _currentSearchTerm;
     
     private readonly VesselClient _client;
     private int _currentPage = 0;
     private int _currentPageSize = 0;
+    private string _currentSearchTerm = string.Empty;
     private int? _cachedPageCount;
 
     public VesselsViewModel(VesselClient client)
@@ -20,10 +23,11 @@ public class VesselsViewModel
         _client = client;
     }
 
-    public async Task<(int, int)> SetPage(int pageNumber, int pageSize)
+    public async Task<(int, int)> SetPage(int pageNumber, int pageSize, string searchTerm)
     {        
         // Avoid unnecessary API calls if we're requesting the same page
-        if (_currentPage == pageNumber && _currentPageSize == pageSize && Page != null)
+        if (_currentPage == pageNumber && _currentPageSize == pageSize && 
+            searchTerm == _currentSearchTerm && Page != null)
         {
             return (pageNumber, pageSize);
         }
@@ -31,7 +35,12 @@ public class VesselsViewModel
         int pageCount = 1;
         if (Page is null || _cachedPageCount is null)
         {
-            var countResult = await _client.GetPageCount(new PagedQuery { PageSize = pageSize });
+            var countResult = await _client.GetPageCount(
+                new PagedQuery 
+                { 
+                    PageSize = pageSize, 
+                    Search = searchTerm 
+                });
             if (!countResult.Success) { throw new Exception("TODO present error"); }
             pageCount = countResult.Value;
             _cachedPageCount = pageCount;
@@ -46,10 +55,17 @@ public class VesselsViewModel
             pageNumber = 1;
         }
 
-        var result = await _client.GetByPage(new PagedQuery { Page = pageNumber, PageSize = pageSize });
+        var result = await _client.GetByPage(
+            new PagedQuery 
+            { 
+                Page = pageNumber, 
+                PageSize = pageSize, 
+                Search = searchTerm 
+            });
         if (result.Success && result.Value != null)
         {
             Page = result.Value;
+            _currentSearchTerm = searchTerm;
             _currentPage = pageNumber;
             _currentPageSize = pageSize;
         }
@@ -66,6 +82,7 @@ public class VesselsViewModel
     {
         _cachedPageCount = null;
         Page = null;
+        _currentSearchTerm = string.Empty;
         _currentPage = 0;
         _currentPageSize = 0;
     }

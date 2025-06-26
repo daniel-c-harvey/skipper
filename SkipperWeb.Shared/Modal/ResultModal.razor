@@ -1,0 +1,28 @@
+﻿@* @using NetBlocks.Models
+
+<MudDialog>
+    <DialogContent>
+        @Body
+    </DialogContent>
+    <DialogActions>
+        @Actions
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public required Result Result { get; set; }
+
+    [Parameter] 
+    public required RenderFragment Body { get; set; }
+    
+    [Parameter] 
+    public RenderFragment? Actions { get; set; }
+
+    protected virtual void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+} *@
