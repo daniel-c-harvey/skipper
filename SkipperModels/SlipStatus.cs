@@ -6,6 +6,6 @@ public enum SlipStatus
     Booked,
     InUse,
     Maintenance,
-    // Sold,
+    Sold,
     Archived
 }

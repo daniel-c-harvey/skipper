@@ -19,11 +19,14 @@ namespace SkipperData.Data.Migrations
             modelBuilder
                 .HasDefaultSchema("skipper")
                 .HasAnnotation("ProductVersion", "9.0.6")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("SkipperModels.Entities.RentalAgreement", b =>
+            modelBuilder.Entity("SkipperModels.Entities.RentalAgreementEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -78,7 +81,59 @@ namespace SkipperData.Data.Migrations
                     b.ToTable("rental_agreements", "skipper");
                 });
 
-            modelBuilder.Entity("SkipperModels.Entities.Slip", b =>
+            modelBuilder.Entity("SkipperModels.Entities.SlipClassificationEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("BasePrice")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .UseCollation("en-US-x-icu");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<decimal>("MaxBeam")
+                        .HasPrecision(19, 5)
+                        .HasColumnType("numeric(19,5)");
+
+                    b.Property<decimal>("MaxLength")
+                        .HasPrecision(19, 5)
+                        .HasColumnType("numeric(19,5)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .UseCollation("en-US-x-icu");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BasePrice");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("slip_classifications", "skipper");
+                });
+
+            modelBuilder.Entity("SkipperModels.Entities.SlipEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -97,7 +152,8 @@ namespace SkipperData.Data.Migrations
                     b.Property<string>("LocationCode")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .UseCollation("en-US-x-icu");
 
                     b.Property<long>("SlipClassificationId")
                         .HasColumnType("bigint");
@@ -105,10 +161,12 @@ namespace SkipperData.Data.Migrations
                     b.Property<string>("SlipNumber")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .UseCollation("en-US-x-icu");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -127,57 +185,7 @@ namespace SkipperData.Data.Migrations
                     b.ToTable("slips", "skipper");
                 });
 
-            modelBuilder.Entity("SkipperModels.Entities.SlipClassification", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("BasePrice")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<decimal>("MaxBeam")
-                        .HasPrecision(19, 5)
-                        .HasColumnType("numeric(19,5)");
-
-                    b.Property<decimal>("MaxLength")
-                        .HasPrecision(19, 5)
-                        .HasColumnType("numeric(19,5)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BasePrice");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("Name");
-
-                    b.ToTable("slip_classifications", "skipper");
-                });
-
-            modelBuilder.Entity("SkipperModels.Entities.Vessel", b =>
+            modelBuilder.Entity("SkipperModels.Entities.VesselEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -204,12 +212,14 @@ namespace SkipperData.Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .UseCollation("en-US-x-icu");
 
                     b.Property<string>("RegistrationNumber")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .UseCollation("en-US-x-icu");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -232,34 +242,39 @@ namespace SkipperData.Data.Migrations
                     b.ToTable("vessels", "skipper");
                 });
 
-            modelBuilder.Entity("SkipperModels.Entities.RentalAgreement", b =>
+            modelBuilder.Entity("SkipperModels.Entities.RentalAgreementEntity", b =>
                 {
-                    b.HasOne("SkipperModels.Entities.Slip", "Slip")
+                    b.HasOne("SkipperModels.Entities.SlipEntity", "SlipEntity")
                         .WithMany()
                         .HasForeignKey("SlipId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("SkipperModels.Entities.Vessel", "Vessel")
+                    b.HasOne("SkipperModels.Entities.VesselEntity", "VesselEntity")
                         .WithMany()
                         .HasForeignKey("VesselId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Slip");
+                    b.Navigation("SlipEntity");
 
-                    b.Navigation("Vessel");
+                    b.Navigation("VesselEntity");
                 });
 
-            modelBuilder.Entity("SkipperModels.Entities.Slip", b =>
+            modelBuilder.Entity("SkipperModels.Entities.SlipEntity", b =>
                 {
-                    b.HasOne("SkipperModels.Entities.SlipClassification", "SlipClassification")
-                        .WithMany()
+                    b.HasOne("SkipperModels.Entities.SlipClassificationEntity", "SlipClassificationEntity")
+                        .WithMany("Slips")
                         .HasForeignKey("SlipClassificationId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("SlipClassification");
+                    b.Navigation("SlipClassificationEntity");
+                });
+
+            modelBuilder.Entity("SkipperModels.Entities.SlipClassificationEntity", b =>
+                {
+                    b.Navigation("Slips");
                 });
 #pragma warning restore 612, 618
         }

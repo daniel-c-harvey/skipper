@@ -4,9 +4,11 @@ using SkipperModels.Entities;
 
 namespace SkipperData.Data.Configurations;
 
-public abstract class BaseEntityConfiguration<T> : IEntityTypeConfiguration<T> where T : BaseEntity
+public abstract class BaseEntityConfiguration<TEntity, TDto> : IEntityTypeConfiguration<TEntity> 
+where TEntity : class, IEntity<TEntity, TDto>
+where TDto : class, IModel<TDto, TEntity>
 {
-    public virtual void Configure(EntityTypeBuilder<T> builder)
+    public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {
         builder.HasKey(e => e.Id);
         
@@ -27,5 +29,5 @@ public abstract class BaseEntityConfiguration<T> : IEntityTypeConfiguration<T> w
         ConfigureEntity(builder);
     }
     
-    protected abstract void ConfigureEntity(EntityTypeBuilder<T> builder);
+    protected abstract void ConfigureEntity(EntityTypeBuilder<TEntity> builder);
 } 

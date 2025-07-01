@@ -6,12 +6,13 @@ using SkipperModels.Entities;
 
 namespace SkipperData.Managers;
 
-public abstract class ManagerBase<TEntity> : IManager<TEntity>
-where TEntity : BaseEntity
+public abstract class ManagerBase<TEntity, TDto> : IManager<TEntity, TDto>
+where TEntity : class, IEntity<TEntity, TDto>
+where TDto : class, IModel<TDto, TEntity>
 {
-    protected IRepository<TEntity> _repository;
+    protected IRepository<TEntity, TDto> _repository;
 
-    public ManagerBase(IRepository<TEntity> repository)
+    public ManagerBase(IRepository<TEntity, TDto> repository)
     {
         _repository = repository;
     }

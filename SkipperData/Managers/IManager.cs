@@ -5,8 +5,9 @@ using SkipperModels.Entities;
 
 namespace SkipperData.Managers;
 
-public interface IManager<TEntity>
-where TEntity : BaseEntity
+public interface IManager<TEntity, TDto>
+where TEntity : class, IEntity<TEntity, TDto>
+where TDto : class, IModel<TDto, TEntity>
 {
     Task<Result> Add(TEntity vessel);
     Task<ResultContainer<int>> GetPageCount(Expression<Func<TEntity, bool>> predicate,  PagingParameters<TEntity> pagingParameters);

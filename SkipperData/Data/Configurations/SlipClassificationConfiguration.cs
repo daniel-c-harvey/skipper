@@ -4,9 +4,9 @@ using SkipperModels.Entities;
 
 namespace SkipperData.Data.Configurations;
 
-public class SlipClassificationConfiguration : BaseEntityConfiguration<SlipClassification>
+public class SlipClassificationConfiguration : BaseEntityConfiguration<SlipClassificationEntity, SlipClassificationModel>
 {
-    protected override void ConfigureEntity(EntityTypeBuilder<SlipClassification> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<SlipClassificationEntity> builder)
     {
         builder.ToTable("slip_classifications");
         

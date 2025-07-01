@@ -6,7 +6,7 @@ using SkipperModels.Entities;
 namespace SkipperTests.RepositoryTests;
 
 [TestFixture]
-public class SlipRepositoryTests : RepositoryTestBase<Slip>
+public class SlipRepositoryTests : RepositoryTestBase<SlipEntity, SlipModel>
 {
     private SlipRepository _repository;
     protected ILogger<SlipRepository> Logger;
@@ -21,9 +21,9 @@ public class SlipRepositoryTests : RepositoryTestBase<Slip>
 
     #region Helper Methods
 
-    private Slip CreateSlip(long id, SlipStatus status, string slipNumber, string locationCode = "LOC1")
+    private SlipEntity CreateSlip(long id, SlipStatus status, string slipNumber, string locationCode = "LOC1")
     {
-        return new Slip
+        return new SlipEntity
         {
             Id = id,
             Status = status,
@@ -36,7 +36,7 @@ public class SlipRepositoryTests : RepositoryTestBase<Slip>
         };
     }
 
-    private async Task SetupSlipsAsync(params Slip[] slips)
+    private async Task SetupSlipsAsync(params SlipEntity[] slips)
     {
         foreach (var slip in slips)
         {

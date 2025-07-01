@@ -1,9 +1,12 @@
 using MudBlazor.Services;
 using NetBlocks.Models.Environment;
 using NetBlocks.Utilities.Environment;
+using SkipperModels.Entities;
 using SkipperWeb.ApiClients;
 using SkipperWeb.Components;
+using SkipperWeb.Components.Pages.Entities;
 using SkipperWeb.Components.Pages.Vessels;
+using System.Text.Json;
 
 namespace SkipperWeb;
 
@@ -23,6 +26,12 @@ public class Program
             .AddMudServices();
 
         LoadSkipperServices(builder.Services);
+
+        builder.Services.Configure<JsonSerializerOptions>(options =>
+        {
+            options.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+            options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        });
         
         var app = builder.Build();
 
@@ -56,12 +65,18 @@ public class Program
     private static void LoadSkipperServices(IServiceCollection builderServices)
     {
         ApiEndpoint skipperEndpoint = EndpointsTools.LoadFromFile("environment/endpoints.json", "skipper-api");
-        VesselClientConfig vesselClientConfig = new(skipperEndpoint.ApiUrl);
         
-        builderServices.AddSingleton(vesselClientConfig);
+        builderServices.AddSingleton(new VesselClientConfig(skipperEndpoint.ApiUrl));
         builderServices.AddScoped<VesselClient>();
+        builderServices.AddSingleton(new SlipClientConfig(skipperEndpoint.ApiUrl));
+        builderServices.AddScoped<SlipClient>();
+        builderServices.AddSingleton(new SlipClassificationClientConfig(skipperEndpoint.ApiUrl));
+        builderServices.AddScoped<SlipClassificationClient>();
+
         
         // Add ViewModels as scoped services
         builderServices.AddScoped<VesselsViewModel>();
+        builderServices.AddScoped<ModelPageViewModel<SlipModel, SlipEntity, SlipClient, SlipClientConfig>>();
+        builderServices.AddScoped<ModelPageViewModel<SlipClassificationModel, SlipClassificationEntity, SlipClassificationClient, SlipClassificationClientConfig>>();
     }
 }

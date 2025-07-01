@@ -8,11 +8,16 @@ public class SkipperContext : DbContext
 {
     public SkipperContext(DbContextOptions<SkipperContext> options) : base(options) { }
 
-    public DbSet<Slip> Slips { get; set; }
-    public DbSet<SlipClassification> SlipClassifications { get; set; }
-    public DbSet<Vessel> Vessels { get; set; }
-    public DbSet<RentalAgreement> RentalAgreements { get; set; }
+    public DbSet<SlipEntity> Slips { get; set; }
+    public DbSet<SlipClassificationEntity> SlipClassifications { get; set; }
+    public DbSet<VesselEntity> Vessels { get; set; }
+    public DbSet<RentalAgreementEntity> RentalAgreements { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseLazyLoadingProxies();
+    }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Global configs
@@ -24,6 +29,15 @@ public class SkipperContext : DbContext
         modelBuilder.ApplyConfiguration(new VesselConfiguration());
         modelBuilder.ApplyConfiguration(new RentalAgreementConfiguration());
 
+        // Set global collation for all string properties
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties().Where(p => p.ClrType == typeof(string)))
+            {
+                property.SetAnnotation("Relational:Collation", "en-US-x-icu");
+            }
+        }
+        
         base.OnModelCreating(modelBuilder);
     }
 }
@@ -38,7 +52,10 @@ public static class SkipperContextBuilder
     public static SkipperContext CreateContext(string connectionString)
     {
         var optionsBuilder = new DbContextOptionsBuilder<SkipperContext>();
-        optionsBuilder.UseNpgsql(connectionString);
+        optionsBuilder.UseNpgsql(connectionString, npgsqlOptions =>
+        {
+            npgsqlOptions.SetPostgresVersion(16, 9);
+        });
         return new SkipperContext(optionsBuilder.Options);
     }
 

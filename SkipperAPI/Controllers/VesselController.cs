@@ -5,26 +5,22 @@ using SkipperModels.Entities;
 
 namespace SkipperAPI.Controllers
 {
-    /// <summary>
-    /// Ultra-minimal VesselController - now using nameof() for type safety!
-    /// No hardcoded strings, no weird aliases, just clean and simple
-    /// </summary>
     [Route("api/[controller]")]
-    public class VesselController : BaseEntityController<Vessel>
+    public class VesselController : BaseModelController<VesselEntity, VesselModel>
     {
-        public VesselController(IManager<Vessel> manager) : base(manager)
+        public VesselController(IManager<VesselEntity, VesselModel> manager) : base(manager)
         {
-            AddSortExpression(nameof(Vessel.Name), v => v.Name);
-            AddSortExpression(nameof(Vessel.RegistrationNumber), v => v.RegistrationNumber);
-            AddSortExpression(nameof(Vessel.Length), v => v.Length);
-            AddSortExpression(nameof(Vessel.Beam), v => v.Beam);
-            AddSortExpression(nameof(Vessel.VesselType), v => v.VesselType);
+            AddSortExpression(nameof(VesselEntity.Name), v => v.Name);
+            AddSortExpression(nameof(VesselEntity.RegistrationNumber), v => v.RegistrationNumber);
+            AddSortExpression(nameof(VesselEntity.Length), v => v.Length);
+            AddSortExpression(nameof(VesselEntity.Beam), v => v.Beam);
+            AddSortExpression(nameof(VesselEntity.VesselType), v => v.VesselType);
         }
 
         /// <summary>
         /// Vessel-specific search - only entity-specific code needed
         /// </summary>
-        protected override Expression<Func<Vessel, bool>> BuildSearchPredicate(string? search)
+        protected override Expression<Func<VesselEntity, bool>> BuildSearchPredicate(string? search)
             => string.IsNullOrEmpty(search) ? v => true 
                : v => v.Name.Contains(search) || v.RegistrationNumber.Contains(search);
     }

@@ -3,7 +3,7 @@ using SkipperModels.Entities;
 
 namespace SkipperData.Managers;
 
-public class SlipManager : ManagerBase<Slip>
+public class SlipManager : ManagerBase<SlipEntity, SlipModel>
 {
-    public SlipManager(IRepository<Slip> repository) : base(repository) { }
+    public SlipManager(IRepository<SlipEntity, SlipModel> repository) : base(repository) { }
 }

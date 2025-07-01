@@ -5,7 +5,7 @@ using SkipperModels.Entities;
 namespace SkipperTests.RepositoryTests;
 
 [TestFixture]
-public class SlipClassificationRepositoryTests : RepositoryTestBase<SlipClassification>
+public class SlipClassificationRepositoryTests : RepositoryTestBase<SlipClassificationEntity, SlipClassificationModel>
 {
     private SlipClassificationRepository _repository;
     protected ILogger<SlipClassificationRepository> Logger;
@@ -20,9 +20,9 @@ public class SlipClassificationRepositoryTests : RepositoryTestBase<SlipClassifi
 
     #region Helper Methods
 
-    private SlipClassification CreateSlipClassification(long id, string name, decimal maxLength, decimal maxBeam, int basePrice, string description = "Test description")
+    private SlipClassificationEntity CreateSlipClassification(long id, string name, decimal maxLength, decimal maxBeam, int basePrice, string description = "Test description")
     {
-        return new SlipClassification
+        return new SlipClassificationEntity
         {
             Id = id,
             Name = name,
@@ -36,7 +36,7 @@ public class SlipClassificationRepositoryTests : RepositoryTestBase<SlipClassifi
         };
     }
 
-    private async Task SetupClassificationsAsync(params SlipClassification[] classifications)
+    private async Task SetupClassificationsAsync(params SlipClassificationEntity[] classifications)
     {
         foreach (var classification in classifications)
         {

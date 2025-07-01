@@ -4,9 +4,9 @@ using SkipperModels.Entities;
 
 namespace SkipperData.Data.Configurations;
 
-public class SlipConfiguration : BaseEntityConfiguration<Slip>
+public class SlipConfiguration : BaseEntityConfiguration<SlipEntity, SlipModel>
 {
-    protected override void ConfigureEntity(EntityTypeBuilder<Slip> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<SlipEntity> builder)
     {
         builder.ToTable("slips");
         
@@ -19,14 +19,13 @@ public class SlipConfiguration : BaseEntityConfiguration<Slip>
             .IsRequired();
             
         builder.Property(e => e.Status)
-            .HasConversion<int>()
+            .HasConversion<string>()
             .IsRequired();
         
         // Foreign key relationship with SlipClassification
-        builder.HasOne(e => e.SlipClassification)
-            .WithMany()
-            .HasForeignKey(e => e.SlipClassificationId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(e => e.SlipClassificationEntity)
+            .WithMany(e => e.Slips)
+            .HasForeignKey(e => e.SlipClassificationId);
         
         // Indexes for better query performance
         builder.HasIndex(e => e.SlipNumber)

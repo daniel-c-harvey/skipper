@@ -7,58 +7,60 @@ using SkipperModels.Entities;
 
 namespace SkipperData.Data.Repositories;
 
-public class Repository<T> : IRepository<T> where T : BaseEntity
+public class Repository<TEntity, TDto> : IRepository<TEntity, TDto>
+where TEntity : class, IEntity<TEntity, TDto>
+where TDto : class, IModel<TDto, TEntity>
 {
     protected readonly SkipperContext _context;
-    protected readonly DbSet<T> _dbSet;
-    protected readonly ILogger<Repository<T>> _logger;
+    protected readonly DbSet<TEntity> _dbSet;
+    protected readonly ILogger<Repository<TEntity, TDto>> _logger;
 
-    public Repository(SkipperContext context, ILogger<Repository<T>> logger)
+    public Repository(SkipperContext context, ILogger<Repository<TEntity, TDto>> logger)
     {
         _context = context;
-        _dbSet = context.Set<T>();
+        _dbSet = context.Set<TEntity>();
         _logger = logger;
     }
 
-    public async Task<T?> GetByIdAsync(long id)
+    public async Task<TEntity?> GetByIdAsync(long id)
     {
         return await _dbSet.FirstOrDefaultAsync(e => e.Id == id && !e.IsDeleted);
     }
 
-    public async Task<IEnumerable<T>> GetAllAsync()
+    public async Task<IEnumerable<TEntity>> GetAllAsync()
     {
         return await _dbSet.Where(e => !e.IsDeleted).ToListAsync();
     }
 
-    public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+    public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
     {
         return await _dbSet.Where(e => !e.IsDeleted).Where(predicate).ToListAsync();
     }
 
-    public async Task<int> GetPageCountAsync(PagingParameters<T> pagingParameters)
+    public async Task<int> GetPageCountAsync(PagingParameters<TEntity> pagingParameters)
     {
         return await _dbSet.CountAsync(e => !e.IsDeleted);
     }
     
-    public async Task<int> GetPageCountAsync(Expression<Func<T, bool>> predicate, PagingParameters<T> pagingParameters)
+    public async Task<int> GetPageCountAsync(Expression<Func<TEntity, bool>> predicate, PagingParameters<TEntity> pagingParameters)
     {
         double rowCount = (double)(await _dbSet.Where(e => !e.IsDeleted).CountAsync(predicate)) / pagingParameters.PageSize;
         return (int)Math.Ceiling(rowCount);
     }
     
-    public async Task<PagedResult<T>> GetPagedAsync(PagingParameters<T> pagingParameters)
+    public async Task<PagedResult<TEntity>> GetPagedAsync(PagingParameters<TEntity> pagingParameters)
     {
         var query = _dbSet.Where(e => !e.IsDeleted);
         return await ExecutePagedQueryAsync(query, pagingParameters);
     }
 
-    public async Task<PagedResult<T>> GetPagedAsync(Expression<Func<T, bool>> predicate, PagingParameters<T> pagingParameters)
+    public async Task<PagedResult<TEntity>> GetPagedAsync(Expression<Func<TEntity, bool>> predicate, PagingParameters<TEntity> pagingParameters)
     {
         var query = _dbSet.Where(e => !e.IsDeleted).Where(predicate);
         return await ExecutePagedQueryAsync(query, pagingParameters);
     }
 
-    private async Task<PagedResult<T>> ExecutePagedQueryAsync(IQueryable<T> query, PagingParameters<T> pagingParameters)
+    private async Task<PagedResult<TEntity>> ExecutePagedQueryAsync(IQueryable<TEntity> query, PagingParameters<TEntity> pagingParameters)
     {
         // Apply ordering
         if (pagingParameters.OrderBy != null)
@@ -82,10 +84,10 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
             .Take(pagingParameters.PageSize)
             .ToListAsync();
 
-        return new PagedResult<T>(items, totalCount, pagingParameters.Page, pagingParameters.PageSize);
+        return new PagedResult<TEntity>(items, totalCount, pagingParameters.Page, pagingParameters.PageSize);
     }
 
-    public async Task<T> AddAsync(T entity)
+    public async Task<TEntity> AddAsync(TEntity entity)
     {
         entity.CreatedAt = DateTime.UtcNow;
         entity.UpdatedAt = DateTime.UtcNow;
@@ -93,7 +95,7 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
         return entity;
     }
 
-    public async Task UpdateAsync(T entity)
+    public async Task UpdateAsync(TEntity entity)
     {
         entity.UpdatedAt = DateTime.UtcNow;
         _context.Entry(entity).State = EntityState.Modified;

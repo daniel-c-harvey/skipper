@@ -1,19 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 using NetBlocks.Models;
 using SkipperModels.Common;
 using SkipperModels.Entities;
+using System.Text.Json;
 
 
 namespace SkipperWeb.ApiClients;
 
-public abstract class EntityControllerClient<TEntity, TConfig> : ApiClient<TConfig> 
-where TConfig : EntityControllerClientConfig
-where TEntity : BaseEntity, new()
+public abstract class ModelControllerClient<TModel, TEntity, TConfig> : ApiClient<TConfig>
+where TConfig : ModelControllerClientConfig
+where TModel : class, IModel<TModel, TEntity>, new()
+where TEntity : class, IEntity<TEntity, TModel>, new()
 {
-    protected EntityControllerClient(TConfig config) : base(config) { }
+    private readonly JsonSerializerOptions _options;
+    protected ModelControllerClient(TConfig config, IOptions<JsonSerializerOptions> options) : base(config) 
+    {
+        _options = options.Value;
+    }
 
-    public async Task<ApiResult<PagedResult<TEntity>>> GetByPage(PagedQuery query)
+    public async Task<ApiResult<PagedResult<TModel>>> GetByPage(PagedQuery query)
     {
         try
         {
@@ -28,18 +35,18 @@ where TEntity : BaseEntity, new()
             
             var uri = QueryHelpers.AddQueryString($"api/{config.ControllerName}", queryMap);
             
-            var result = await http.GetFromJsonAsync<ApiResultDto<PagedResult<TEntity>>>(uri)
+            var result = await http.GetFromJsonAsync<ApiResultDto<PagedResult<TModel>>>(uri, _options)
                    ?? throw new HttpRequestException("Failed to deserialize response");
 
             return result.From();
         }
         catch (Exception e)
         {
-            return ApiResult<PagedResult<TEntity>>.CreateFailResult(e.Message);
+            return ApiResult<PagedResult<TModel>>.CreateFailResult(e.Message);
         }
     }
 
-    public async Task<ApiResult<int>> GetPageCount(PagedQuery query)
+    public async Task<ApiResult<ItemCount>> GetPageCount(PagedQuery query)
     {
         try
         { 
@@ -54,32 +61,32 @@ where TEntity : BaseEntity, new()
 
             var uri = QueryHelpers.AddQueryString($"api/{config.ControllerName}/count", queryMap);
 
-            var result = await http.GetFromJsonAsync<ApiResultDto<int>>(uri)
+            var result = await http.GetFromJsonAsync<ApiResultDto<ItemCount>>(uri, _options)
                    ?? throw new HttpRequestException("Failed to deserialize response");
 
             return result.From();
         }
-            catch (Exception e)
-            {
-                return ApiResult<int>.CreateFailResult(e.Message);
-            }
+        catch (Exception e)
+        {
+            return ApiResult<ItemCount>.CreateFailResult(e.Message);
         }
+    }
 
-    public async Task<ApiResult<TEntity>> Add(TEntity entity)
+    public async Task<ApiResult<TModel>> Add(TModel entity)
     {
         try
         {
-            var response = await http.PostAsJsonAsync($"api/{config.ControllerName}", entity);
+            var response = await http.PostAsJsonAsync($"api/{config.ControllerName}", entity, _options);
             if (response == null) throw new HttpRequestException(HttpRequestError.InvalidResponse);
             
-            var result = await response.Content.ReadFromJsonAsync<ApiResultDto<TEntity>>()
+            var result = await response.Content.ReadFromJsonAsync<ApiResultDto<TModel>>(_options)
                 ?? throw new HttpRequestException("Failed to deserialize response");
 
             return result.From();
         }
         catch (Exception e)
         {
-            return ApiResult<TEntity>.CreateFailResult(e.Message);
+            return ApiResult<TModel>.CreateFailResult(e.Message);
         }
     }
 }

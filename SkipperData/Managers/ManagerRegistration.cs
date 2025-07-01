@@ -7,8 +7,9 @@ public static class ManagerRegistration
 {
     public static IServiceCollection AddManagers(this IServiceCollection services)
     {
-        services.AddScoped<IManager<Vessel>, VesselManager>();
-        services.AddScoped<IManager<Slip>, SlipManager>();
+        services.AddScoped<IManager<VesselEntity, VesselModel>, VesselManager>();
+        services.AddScoped<IManager<SlipEntity, SlipModel>, SlipManager>();
+        services.AddScoped<IManager<SlipClassificationEntity, SlipClassificationModel>, SlipClassificationManager>();
         
         return services;
     }

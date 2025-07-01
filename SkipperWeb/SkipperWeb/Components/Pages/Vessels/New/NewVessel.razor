@@ -87,7 +87,7 @@
         Task<Result> resultTask = Task<Result>.Run(async () =>
         {
 
-            Vessel newVessel = new()
+            VesselModel newVessel = new()
                 {
                     RegistrationNumber = Input.RegistrationNumber,
                     Name = Input.Name,
@@ -96,7 +96,7 @@
                     VesselType = Input.VesselType
                 };
 
-            ApiResult<Vessel> addResult = await Client.Add(newVessel);
+            ApiResult<VesselModel> addResult = await Client.Add(newVessel);
             return addResult.Success ? Result.CreatePassResult() : Result.From(addResult);
         });
 

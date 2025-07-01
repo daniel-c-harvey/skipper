@@ -4,9 +4,9 @@ using SkipperModels.Entities;
 
 namespace SkipperData.Data.Configurations;
 
-public class RentalAgreementConfiguration : BaseEntityConfiguration<RentalAgreement>
+public class RentalAgreementConfiguration : BaseEntityConfiguration<RentalAgreementEntity, RentalAgreementModel>
 {
-    protected override void ConfigureEntity(EntityTypeBuilder<RentalAgreement> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<RentalAgreementEntity> builder)
     {
         builder.ToTable("rental_agreements");
         
@@ -28,13 +28,13 @@ public class RentalAgreementConfiguration : BaseEntityConfiguration<RentalAgreem
             .IsRequired();
         
         // Foreign key relationship with Slip
-        builder.HasOne(e => e.Slip)
+        builder.HasOne(e => e.SlipEntity)
             .WithMany()
             .HasForeignKey(e => e.SlipId)
             .OnDelete(DeleteBehavior.Restrict);
             
         // Foreign key relationship with Vessel
-        builder.HasOne(e => e.Vessel)
+        builder.HasOne(e => e.VesselEntity)
             .WithMany()
             .HasForeignKey(e => e.VesselId)
             .OnDelete(DeleteBehavior.Restrict);

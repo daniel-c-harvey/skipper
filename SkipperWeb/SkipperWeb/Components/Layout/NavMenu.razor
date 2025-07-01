@@ -5,15 +5,7 @@
     </MudStack>
     <MudSpacer />
     <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.House">Home</MudNavLink>
-
-    @foreach (var item in NavigationItems)
-    {
-        <MudNavLink Href="@item.Href" Match="@item.Match" Icon="@item.Icon">@item.Text</MudNavLink>
-    }
+    <MudNavLink Href="/vessels" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.DirectionsBoat">Vessels</MudNavLink>
+    <MudNavLink Href="/slips" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Houseboat">Slips</MudNavLink>
+    <MudNavLink Href="/slipclassifications" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Home">Slip Classifications</MudNavLink>
 </MudNavMenu>
-
-@code {
-
-    [Parameter] public IEnumerable<NavMenuItem> NavigationItems { get; set; } = [];
-
-}

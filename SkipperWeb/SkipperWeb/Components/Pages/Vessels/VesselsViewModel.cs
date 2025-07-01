@@ -8,7 +8,7 @@ namespace SkipperWeb.Components.Pages.Vessels;
 
 public class VesselsViewModel
 {
-    public PagedResult<Vessel>? Page { get; private set; }
+    public PagedResult<VesselModel>? Page { get; private set; }
 
     public string SearchTerm => _currentSearchTerm;
     
@@ -42,7 +42,7 @@ public class VesselsViewModel
                     Search = searchTerm 
                 });
             if (!countResult.Success) { throw new Exception("TODO present error"); }
-            pageCount = countResult.Value;
+            pageCount = countResult.Value.Count;
             _cachedPageCount = pageCount;
         }
         else

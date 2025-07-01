@@ -6,7 +6,7 @@ using SkipperModels.Entities;
 namespace SkipperTests.RepositoryTests;
 
 [TestFixture]
-public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement>
+public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreementEntity, RentalAgreementModel>
 {
     private RentalAgreementRepository _repository;
     protected ILogger<RentalAgreementRepository> Logger;
@@ -21,9 +21,9 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
 
     #region Helper Methods
 
-    private RentalAgreement CreateRentalAgreement(long id, long slipId, long vesselId, DateTime startDate, DateTime endDate, RentalStatus status = RentalStatus.Active, int priceRate = 100)
+    private RentalAgreementEntity CreateRentalAgreement(long id, long slipId, long vesselId, DateTime startDate, DateTime endDate, RentalStatus status = RentalStatus.Active, int priceRate = 100)
     {
-        return new RentalAgreement
+        return new RentalAgreementEntity
         {
             Id = id,
             SlipId = slipId,
@@ -39,7 +39,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
         };
     }
 
-    private async Task SetupRentalsAsync(params RentalAgreement[] rentals)
+    private async Task SetupRentalsAsync(params RentalAgreementEntity[] rentals)
     {
         foreach (var rental in rentals)
         {

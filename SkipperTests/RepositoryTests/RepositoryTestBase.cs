@@ -6,7 +6,9 @@ using SkipperModels.Entities;
 namespace SkipperTests.RepositoryTests;
 
 [TestFixture]
-public abstract class RepositoryTestBase<T> where T : BaseEntity
+public abstract class RepositoryTestBase<TEntity, TDto> 
+where TEntity : class, IEntity<TEntity, TDto>
+where TDto : class, IModel<TDto, TEntity>
 {
     protected SkipperContext Context;
     

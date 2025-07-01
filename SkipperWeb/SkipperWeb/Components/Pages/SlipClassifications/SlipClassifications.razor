@@ -1,0 +1,20 @@
+﻿@using SkipperModels.Entities
+@using SkipperWeb.ApiClients
+@using SkipperWeb.Components.Pages.Entities
+
+@page "/slipclassifications"
+
+<ModelView T="SlipClassificationModel"
+            TEntity="SlipClassificationEntity"
+            TClient="SlipClassificationClient"
+            TClientConfig="SlipClassificationClientConfig"
+            Title="Slip Classifications"
+            Placeholder="Search for slip classifications...">
+    <Columns>
+        <PropertyColumn Property="x => x.Name" />
+        <PropertyColumn Property="x => x.Description" />
+        <PropertyColumn Property="x => x.BasePrice / 100D" Title="Base Price" />
+        <PropertyColumn Property="x => x.MaxLength" Title="Max Length" />
+        <PropertyColumn Property="x => x.MaxBeam" Title="Max Beam" />
+    </Columns>
+</ModelView>

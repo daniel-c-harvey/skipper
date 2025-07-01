@@ -12,7 +12,7 @@
         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
     </MudAppBar>
     <MudDrawer @bind-Open="@_drawerOpen" Elevation="2">
-        <NavMenu NavigationItems="NavMenuItems"/>
+        <NavMenu/>
     </MudDrawer>
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.Large">
@@ -28,23 +28,7 @@
     <span class="dismiss">🗙</span>
 </div>
 
-@code {
-    private static readonly List<MudNavMenuItem> NavMenuItems = 
-    [
-        new MudNavMenuItem()
-        {
-            Href="/vessels",
-            Text = "Vessels",
-            Icon = MudBlazor.Icons.Material.Filled.DirectionsBoat
-        },
-        new MudNavMenuItem()
-        {
-            Href = "/slips",
-            Text = "Slips",
-            Icon = Icons.Material.Filled.Dock
-        }
-    ];
-    
+@code {    
     bool _drawerOpen = false;
     private bool _isDarkMode = true;
     private MudTheme? _theme = null;

@@ -12,7 +12,6 @@
 
 <MudText Typo="Typo.h2">Vessels</MudText>
 
-
 <MudGrid Class="my-5">
     <MudItem xs="12" md="9">
         <MudTextField Adornment="Adornment.Start" 
@@ -29,10 +28,9 @@
         </MudButton>
     </MudItem>
 </MudGrid>
-    
 
 <MudDataGrid @ref="vesselGrid"
-                T="Vessel" 
+                T="VesselModel" 
                 ServerData="LoadGridServerData"
                 ReadOnly="true"
                 CurrentPage="@(Page.GetValueOrDefault(10) - 1)"
@@ -45,7 +43,7 @@
         <PropertyColumn Property="x => x.VesselType" Title="Type" />
     </Columns>
     <PagerContent>
-        <MudDataGridPager T="Vessel" 
+        <MudDataGridPager T="VesselModel"
                             PageSizeOptions="@(new[] { 5, 10, 15, 25, 50})" 
                             RowsPerPageString="Vessels per page"
                             InfoFormat="{first_item}-{last_item} of {all_items}"/>
@@ -66,7 +64,7 @@
     [SupplyParameterFromQuery]
     public string? SearchTerm { get; set; }
 
-    private MudDataGrid<Vessel>? vesselGrid;
+    private MudDataGrid<VesselModel>? vesselGrid;
     private bool _updatingParameters = false;
 
     protected override async Task OnParametersSetAsync()
@@ -88,14 +86,14 @@
         UpdatePageWithUrl(1, PageSize ?? 10, searchTerm);
     }
 
-    private async Task<GridData<Vessel>> LoadGridServerData(GridState<Vessel> state)
+    private async Task<GridData<VesselModel>> LoadGridServerData(GridState<VesselModel> state)
     {
         if (!_updatingParameters) UpdatePageWithUrl(state.Page + 1, state.PageSize, ViewModel.SearchTerm);
         await LoadServerData(Page ?? 1, PageSize ?? 10 , SearchTerm ?? string.Empty);
 
-        return new GridData<Vessel>()
+        return new GridData<VesselModel>()
         {
-            Items = ViewModel.Page?.Items ?? Enumerable.Empty<Vessel>(),
+            Items = ViewModel.Page?.Items ?? Enumerable.Empty<VesselModel>(),
             TotalItems = ViewModel.Page?.TotalCount ?? 0
         };
     }

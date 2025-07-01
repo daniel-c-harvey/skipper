@@ -6,7 +6,7 @@ using SkipperModels.Entities;
 namespace SkipperTests.RepositoryTests;
 
 [TestFixture]
-public class VesselRepositoryTests : RepositoryTestBase<Vessel>
+public class VesselRepositoryTests : RepositoryTestBase<VesselEntity, VesselModel>
 {
     private VesselRepository _repository;
     protected ILogger<VesselRepository> Logger;
@@ -21,9 +21,9 @@ public class VesselRepositoryTests : RepositoryTestBase<Vessel>
 
     #region Helper Methods
 
-    private Vessel CreateVessel(long id, string name, string registrationNumber, VesselType type = VesselType.Sailboat, decimal length = 25.0m, decimal beam = 8.0m)
+    private VesselEntity CreateVessel(long id, string name, string registrationNumber, VesselType type = VesselType.Sailboat, decimal length = 25.0m, decimal beam = 8.0m)
     {
-        return new Vessel
+        return new VesselEntity
         {
             Id = id,
             Name = name,
@@ -37,7 +37,7 @@ public class VesselRepositoryTests : RepositoryTestBase<Vessel>
         };
     }
 
-    private async Task SetupVesselsAsync(params Vessel[] vessels)
+    private async Task SetupVesselsAsync(params VesselEntity[] vessels)
     {
         foreach (var vessel in vessels)
         {

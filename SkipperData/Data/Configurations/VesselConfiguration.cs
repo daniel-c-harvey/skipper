@@ -4,9 +4,9 @@ using SkipperModels.Entities;
 
 namespace SkipperData.Data.Configurations;
 
-public class VesselConfiguration : BaseEntityConfiguration<Vessel>
+public class VesselConfiguration : BaseEntityConfiguration<VesselEntity, VesselModel>
 {
-    protected override void ConfigureEntity(EntityTypeBuilder<Vessel> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<VesselEntity> builder)
     {
         builder.ToTable("vessels");
         

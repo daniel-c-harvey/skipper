@@ -5,20 +5,22 @@ using SkipperModels.Entities;
 
 namespace SkipperData.Data.Repositories;
 
-public interface IRepository<T> where T : BaseEntity
+public interface IRepository<TEntity, TDto> 
+where TEntity : class, IEntity<TEntity, TDto>
+where TDto : class, IModel<TDto, TEntity>
 {
     // Basic CRUD
-    Task<T?> GetByIdAsync(long id);
-    Task<IEnumerable<T>> GetAllAsync();
-    Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
-    Task<T> AddAsync(T entity);
-    Task UpdateAsync(T entity);
+    Task<TEntity?> GetByIdAsync(long id);
+    Task<IEnumerable<TEntity>> GetAllAsync();
+    Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate);
+    Task<TEntity> AddAsync(TEntity entity);
+    Task UpdateAsync(TEntity entity);
     Task DeleteAsync(long id);
     
     // Paged fetching with ordering
-    Task<int> GetPageCountAsync(Expression<Func<T, bool>> predicate, PagingParameters<T> pagingParameters);
-    Task<PagedResult<T>> GetPagedAsync(PagingParameters<T> pagingParameters);
-    Task<PagedResult<T>> GetPagedAsync(Expression<Func<T, bool>> predicate, PagingParameters<T> pagingParameters);
+    Task<int> GetPageCountAsync(Expression<Func<TEntity, bool>> predicate, PagingParameters<TEntity> pagingParameters);
+    Task<PagedResult<TEntity>> GetPagedAsync(PagingParameters<TEntity> pagingParameters);
+    Task<PagedResult<TEntity>> GetPagedAsync(Expression<Func<TEntity, bool>> predicate, PagingParameters<TEntity> pagingParameters);
     
     // Essentials only
     Task<bool> ExistsAsync(long id);

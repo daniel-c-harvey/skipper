@@ -5,46 +5,46 @@ using SkipperModels.Entities;
 
 namespace SkipperData.Data.Repositories;
 
-public class RentalAgreementRepository : Repository<RentalAgreement>
+public class RentalAgreementRepository : Repository<RentalAgreementEntity, RentalAgreementModel>
 {
     public RentalAgreementRepository(SkipperContext context, ILogger<RentalAgreementRepository> logger) : base(context, logger) { }
 
-    public async Task<IEnumerable<RentalAgreement>> GetByStatusAsync(RentalStatus status)
+    public async Task<IEnumerable<RentalAgreementEntity>> GetByStatusAsync(RentalStatus status)
     {
         return await FindAsync(ra => ra.Status == status);
     }
 
-    public async Task<PagedResult<RentalAgreement>> GetByStatusPagedAsync(RentalStatus status, PagingParameters<RentalAgreement> pagingParameters)
+    public async Task<PagedResult<RentalAgreementEntity>> GetByStatusPagedAsync(RentalStatus status, PagingParameters<RentalAgreementEntity> pagingParameters)
     {
         return await GetPagedAsync(ra => ra.Status == status, pagingParameters);
     }
 
-    public async Task<IEnumerable<RentalAgreement>> GetActiveAsync()
+    public async Task<IEnumerable<RentalAgreementEntity>> GetActiveAsync()
     {
         return await GetByStatusAsync(RentalStatus.Active);
     }
 
-    public async Task<PagedResult<RentalAgreement>> GetActivePagedAsync(PagingParameters<RentalAgreement> pagingParameters)
+    public async Task<PagedResult<RentalAgreementEntity>> GetActivePagedAsync(PagingParameters<RentalAgreementEntity> pagingParameters)
     {
         return await GetByStatusPagedAsync(RentalStatus.Active, pagingParameters);
     }
 
-    public async Task<IEnumerable<RentalAgreement>> GetBySlipIdAsync(long slipId)
+    public async Task<IEnumerable<RentalAgreementEntity>> GetBySlipIdAsync(long slipId)
     {
         return await FindAsync(ra => ra.SlipId == slipId);
     }
 
-    public async Task<PagedResult<RentalAgreement>> GetBySlipIdPagedAsync(long slipId, PagingParameters<RentalAgreement> pagingParameters)
+    public async Task<PagedResult<RentalAgreementEntity>> GetBySlipIdPagedAsync(long slipId, PagingParameters<RentalAgreementEntity> pagingParameters)
     {
         return await GetPagedAsync(ra => ra.SlipId == slipId, pagingParameters);
     }
 
-    public async Task<IEnumerable<RentalAgreement>> GetByVesselIdAsync(long vesselId)
+    public async Task<IEnumerable<RentalAgreementEntity>> GetByVesselIdAsync(long vesselId)
     {
         return await FindAsync(ra => ra.VesselId == vesselId);
     }
 
-    public async Task<PagedResult<RentalAgreement>> GetByVesselIdPagedAsync(long vesselId, PagingParameters<RentalAgreement> pagingParameters)
+    public async Task<PagedResult<RentalAgreementEntity>> GetByVesselIdPagedAsync(long vesselId, PagingParameters<RentalAgreementEntity> pagingParameters)
     {
         return await GetPagedAsync(ra => ra.VesselId == vesselId, pagingParameters);
     }

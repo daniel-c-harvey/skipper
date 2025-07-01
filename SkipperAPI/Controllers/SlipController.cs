@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SkipperData.Managers;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using SkipperModels.Entities;
 
 namespace SkipperAPI.Controllers
@@ -10,18 +11,18 @@ namespace SkipperAPI.Controllers
     /// Clean, type-safe, no hardcoded strings
     /// </summary>
     [Route("api/[controller]")]
-    public class SlipController : BaseEntityController<Slip>
+    public class SlipController : BaseModelController<SlipEntity, SlipModel>
     {
-        public SlipController(IManager<Slip> manager) : base(manager)
+        public SlipController(IManager<SlipEntity, SlipModel> manager) : base(manager)
         {
-            AddSortExpression(nameof(Slip.SlipNumber), s => s.SlipNumber);
-            AddSortExpression(nameof(Slip.LocationCode), s => s.LocationCode);
-            AddSortExpression(nameof(Slip.Status), s => s.Status);
-            AddSortExpression(nameof(Slip.SlipClassificationId), s => s.SlipClassificationId);
+            AddSortExpression(nameof(SlipEntity.SlipNumber), s => s.SlipNumber);
+            AddSortExpression(nameof(SlipEntity.LocationCode), s => s.LocationCode);
+            AddSortExpression(nameof(SlipEntity.Status), s => s.Status);
+            AddSortExpression(nameof(SlipEntity.SlipClassificationId), s => s.SlipClassificationId);
         }
         
-        protected override Expression<Func<Slip, bool>> BuildSearchPredicate(string? search)
+        protected override Expression<Func<SlipEntity, bool>> BuildSearchPredicate(string? search)
             => string.IsNullOrEmpty(search) ? s => true 
-               : s => s.SlipNumber.Contains(search) || s.LocationCode.Contains(search);
+               : s => EF.Functions.ILike(s.SlipNumber, $"%{search}%") || EF.Functions.ILike(s.LocationCode, $"%{search}%") || EF.Functions.ILike(s.SlipClassificationEntity.Name, $"%{search}%");
     }
 } 
