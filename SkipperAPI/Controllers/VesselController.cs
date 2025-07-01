@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SkipperData.Managers;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using SkipperModels.Entities;
 
 namespace SkipperAPI.Controllers
@@ -22,6 +23,7 @@ namespace SkipperAPI.Controllers
         /// </summary>
         protected override Expression<Func<VesselEntity, bool>> BuildSearchPredicate(string? search)
             => string.IsNullOrEmpty(search) ? v => true 
-               : v => v.Name.Contains(search) || v.RegistrationNumber.Contains(search);
+               : v => EF.Functions.ILike(v.Name, $"%{search}%") ||
+                    EF.Functions.ILike(v.RegistrationNumber, $"%{search}%");
     }
 }

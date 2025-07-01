@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SkipperData.Managers;
 using SkipperModels.Entities;
 
@@ -20,7 +21,7 @@ public class SlipClassificationController : BaseModelController<SlipClassificati
     protected override Expression<Func<SlipClassificationEntity, bool>> BuildSearchPredicate(string? search)
         => string.IsNullOrEmpty(search)
             ? s => true
-            : s => s.Name.Contains(search) || 
-                s.Description.Contains(search) || 
-                s.BasePrice.ToString().Contains(search);
+            : s => EF.Functions.ILike(s.Name, $"%{search}%") || 
+                EF.Functions.ILike(s.Description, $"%{search}%") || 
+                EF.Functions.ILike(s.BasePrice.ToString(), $"%{search}%");
 }

@@ -23,6 +23,8 @@ namespace SkipperAPI.Controllers
         
         protected override Expression<Func<SlipEntity, bool>> BuildSearchPredicate(string? search)
             => string.IsNullOrEmpty(search) ? s => true 
-               : s => EF.Functions.ILike(s.SlipNumber, $"%{search}%") || EF.Functions.ILike(s.LocationCode, $"%{search}%") || EF.Functions.ILike(s.SlipClassificationEntity.Name, $"%{search}%");
+               : s => EF.Functions.ILike(s.SlipNumber, $"%{search}%") || 
+                      EF.Functions.ILike(s.LocationCode, $"%{search}%") || 
+                      EF.Functions.ILike(s.SlipClassificationEntity.Name, $"%{search}%");
     }
 } 
