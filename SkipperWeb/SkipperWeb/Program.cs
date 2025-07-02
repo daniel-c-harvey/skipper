@@ -33,7 +33,9 @@ public class Program
             options.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
             options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         });
-        
+
+        builder.Services.AddLocalization();
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -54,6 +56,8 @@ public class Program
         app.UseStatusCodePagesWithRedirects("/404");
 
         app.MapStaticAssets();
+        app.UseRequestLocalization("en-US");
+        
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode()
             .AddInteractiveWebAssemblyRenderMode()
