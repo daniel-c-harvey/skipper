@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
-using NetBlocks.Models;
-using SkipperModels.Common;
 using SkipperModels.Entities;
 using System.Text.Json;
+using SkipperModels.Models;
 
 namespace SkipperWeb.ApiClients;
 

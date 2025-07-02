@@ -17,12 +17,12 @@ public class NewVesselInputModel
 
     [Required(ErrorMessage = "Length is required")]
     [Range(0.01, 999999.99999, ErrorMessage = "Length must be greater than 0 and less than 1,000,000")]
-    [Display(Name = "Length (m)")]
+    [Display(Name = "Length")]
     public decimal Length { get; set; }
 
     [Required(ErrorMessage = "Beam is required")]
     [Range(0.01, 999999.99999, ErrorMessage = "Beam must be greater than 0 and less than 1,000,000")]
-    [Display(Name = "Beam (m)")]
+    [Display(Name = "Beam")]
     public decimal Beam { get; set; }
 
     [Required(ErrorMessage = "Vessel type is required")]

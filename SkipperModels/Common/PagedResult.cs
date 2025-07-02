@@ -14,6 +14,17 @@ public class PagedResult<T>
     {
     }
 
+    public static PagedResult<T> From<TOther>(PagedResult<TOther> other, IEnumerable<T> items)
+    {
+        return new PagedResult<T>()
+        {
+            Items = items,
+            Page = other.Page,
+            PageSize = other.PageSize,
+            TotalCount = other.TotalCount,
+        };
+    }
+
     public PagedResult(IEnumerable<T> items, int totalCount, int page, int pageSize)
     {
         Items = items ?? new List<T>();

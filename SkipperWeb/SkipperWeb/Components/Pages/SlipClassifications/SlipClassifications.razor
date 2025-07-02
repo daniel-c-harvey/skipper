@@ -1,4 +1,6 @@
-﻿@using SkipperModels.Entities
+﻿@using NetBlocks.Utilities;
+@using SkipperModels.Entities
+@using SkipperModels.Models
 @using SkipperWeb.ApiClients
 @using SkipperWeb.Components.Pages.Entities
 
@@ -9,12 +11,14 @@
             TClient="SlipClassificationClient"
             TClientConfig="SlipClassificationClientConfig"
             Title="Slip Classifications"
+            PageRoute="slipclassifications"
+            ModelDisplayName="Slip Classification"
             Placeholder="Search for slip classifications...">
     <Columns>
         <PropertyColumn Property="x => x.Name" />
         <PropertyColumn Property="x => x.Description" />
-        <PropertyColumn Property="x => x.BasePrice / 100D" Title="Base Price" />
-        <PropertyColumn Property="x => x.MaxLength" Title="Max Length" />
-        <PropertyColumn Property="x => x.MaxBeam" Title="Max Beam" />
+        <PropertyColumn Property="@(x => (x.BasePrice / 100D).ToString("C"))" Title="Base Price"/>
+        <PropertyColumn Property="x => LengthMeasureConverter.ToImperialString(x.MaxLength, 16)" Title="Max Length" />
+        <PropertyColumn Property="x => LengthMeasureConverter.ToImperialString(x.MaxBeam, 16)" Title="Max Beam" />
     </Columns>
 </ModelView>

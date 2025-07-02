@@ -1,0 +1,42 @@
+﻿@using SkipperModels.Entities
+@using SkipperModels.Models
+@using SkipperModels.InputModels
+@using SkipperWeb.ApiClients
+
+@typeparam TModel where TModel : class, IModel<TModel, TEntity>, new()
+@typeparam TEntity where TEntity : class, IEntity<TEntity, TModel>, new()
+@typeparam TInputModel where TInputModel : class, IInputModel<TInputModel, TModel, TEntity>, new()
+@typeparam TClient where TClient : ModelControllerClient<TModel, TEntity, TClientConfig>
+@typeparam TClientConfig where TClientConfig : ModelControllerClientConfig
+
+<MudContainer Class="pa-5">
+    <EditForm Model="Input" method="post" OnValidSubmit="Post" FormName="new-vessel">
+        <DataAnnotationsValidator/>
+        <MudCard Class="rounded-tb-xl">
+            <MudCardHeader Class="mud-theme-primary">
+                <MudStack Row AlignItems="AlignItems.Center">
+                    <MudText Typo="Typo.h4">
+                        <MudIcon Icon="@Icons.Material.Outlined.AddCircleOutline"/>
+                        New @ModelDisplayName Entry
+                    </MudText>
+                </MudStack>
+            </MudCardHeader>
+            <MudCardContent>
+                @ChildContent(Input)
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Href="@($"/{PageRoute}")" StartIcon="@Icons.Material.Outlined.ArrowBack" Color="Color.Secondary"
+                           Variant="Variant.Filled">Back to entries
+                </MudButton>
+                <MudSpacer/>
+                <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Outlined.Save"
+                           Color="Color.Primary" Variant="Variant.Filled">Save @ModelDisplayName
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+        <MudSpacer/>
+        <MudPaper Class="my-2">
+            <ValidationSummary class="mx-2 pa-5"/>
+        </MudPaper>
+    </EditForm>
+</MudContainer>

@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using SkipperData.Managers;
 using System.Linq.Expressions;
-using Microsoft.AspNetCore.Http.HttpResults;
 using NetBlocks.Models;
 using SkipperModels.Common;
 using SkipperModels.Entities;
+using SkipperModels.Models;
 
 namespace SkipperAPI.Controllers
 {
@@ -45,13 +45,7 @@ namespace SkipperAPI.Controllers
             var pageResult = await Manager.GetPage(predicate, paging);
             
             var result = ApiResult<PagedResult<TModel>>.From(pageResult);
-            result.Value = new PagedResult<TModel>()
-            {
-                Items = pageResult?.Value?.Items.Select(TEntity.CreateModel) ?? [],
-                Page = pageResult?.Value?.Page ?? 1,
-                PageSize = pageResult?.Value?.PageSize ?? 0,
-                TotalCount = pageResult?.Value?.TotalCount ?? 0
-            };
+            result.Value = PagedResult<TModel>.From(pageResult.Value, pageResult.Value.Items.Select(TEntity.CreateModel));
             ApiResultDto<PagedResult<TModel>> dto = new(result);
             
             return result.Success ? Ok(dto) : StatusCode(500, dto);

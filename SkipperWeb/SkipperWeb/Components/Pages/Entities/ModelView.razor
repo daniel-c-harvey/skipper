@@ -1,15 +1,15 @@
 ﻿@using SkipperModels.Entities
 @using SkipperWeb.ApiClients
 
-@typeparam T where T : class, IModel<T, TEntity>, new()
+@typeparam T where T : class, SkipperModels.Models.IModel<T, TEntity>, new()
 @typeparam TEntity where TEntity : class, IEntity<TEntity, T>, new()
 @typeparam TClient where TClient : ModelControllerClient<T, TEntity, TClientConfig>
 @typeparam TClientConfig where TClientConfig : ModelControllerClientConfig
 
-<MudText Typo="Typo.h2">@Title</MudText>
+<MudText Typo="Typo.h4">@Title</MudText>
 
 <MudGrid Class="my-5">
-    <MudItem xs="12" md="9">
+    <MudItem xs="12" md="8">
         <MudTextField Adornment="Adornment.Start" 
                       AdornmentIcon="@Icons.Material.Filled.Search" 
                       Placeholder="@Placeholder" 
@@ -18,9 +18,9 @@
                       DebounceInterval="300"
                       OnDebounceIntervalElapsed="OnSearchChanged"/>
     </MudItem>
-    <MudItem xs="3" Class="d-flex justify-end">
+    <MudItem xs="4" md="4" Class="d-flex justify-end">
         <MudButton Color="Color.Primary" EndIcon="@Icons.Material.Outlined.AddCircleOutline" Variant="Variant.Filled" OnClick="NewEntity">
-            Enter New Vessel
+            Enter New @ModelDisplayName
         </MudButton>
     </MudItem>
 </MudGrid>
@@ -37,7 +37,7 @@
     <PagerContent>
         <MudDataGridPager T="T" 
                           PageSizeOptions="@(new[] { 5, 10, 15, 25, 50})" 
-                          RowsPerPageString="@($"{Title} per page")"
+                          RowsPerPageString="@($"{ModelDisplayName}s per page")"
                           InfoFormat="{first_item}-{last_item} of {all_items}"/>
     </PagerContent>
 </MudDataGrid>

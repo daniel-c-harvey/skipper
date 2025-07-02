@@ -2,6 +2,7 @@
 using NetBlocks.Models;
 using SkipperModels.Common;
 using SkipperModels.Entities;
+using SkipperModels.Models;
 
 namespace SkipperData.Managers;
 

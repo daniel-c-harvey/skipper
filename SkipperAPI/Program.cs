@@ -29,6 +29,16 @@ public class Program
             options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         });
         
+        // Enable HTTP request/response logging (built-in .NET feature)
+        builder.Services.AddHttpLogging(options =>
+        {
+            options.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.All;
+            options.RequestBodyLogLimit = 4096;
+            options.ResponseBodyLogLimit = 4096;
+            options.CombineLogs = true;
+        });
+
+        
         builder.Services.AddControllers();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
@@ -39,8 +49,33 @@ public class Program
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
+            app.UseDeveloperExceptionPage();
+            app.UseHttpLogging();
+            // Add this to see model binding errors
+            app.UseExceptionHandler("/Error");
         }
 
+        // // Custom middleware for request debugging
+        // app.Use(async (context, next) =>
+        // {
+        //     var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+        //
+        //     logger.LogInformation("Incoming request: {Method} {Path} {QueryString}", 
+        //         context.Request.Method, 
+        //         context.Request.Path, 
+        //         context.Request.QueryString);
+        //
+        //     // Log request headers in debug mode
+        //     foreach (var header in context.Request.Headers)
+        //     {
+        //         logger.LogDebug("Request Header: {Key} = {Value}", header.Key, header.Value);
+        //     }
+        //
+        //     await next();
+        //
+        //     logger.LogInformation("Response: {StatusCode}", context.Response.StatusCode);
+        // });
+        
         // For now the API is only running locally behind firewall, keep things simple for now
         // app.UseHttpsRedirection();
 

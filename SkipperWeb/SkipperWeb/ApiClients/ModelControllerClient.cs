@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using NetBlocks.Models;
 using SkipperModels.Common;
 using SkipperModels.Entities;
+using SkipperModels.Models;
 using System.Text.Json;
 
 

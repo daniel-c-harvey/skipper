@@ -1,8 +1,7 @@
-﻿using System.Linq.Expressions;
-using System.Reflection.Metadata;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SkipperModels.Entities;
+using SkipperModels.Models;
 using SkipperWeb.ApiClients;
 
 namespace SkipperWeb.Components.Pages.Entities;
@@ -30,7 +29,13 @@ public partial class ModelView<T, TEntity, TClient, TClientConfig>  : ComponentB
     public required NavigationManager Nav { get; set; }
     
     [Parameter]
+    public required string PageRoute { get; set; }
+    
+    [Parameter]
     public required string Title { get; set; }
+    
+    [Parameter]
+    public required string ModelDisplayName { get; set; }
     
     [Parameter]
     public required RenderFragment Columns { get; set; }
@@ -107,6 +112,6 @@ public partial class ModelView<T, TEntity, TClient, TClientConfig>  : ComponentB
 
     private void NewEntity()
     {
-        Nav.NavigateTo(Nav.Uri + "new");
+        Nav.NavigateTo($"{PageRoute}/new");
     }
 }

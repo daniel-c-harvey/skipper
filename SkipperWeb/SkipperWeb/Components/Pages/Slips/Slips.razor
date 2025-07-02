@@ -1,4 +1,5 @@
 ﻿@using SkipperModels.Entities
+@using SkipperModels.Models
 @using SkipperWeb.ApiClients
 @using SkipperWeb.Components.Pages.Entities
 
@@ -9,6 +10,8 @@
             TClient="SlipClient"
             TClientConfig="SlipClientConfig"
             Title="Slips"
+            ModelDisplayName="Slip"
+            PageRoute="slips"
             Placeholder="Search for slips...">
     <Columns>
         <PropertyColumn Property="x => x.SlipNumber" Title="Slip Number" />

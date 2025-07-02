@@ -1,8 +1,8 @@
 ﻿using NetBlocks.Utilities;
 using SkipperModels.Common;
-using SkipperModels.Entities;
 using SkipperWeb.ApiClients;
 using System.Diagnostics;
+using SkipperModels.Models;
 
 namespace SkipperWeb.Components.Pages.Vessels;
 

@@ -3,6 +3,7 @@ using SkipperData.Managers;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using SkipperModels.Entities;
+using SkipperModels.Models;
 
 namespace SkipperAPI.Controllers
 {

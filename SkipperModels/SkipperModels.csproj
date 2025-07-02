@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="C:\lib\NetBlocks\NetBlocks.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -7,6 +7,7 @@ using SkipperWeb.Components;
 using SkipperWeb.Components.Pages.Entities;
 using SkipperWeb.Components.Pages.Vessels;
 using System.Text.Json;
+using SkipperModels.Models;
 
 namespace SkipperWeb;
 

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SkipperData.Managers;
 using SkipperModels.Entities;
+using SkipperModels.Models;
 
 namespace SkipperAPI.Controllers;
 

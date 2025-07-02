@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SkipperModels.Entities;
+using SkipperModels.Models;
 
 namespace SkipperData.Managers;
 

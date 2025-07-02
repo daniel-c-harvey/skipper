@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using SkipperModels.Entities;
 using System.Text.Json;
+using SkipperModels.Models;
 
 namespace SkipperWeb.ApiClients;
 

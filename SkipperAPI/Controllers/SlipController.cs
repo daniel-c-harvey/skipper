@@ -3,13 +3,10 @@ using SkipperData.Managers;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using SkipperModels.Entities;
+using SkipperModels.Models;
 
 namespace SkipperAPI.Controllers
 {
-    /// <summary>
-    /// SlipController - demonstrates the simple nameof() approach
-    /// Clean, type-safe, no hardcoded strings
-    /// </summary>
     [Route("api/[controller]")]
     public class SlipController : BaseModelController<SlipEntity, SlipModel>
     {

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SkipperModels.Entities;
+using SkipperModels.Models;
 
 namespace SkipperData.Data.Configurations;
 

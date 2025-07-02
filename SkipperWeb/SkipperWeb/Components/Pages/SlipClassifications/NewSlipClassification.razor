@@ -1,0 +1,59 @@
+﻿@using SkipperModels
+@using SkipperModels.Common
+@using SkipperModels.Entities
+@using SkipperModels.Models
+@using SkipperModels.InputModels
+@using SkipperWeb.ApiClients
+@using SkipperWeb.Components.Pages.Entities.New
+@using SkipperWeb.Shared.Converters
+
+@page "/slipclassifications/new"
+
+<NewModelView TInputModel="SlipClassificationInputModel"
+              TModel="SlipClassificationModel"
+              TEntity="SlipClassificationEntity"
+              TClient="SlipClassificationClient"
+              TClientConfig="SlipClassificationClientConfig"
+              ModelDisplayName="Slip Classification"
+              PageRoute="slipclassifications">
+    <MudGrid Spacing="3">
+        <MudItem xs="7" md="6">
+            <MudTextField Label="Slip Classification Name"
+                          @bind-Value="context.Name"
+                          For="() => context.Name"
+                          Variant="Variant.Outlined"/>
+        </MudItem>
+        <MudItem xs="5" md="2">
+            <MudNumericField Label="Base Price"
+                             @bind-Value="context.BasePrice"
+                             For="() => context.BasePrice"
+                             Format="C"
+                             Variant="Variant.Outlined"/>
+        </MudItem>
+        <MudItem xs="3" md="2">
+            <MudTextField Label="Max Length"
+                             @bind-Value="context.MaxLength"
+                             For="() => context.MaxLength"
+                             Converter="LengthMeasureConverter.GetConverter"
+                             Variant="Variant.Outlined"/>
+        </MudItem>
+        <MudItem xs="3" md="2">
+            <MudTextField Label="Max Beam"
+                             @bind-Value="context.MaxBeam"
+                             For="() => context.MaxBeam"
+                             Converter="LengthMeasureConverter.GetConverter"
+                             Variant="Variant.Outlined"/>
+        </MudItem>
+        <MudItem xs="12" md="12">
+            <MudTextField Label="Description"
+                          @bind-Value="context.Description"
+                          For="() => context.Description"
+                          Lines="3"
+                          Variant="Variant.Outlined"/>
+        </MudItem>
+    </MudGrid>
+</NewModelView>
+
+@code {
+    
+}

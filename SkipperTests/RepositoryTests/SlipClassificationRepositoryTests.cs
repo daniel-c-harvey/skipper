@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using SkipperData.Data.Repositories;
 using SkipperModels.Entities;
+using SkipperModels.Models;
 
 namespace SkipperTests.RepositoryTests;
 

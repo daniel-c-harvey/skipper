@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SkipperData.Data;
 using SkipperModels.Entities;
+using SkipperModels.Models;
 
 namespace SkipperTests.RepositoryTests;
 
