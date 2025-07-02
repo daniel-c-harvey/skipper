@@ -48,12 +48,15 @@ where TClientConfig : ModelControllerClientConfig
             return addResult.Success ? Result.CreatePassResult() : Result.From(addResult);
         });
 
-        var parameters = new DialogParameters<VesselSubmittedModal>
-            { { x => x.ResultTask, resultTask } };
+        var parameters = new DialogParameters<ModelSubmittedModal>
+        {
+            { x => x.ResultTask, resultTask },
+            { x => x.ModelName, ModelDisplayName}
+        };
         var options = new DialogOptions { CloseButton = true, FullWidth = true };
 
         // Post and show results
-        var dialog = await DialogService.ShowAsync<VesselSubmittedModal>("Submit Vessel Result", parameters, options);
+        var dialog = await DialogService.ShowAsync<ModelSubmittedModal>($"Submit {ModelDisplayName} Result", parameters, options);
         var dialogResult = await dialog.Result;
 
         if(dialogResult != null && 

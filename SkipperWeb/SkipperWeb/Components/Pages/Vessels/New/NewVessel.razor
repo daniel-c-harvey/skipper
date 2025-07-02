@@ -1,114 +1,55 @@
-﻿@using NetBlocks.Models
-@using SkipperModels
+﻿@using SkipperModels
+@using SkipperModels.Entities
+@using SkipperModels.InputModels
 @using SkipperModels.Models
 @using SkipperWeb.ApiClients
-
-@inject VesselClient Client
-@inject NavigationManager Navigation
-@inject IDialogService DialogService
+@using SkipperWeb.Components.Pages.Entities.New
 
 @page "/vessels/new"
 
-<MudContainer Class="pa-5">
-        <EditForm Model="Input" method="post" OnValidSubmit="Post" FormName="new-vessel">
-            <DataAnnotationsValidator/>
-            <MudCard>
-                <MudCardHeader>
-                    <MudStack Row AlignItems="AlignItems.Center">
-                        <MudText Color="Color.Primary" Typo="Typo.h4">
-                            <MudIcon Icon="@Icons.Material.Outlined.AddCircleOutline" />
-                            New Vessel Entry
-                        </MudText>
-                    </MudStack>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudGrid Spacing="3">
-                        <MudItem xs="12" md="6">
-                            <MudTextField Label="Registration No."
-                                          Adornment="Adornment.Start"
-                                          AdornmentIcon="@Icons.Material.Outlined.Receipt"
-                                          @bind-Value="Input.RegistrationNumber"
-                                          For="() => Input.RegistrationNumber" />
-                        </MudItem>
-                        <MudItem xs="12" md="6">
-                            <MudTextField Label="Vessel Name"
-                                          Adornment="Adornment.Start"
-                                          AdornmentIcon="@Icons.Material.Outlined.DirectionsBoat"
-                                          @bind-Value="Input.Name"
-                                          For="() => Input.Name" />
-                        </MudItem>
-                        
-                        <MudItem xs="6" md="4">
-                            <MudNumericField Label="Length"
-                                             @bind-Value="Input.Length"
-                                             For="() => Input.Length"/>
-                        </MudItem>
-                        <MudItem xs="6" md="4">
-                            <MudNumericField Label="Beam"
-                                             @bind-Value="Input.Beam"
-                                             For="() => Input.Beam"/>
-                        </MudItem>
-                        <MudItem xs="6" md="4">
-                            <MudSelect Label="Select Vessel Type"
-                                       @bind-Value="Input.VesselType"
-                                       For="() => Input.VesselType">
-                                @foreach (VesselType vesselType in Enum.GetValues<VesselType>())
-                                {
-                                    <MudSelectItem Value="@vesselType">@vesselType</MudSelectItem>
-                                }
-                            </MudSelect>
-                        </MudItem>
-                    </MudGrid>
-                </MudCardContent>
-                <MudCardActions>
-                    <MudButton Href="/vessels" StartIcon="@Icons.Material.Outlined.ArrowBack" Color="Color.Secondary" Variant="Variant.Filled">Back to Vessels</MudButton>
-                    <MudSpacer />
-                    <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" Variant="Variant.Filled">Save Vessel</MudButton>
-                </MudCardActions>
-            </MudCard>
-            <MudSpacer/>
-            <MudPaper Class="my-2">
-            <ValidationSummary class="mx-2 pa-5" />
-            </MudPaper>
-        </EditForm>
-    </MudContainer>
+<NewModelView TInputModel="VesselInputModel"
+              TModel="VesselModel"
+              TEntity="VesselEntity"
+              TClient="VesselClient"
+              TClientConfig="VesselClientConfig"
+              ModelDisplayName="Vessel"
+              PageRoute="vessels">
+    <MudGrid Spacing="3">
+        <MudItem xs="12" md="6">
+            <MudTextField Label="Registration No."
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Outlined.Receipt"
+                          @bind-Value="context.RegistrationNumber"
+                          For="() => context.RegistrationNumber" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField Label="Vessel Name"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Outlined.DirectionsBoat"
+                          @bind-Value="context.Name"
+                          For="() => context.Name" />
+        </MudItem>
 
-@code {
-    [SupplyParameterFromForm]
-    private NewVesselInputModel Input { get; set; } = new();
-
-    public async Task Post(EditContext editContext)
-    {
-        Task<Result> resultTask = Task<Result>.Run(async () =>
-        {
-
-            VesselModel newVessel = new()
+        <MudItem xs="6" md="4">
+            <MudNumericField Label="Length"
+                             @bind-Value="context.Length"
+                             For="() => context.Length"/>
+        </MudItem>
+        <MudItem xs="6" md="4">
+            <MudNumericField Label="Beam"
+                             @bind-Value="context.Beam"
+                             For="() => context.Beam"/>
+        </MudItem>
+        <MudItem xs="6" md="4">
+            <MudSelect Label="Select Vessel Type"
+                       @bind-Value="context.VesselType"
+                       For="() => context.VesselType">
+                @foreach (VesselType vesselType in Enum.GetValues<VesselType>()) @* todo make the enumeration with full display support *@
                 {
-                    RegistrationNumber = Input.RegistrationNumber,
-                    Name = Input.Name,
-                    Length = Input.Length,
-                    Beam = Input.Beam,
-                    VesselType = Input.VesselType
-                };
+                    <MudSelectItem Value="@vesselType">@vesselType</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+    </MudGrid>
 
-            ApiResult<VesselModel> addResult = await Client.Add(newVessel);
-            return addResult.Success ? Result.CreatePassResult() : Result.From(addResult);
-        });
-
-        var parameters = new DialogParameters<VesselSubmittedModal>
-            { { x => x.ResultTask, resultTask } };
-        var options = new DialogOptions { CloseButton = true, FullWidth = true };
-
-        // Post and show results
-        var dialog = await DialogService.ShowAsync<VesselSubmittedModal>("Submit Vessel Result", parameters, options);
-        var dialogResult = await dialog.Result;
-
-        if(dialogResult != null && 
-           !dialogResult.Canceled && 
-           dialogResult.Data is Result result &&
-            result.Success)
-        {
-            Navigation.NavigateTo("/vessels");
-        }
-    }
-}
+</NewModelView>

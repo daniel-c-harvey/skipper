@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using SkipperModels;
+using SkipperModels.Common;
+using SkipperModels.Entities;
+using SkipperModels.Models;
 
-namespace SkipperWeb.Components.Pages.Vessels.New;
+namespace SkipperModels.InputModels;
 
-public class NewVesselInputModel
+public class VesselInputModel : IInputModel<VesselInputModel, VesselModel, VesselEntity>
 {
     [Required(ErrorMessage = "Registration number is required")]
     [StringLength(50, ErrorMessage = "Registration number cannot exceed 50 characters")]
@@ -16,16 +18,28 @@ public class NewVesselInputModel
     public string Name { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Length is required")]
-    [Range(0.01, 999999.99999, ErrorMessage = "Length must be greater than 0 and less than 1,000,000")]
+    [LengthRange]
     [Display(Name = "Length")]
     public decimal Length { get; set; }
 
     [Required(ErrorMessage = "Beam is required")]
-    [Range(0.01, 999999.99999, ErrorMessage = "Beam must be greater than 0 and less than 1,000,000")]
+    [BeamRange]
     [Display(Name = "Beam")]
     public decimal Beam { get; set; }
 
     [Required(ErrorMessage = "Vessel type is required")]
     [Display(Name = "Vessel Type")]
     public VesselType VesselType { get; set; }
+
+    public static VesselModel MakeModel(VesselInputModel input)
+    {
+        return new VesselModel()
+        {
+            RegistrationNumber = input.RegistrationNumber,
+            Name = input.Name,
+            Length = input.Length,
+            Beam = input.Beam,
+            VesselType = input.VesselType
+        };
+    }
 }

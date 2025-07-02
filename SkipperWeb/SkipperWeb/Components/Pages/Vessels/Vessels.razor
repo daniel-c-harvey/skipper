@@ -1,135 +1,27 @@
-﻿@using SkipperModels.Models
+﻿@using NetBlocks.Utilities
+@using SkipperModels.Entities
+@using SkipperModels.Models
 @using SkipperWeb.ApiClients
+@using SkipperWeb.Components.Pages.Entities
 
 @inject VesselClient Client
 @inject NavigationManager Nav
-@inject VesselsViewModel ViewModel
 
 @page "/vessels"
 
-<MudText Typo="Typo.h2">Vessels</MudText>
-
-<MudGrid Class="my-5">
-    <MudItem xs="12" md="9">
-        <MudTextField Adornment="Adornment.Start" 
-                      AdornmentIcon="@Icons.Material.Filled.Search" 
-                      Placeholder="Seach vessels..." 
-                      Clearable="true"
-                      @bind-Value="SearchTerm"
-                      DebounceInterval="300"
-                      OnDebounceIntervalElapsed="OnSearchChanged"/>
-    </MudItem>
-    <MudItem xs="3" Class="d-flex justify-end">
-        <MudButton Color="Color.Primary" EndIcon="@Icons.Material.Outlined.AddCircleOutline" Variant="Variant.Filled" OnClick="NewVessel">
-            Enter New Vessel
-        </MudButton>
-    </MudItem>
-</MudGrid>
-
-<MudDataGrid @ref="vesselGrid"
-                T="VesselModel" 
-                ServerData="LoadGridServerData"
-                ReadOnly="true"
-                CurrentPage="@(Page.GetValueOrDefault(10) - 1)"
-                RowsPerPage="@(PageSize.GetValueOrDefault(10))">
+<ModelView T="VesselModel"
+           TEntity="VesselEntity"
+           TClient="VesselClient"
+           TClientConfig="VesselClientConfig"
+           Title="Vessels"
+           ModelDisplayName="Vessel"
+           PageRoute="vessels"
+           Placeholder="Search for vessels...">
     <Columns>
-        <PropertyColumn Property="x => x.RegistrationNumber" Title="Reg. No." />
-        <PropertyColumn Property="x => x.Name" />
-        <PropertyColumn Property="x => x.Length" />
-        <PropertyColumn Property="x => x.Beam" />
-        <PropertyColumn Property="x => x.VesselType" Title="Type" />
+        <PropertyColumn Property="x => x.RegistrationNumber" Title="Registration #"/>
+        <PropertyColumn Property="x => x.Name"/>
+        <PropertyColumn Property="x => LengthMeasureConverter.ToImperialString(x.Length, 16)"/>
+        <PropertyColumn Property="x => LengthMeasureConverter.ToImperialString(x.Beam, 16)"/>
+        <PropertyColumn Property="x => x.VesselType" Title="Type"/>
     </Columns>
-    <PagerContent>
-        <MudDataGridPager T="VesselModel"
-                            PageSizeOptions="@(new[] { 5, 10, 15, 25, 50})" 
-                            RowsPerPageString="Vessels per page"
-                            InfoFormat="{first_item}-{last_item} of {all_items}"/>
-    </PagerContent>
-</MudDataGrid>
-
-
-@code {
-
-
-
-    [SupplyParameterFromQuery]
-    public int? Page { get; set; }
-
-    [SupplyParameterFromQuery]
-    public int? PageSize { get; set; }
-
-    [SupplyParameterFromQuery]
-    public string? SearchTerm { get; set; }
-
-    private MudDataGrid<VesselModel>? vesselGrid;
-    private bool _updatingParameters = false;
-
-    protected override async Task OnParametersSetAsync()
-    {
-        // If parameters are missing, set defaults and update URL
-        if (Page == null || PageSize == null || SearchTerm is null)
-        {
-            UpdatePageWithUrl(Page ?? 1, PageSize ?? 10, SearchTerm ?? string.Empty, replace: true);
-            return; // URL change will trigger OnParametersSetAsync again with proper values
-        }
-
-        _updatingParameters = true;
-        if (vesselGrid != null) await vesselGrid.ReloadServerData();
-        _updatingParameters = false;
-    }
-    
-    private void OnSearchChanged(string searchTerm)
-    {
-        UpdatePageWithUrl(1, PageSize ?? 10, searchTerm);
-    }
-
-    private async Task<GridData<VesselModel>> LoadGridServerData(GridState<VesselModel> state)
-    {
-        if (!_updatingParameters) UpdatePageWithUrl(state.Page + 1, state.PageSize, ViewModel.SearchTerm);
-        await LoadServerData(Page ?? 1, PageSize ?? 10 , SearchTerm ?? string.Empty);
-
-        return new GridData<VesselModel>()
-        {
-            Items = ViewModel.Page?.Items ?? Enumerable.Empty<VesselModel>(),
-            TotalItems = ViewModel.Page?.TotalCount ?? 0
-        };
-    }
-    
-    private void UpdatePageWithUrl(int page, int pageSize, string searchTerm, bool replace = false)
-    {
-        var currentPage = Page;
-        var currentPageSize = PageSize;
-        var currentSearchTerm = ViewModel.SearchTerm;
-
-        if (currentPage == page && currentPageSize == pageSize && currentSearchTerm == searchTerm) 
-            return;
-        
-        var queryParams = new Dictionary<string, object?>
-        {
-            ["Page"] = page,
-            ["PageSize"] = pageSize,
-            ["SearchTerm"] = searchTerm
-        };
-
-        var queryString = Nav.GetUriWithQueryParameters(queryParams);
-        Nav.NavigateTo(queryString, forceLoad: false, replace: replace);
-    }
-
-    private async Task LoadServerData(int page, int pageSize, string searchTerm)
-    {
-
-        // Ensure ViewModel has the latest data
-        (page, pageSize) = await ViewModel.SetPage(page, pageSize, searchTerm);
-
-        // if page was coerced, update again
-        if (page != Page || pageSize != PageSize)
-        {
-            UpdatePageWithUrl(page, pageSize, searchTerm);
-        }
-    }
-
-    private void NewVessel()
-    {
-        Nav.NavigateTo("/vessels/new");
-    }
-}
+</ModelView>

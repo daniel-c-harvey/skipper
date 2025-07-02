@@ -12,11 +12,11 @@
         }
         else if (result.Success)
         {
-            <MudText>Vessel has been <MudText Inline="true" Color="Color.Success">submitted</MudText>.</MudText>
+            <MudText>@ModelName has been <MudText Inline="true" Color="Color.Success">submitted</MudText>.</MudText>
         }
         else
         {
-            <MudText>Vessel was <MudText Inline="true" Color="Color.Warning">NOT</MudText> submitted</MudText>
+            <MudText>@ModelName was <MudText Inline="true" Color="Color.Warning">NOT</MudText> submitted</MudText>
             <MudContainer Class="pa-5">
                 <ResultDetails Result="result" />
             </MudContainer>
@@ -34,6 +34,9 @@
     [Parameter] 
     public required Task<Result> ResultTask { get; set; }
 
+    [Parameter]
+    public required string ModelName { get; set; }
+    
     private Result? result = null;
 
     protected override async Task OnInitializedAsync()
