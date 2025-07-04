@@ -9,6 +9,7 @@ public class SlipClassificationInputModel
 : IInputModel<SlipClassificationInputModel, SlipClassificationModel, SlipClassificationEntity>,
   IEquatable<SlipClassificationInputModel>
 {
+    public long Id { get; set; }
     [Required(ErrorMessage = "Name required")]
     public string Name { get; set; }
 
@@ -24,22 +25,43 @@ public class SlipClassificationInputModel
     [BeamRange]
     public decimal MaxBeam { get; set; }
     
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
     public static SlipClassificationModel MakeModel(SlipClassificationInputModel input)
     {
         return new SlipClassificationModel()
         {
+            Id = input.Id,
             Name = input.Name,
             Description = input.Description,
             BasePrice = (int)Math.Round(input.BasePrice * 100, 0), // convert from dollars for front end to cents for data transfer.
             MaxLength = input.MaxLength,
             MaxBeam = input.MaxBeam,
+            CreatedAt = input.CreatedAt,
+            UpdatedAt = input.UpdatedAt
+        };
+    }
+
+    public static SlipClassificationInputModel From(SlipClassificationModel model)
+    {
+        return new SlipClassificationInputModel()
+        {
+            Id = model.Id,
+            Name = model.Name,
+            Description = model.Description,
+            BasePrice = model.BasePrice / 100M,
+            MaxLength = model.MaxLength,
+            MaxBeam = model.MaxBeam,
+            CreatedAt = model.CreatedAt,
+            UpdatedAt = model.UpdatedAt
         };
     }
 
     public bool Equals(SlipClassificationInputModel? other)
     {
         if (other is null) return false;
-        return Name == other.Name &&
+        return Id == other.Id &&
+               Name == other.Name &&
                Description == other.Description &&
                BasePrice == other.BasePrice &&
                MaxBeam == other.MaxBeam &&
@@ -58,6 +80,6 @@ public class SlipClassificationInputModel
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Name, Description, BasePrice, MaxLength, MaxBeam);
+        return HashCode.Combine(Id, Name, Description, BasePrice, MaxLength, MaxBeam);
     }
 }

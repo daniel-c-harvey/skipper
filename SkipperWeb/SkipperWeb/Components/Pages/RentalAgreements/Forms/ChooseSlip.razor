@@ -1,0 +1,212 @@
+﻿@using NetBlocks.Utilities
+@using SkipperModels.InputModels
+@using SkipperWeb.Shared.UI
+
+@code {
+    private bool _showSlipsResults = false;
+    
+    [Parameter]
+    public required RentalAgreementInputModel Context { get; set; }
+}
+
+<MudGrid AlignItems="Center" Spacing="2" Class="mb-3">
+    <!-- Action Buttons Row -->
+    <MudItem xs="12" Class="d-flex align-center gap-3 mb-2">
+        <MudButton StartIcon="@Icons.Material.Outlined.AddCircle" 
+                   Color="Color.Primary" 
+                   Variant="Variant.Outlined"
+                   Size="Size.Small"
+                   OnClick="AddSlip">
+            Add New Slip
+        </MudButton>
+        
+        <MudSpacer />
+        
+        <MudButton Color="Color.Primary" 
+                   Variant="@(_showSlipsResults ? Variant.Filled : Variant.Outlined)"
+                   Size="Size.Small"
+                   StartIcon="@(_showSlipsResults ? Icons.Material.Outlined.ViewList : Icons.Material.Outlined.Search)"
+                   OnClick="() => _showSlipsResults = !_showSlipsResults">
+            @(_showSlipsResults ? "Hide" : "Show") Table View
+        </MudButton>
+    </MudItem>
+    
+    <!-- Search and Select Row -->
+    <MudItem xs="12" sm="@((!_showSlipsResults) ? 6 : 12)" md="@((!_showSlipsResults) ? 5 : 12)">
+        <MudTextField Label="Search Slips"
+                      Adornment="Adornment.Start" 
+                      AdornmentIcon="@Icons.Material.Outlined.Search" 
+                      @bind-Value="_slipSearch" 
+                      DebounceInterval="500" 
+                      OnDebounceIntervalElapsed="OnSlipsSearchChanged"
+                      Variant="Variant.Outlined"
+                      FullWidth="true"
+                      Clearable="true" />
+    </MudItem>
+    
+    @if (!_showSlipsResults)
+    {
+        <MudItem xs="12" sm="6" md="7">
+            <MudStack Row AlignItems="AlignItems.Center" Spacing="2">
+                <MudSelect Label="Select Slip"
+                           T="SlipInputModel"
+                           @bind-Value="Context.Slip"
+                           For="() => Context.Slip"
+                           Variant="Variant.Outlined"
+                           Style="flex-grow: 1;"
+                           MaxHeight="300"
+                           Clearable="true">
+                    @foreach (SlipInputModel input in _slips)
+                    {
+                        <MudSelectItem T="SlipInputModel" Value="input">
+                            <MudStack Row AlignItems="AlignItems.Center">
+                                <MudStack Justify="Justify.FlexStart" Spacing="0">
+                                    <MudText Typo="Typo.body2"><b>@input.SlipNumber</b></MudText>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">@input.LocationCode</MudText>
+                                </MudStack>
+                                <MudSpacer/>
+                                <MudStack Row Justify="Justify.SpaceAround" AlignItems="AlignItems.Center">
+                                    <MudText Typo="Typo.caption">
+                                        @(LengthMeasureConverter.ToImperialString(input.SlipClassification.MaxLength)) x @(LengthMeasureConverter.ToImperialString(input.SlipClassification.MaxBeam))
+                                    </MudText>
+                                </MudStack>
+                                <MudSpacer/>
+                                <MudStack Row Justify="Justify.FlexEnd" AlignItems="AlignItems.Center" Spacing="1">
+                                    <MudText Typo="Typo.caption">@input.SlipClassification.Name</MudText>
+                                    <SlipStatusChip Status="@input.Status" />
+                                </MudStack>
+                            </MudStack>
+                        </MudSelectItem>
+                    }
+                    
+                    @* Show loading indicator in dropdown *@
+                    @if (_loadingMoreSlips)
+                    {
+                        <MudSelectItem T="SlipInputModel" Value="null" Disabled="true">
+                            <MudStack AlignItems="AlignItems.Center" Class="pa-3">
+                                <MudProgressCircular Size="Size.Small" Indeterminate />
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">Loading more slips...</MudText>
+                            </MudStack>
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+                
+                @* Load More button next to dropdown *@
+                @if (_hasMoreSlips && !_loadingMoreSlips)
+                {
+                    <MudTooltip Text="Load More Slips">
+                        <MudIconButton Icon="@Icons.Material.Outlined.Add" 
+                                       Color="Color.Primary" 
+                                       Variant="Variant.Outlined"
+                                       Size="Size.Medium"
+                                       OnClick="LoadMoreSlips" />
+                    </MudTooltip>
+                }
+                
+                @if (_loadingMoreSlips)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate />
+                }
+            </MudStack>
+        </MudItem>
+    }
+</MudGrid>
+
+@if (_showSlipsResults)
+{
+    <MudTable Items="_slips" 
+              @bind-SelectedItem="Context.Slip" 
+              Class="mt-3"
+              Dense="true"
+              Hover="true"
+              RowStyleFunc="@((SlipInputModel slip, int index) => Context.Slip?.SlipNumber == slip.SlipNumber ? "background-color: var(--mud-palette-primary-lighten);" : "")">
+        <HeaderContent>
+            <MudTh>Slip Number</MudTh>
+            <MudTh>Name</MudTh>
+            <MudTh>Description</MudTh>
+            <MudTh>Max Length</MudTh>
+            <MudTh>Max Beam</MudTh>
+            <MudTh>Location Code</MudTh>
+            <MudTh>Slip Status</MudTh>
+        </HeaderContent>
+        <RowTemplate Context="row">
+            <MudTd DataLabel="Slip Number">@row.SlipNumber</MudTd>
+            <MudTd DataLabel="Name">@row.SlipClassification.Name</MudTd>
+            <MudTd DataLabel="Description">@row.SlipClassification.Description</MudTd>
+            <MudTd DataLabel="Max Length">@(LengthMeasureConverter.ToImperialString(row.SlipClassification.MaxLength))</MudTd>
+            <MudTd DataLabel="Max Beam">@(LengthMeasureConverter.ToImperialString(row.SlipClassification.MaxBeam))</MudTd>
+            <MudTd DataLabel="Location Code">@row.LocationCode</MudTd>
+            <MudTd DataLabel="Slip Status">
+                <SlipStatusChip Status="@row.Status"/>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+    
+    @* Load More section for table *@
+    @if (_hasMoreSlips || _loadingMoreSlips)
+    {
+        <MudStack AlignItems="AlignItems.Center" Class="mt-4">
+            @if (_loadingMoreSlips)
+            {
+                <MudProgressCircular Size="Size.Medium" Indeterminate />
+                <MudText Typo="Typo.caption">Loading more slips...</MudText>
+            }
+            else
+            {
+                <MudButton Variant="Variant.Outlined" 
+                           Color="Color.Primary" 
+                           StartIcon="@Icons.Material.Outlined.Add"
+                           OnClick="LoadMoreSlips">
+                    Load More Slips (@(_slips.Count()))
+                </MudButton>
+            }
+        </MudStack>
+    }
+}
+
+<MudPaper Class="rounded-tb-xl px-1 py-5" MaxWidth="md" Elevation="0">
+    <MudText Typo="Typo.h6">Selected Slip:</MudText>
+    @if (Context.Slip != null)
+    {
+        <MudStack>
+            <MudStack Row>
+                <MudText>Slip Number: </MudText>
+                <MudText>@Context.Slip.SlipNumber</MudText>
+            </MudStack>
+                    
+            <MudStack Row>
+                <MudText>Slip Name: </MudText>
+                <MudText>@Context.Slip.SlipClassification.Name</MudText>
+            </MudStack>
+                    
+            <MudStack Row>
+                <MudText>Description: </MudText>
+                <MudText>@Context.Slip.SlipClassification.Description</MudText>
+            </MudStack>
+                    
+            <MudStack Row>
+                <MudText>Max Length: </MudText>
+                <MudText>@(LengthMeasureConverter.ToImperialString(Context.Slip.SlipClassification.MaxLength))</MudText>
+            </MudStack>
+                    
+            <MudStack Row>
+                <MudText>Max Beam: </MudText>
+                <MudText>@(LengthMeasureConverter.ToImperialString(Context.Slip.SlipClassification.MaxBeam))</MudText>
+            </MudStack>
+
+            <MudStack Row>
+                <MudText>Location Code: </MudText>
+                <MudText>@Context.Slip.LocationCode</MudText>
+            </MudStack>
+
+            <MudStack Row>
+                <MudText>Slip Status: </MudText>
+                <MudText>@Context.Slip.Status</MudText>
+            </MudStack>
+        </MudStack>
+    }
+    else
+    {
+        <MudText>You must select a slip.</MudText>
+    }
+</MudPaper>

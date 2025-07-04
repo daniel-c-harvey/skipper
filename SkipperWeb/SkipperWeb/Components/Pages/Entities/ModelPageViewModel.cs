@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using SkipperModels.Common;
 using SkipperModels.Entities;
+using SkipperModels.InputModels;
 using SkipperModels.Models;
 using SkipperWeb.ApiClients;
 
@@ -89,5 +90,14 @@ public class ModelPageViewModel<TModel, TEntity, TClient, TClientConfig>
         _currentSearchTerm = string.Empty;
         _currentPage = 0;
         _currentPageSize = 0;
+    }
+
+    public async Task UpdateItem(TModel model)
+    {
+        var result = await _client.Update(model);
+        if (!result.Success)
+        {
+            Debugger.Break(); // TODO show error
+        }
     }
 }

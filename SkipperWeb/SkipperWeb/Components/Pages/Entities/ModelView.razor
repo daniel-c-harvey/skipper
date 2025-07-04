@@ -1,9 +1,11 @@
 ﻿@using SkipperModels.Entities
 @using SkipperWeb.ApiClients
 
-@typeparam T where T : class, SkipperModels.Models.IModel<T, TEntity>, new()
-@typeparam TEntity where TEntity : class, IEntity<TEntity, T>, new()
-@typeparam TClient where TClient : ModelControllerClient<T, TEntity, TClientConfig>
+@typeparam T where T : class, SkipperModels.InputModels.IInputModel<T, TModel, TEntity>, new()
+@typeparam TModel where TModel : class, SkipperModels.Models.IModel<TModel, TEntity>, new()
+@typeparam TEntity where TEntity : class, IEntity<TEntity, TModel>, new()
+@typeparam TEditModal where TEditModal : IEditModal<T>
+@typeparam TClient where TClient : ModelControllerClient<TModel, TEntity, TClientConfig>
 @typeparam TClientConfig where TClientConfig : ModelControllerClientConfig
 
 <MudText Typo="Typo.h4">@Title</MudText>
@@ -28,11 +30,15 @@
 <MudDataGrid @ref="_grid"
              T="T" 
              ServerData="LoadGridServerData"
-             ReadOnly="true"
              CurrentPage="@(Page.GetValueOrDefault(1) - 1)"
              RowsPerPage="@(PageSize.GetValueOrDefault(10))">
     <Columns>
         @Columns
+        <TemplateColumn CellClass="d-flex justify-end px-3">
+            <CellTemplate>
+                <MudIconButton Size="@Size.Small" Color="Color.Secondary" Icon="@Icons.Material.Outlined.Edit" OnClick="async () => await EditItem(context.Item)"/>
+            </CellTemplate>
+        </TemplateColumn>
     </Columns>
     <PagerContent>
         <MudDataGridPager T="T" 

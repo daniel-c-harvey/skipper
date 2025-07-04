@@ -22,7 +22,7 @@ public class RentalAgreementEntity : BaseEntity<RentalAgreementEntity, RentalAgr
             Vessel = VesselEntity.CreateModel(entity.VesselEntity),
             StartDate = entity.StartDate,
             EndDate = entity.EndDate,
-            PriceRate = entity.PriceRate,
+            PriceRate = entity.PriceRate / 100M,
             PriceUnit = entity.PriceUnit,
             Status = entity.Status,
             CreatedAt = entity.CreatedAt,

@@ -1,0 +1,41 @@
+﻿@typeparam TModel where TModel : new()
+@implements IEditModal<TModel>
+
+<EditForm Model="EditModel" OnValidSubmit="Submit" FormName="edit-model" method="post">
+    <MudDialog>
+        <DialogContent>
+            <DataAnnotationsValidator/>
+            @ChildContent
+        </DialogContent>
+        <DialogActions>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Cancel">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">Submit</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public required TModel Model { get; set; }
+
+    [SupplyParameterFromForm]
+    public TModel EditModel { get; set; } = new();
+    // public TModel EditModel { get => Model; set => Model = value; }
+
+    [Parameter]
+    public required RenderFragment ChildContent { get; set; }
+
+    private void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(Model));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Close(DialogResult.Cancel());
+    }
+
+}

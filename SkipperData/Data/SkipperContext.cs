@@ -38,6 +38,20 @@ public class SkipperContext : DbContext
             }
         }
         
+        
+        var dateTimeConverter = new UtcDateTimeConverter();
+            
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties())
+            {
+                if (property.ClrType == typeof(DateTime) || property.ClrType == typeof(DateTime?))
+                {
+                    property.SetValueConverter(dateTimeConverter);
+                }
+            }
+        }
+        
         base.OnModelCreating(modelBuilder);
     }
 }

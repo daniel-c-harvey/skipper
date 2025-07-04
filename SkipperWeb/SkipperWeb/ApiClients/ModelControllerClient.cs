@@ -77,11 +77,29 @@ where TEntity : class, IEntity<TEntity, TModel>, new()
     {
         try
         {
-            var response = await http.PostAsJsonAsync($"api/{config.ControllerName}", entity, _options);
+            var response = await http.PostAsJsonAsync($"api/{config.ControllerName}/new", entity, _options);
             if (response == null) throw new HttpRequestException(HttpRequestError.InvalidResponse);
             
             var result = await response.Content.ReadFromJsonAsync<ApiResultDto<TModel>>(_options)
                 ?? throw new HttpRequestException("Failed to deserialize response");
+
+            return result.From();
+        }
+        catch (Exception e)
+        {
+            return ApiResult<TModel>.CreateFailResult(e.Message);
+        }
+    }
+
+    public async Task<ApiResult<TModel>> Update(TModel model)
+    {
+        try
+        {
+            var response = await http.PostAsJsonAsync($"api/{config.ControllerName}", model, _options);
+            if (response == null) throw new HttpRequestException(HttpRequestError.InvalidResponse);
+            
+            var result = await response.Content.ReadFromJsonAsync<ApiResultDto<TModel>>(_options)
+                         ?? throw new HttpRequestException("Failed to deserialize response");
 
             return result.From();
         }

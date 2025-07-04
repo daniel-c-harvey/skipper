@@ -1,18 +1,21 @@
 ﻿@using SkipperModels.Entities
+@using SkipperModels.InputModels
 @using SkipperModels.Models
 @using SkipperWeb.ApiClients
 @using SkipperWeb.Components.Pages.Entities
 
 @page "/slips"
 
-<ModelView T="SlipModel"
-            TEntity="SlipEntity"
-            TClient="SlipClient"
-            TClientConfig="SlipClientConfig"
-            Title="Slips"
-            ModelDisplayName="Slip"
-            PageRoute="slips"
-            Placeholder="Search for slips...">
+<ModelView T="SlipInputModel"
+           TModel="SlipModel"
+           TEntity="SlipEntity"
+           TEditModal="EditSlipModal"
+           TClient="SlipClient"
+           TClientConfig="SlipClientConfig"
+           Title="Slips"
+           ModelDisplayName="Slip"
+           PageRoute="slips"
+           Placeholder="Search for slips...">
     <Columns>
         <PropertyColumn Property="x => x.SlipNumber" Title="Slip Number" />
         <PropertyColumn Property="x => x.SlipClassification.Name" Title="Classification" />

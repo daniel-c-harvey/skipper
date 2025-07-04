@@ -1,6 +1,7 @@
 ﻿@using NetBlocks.Utilities
 @using SkipperModels.Entities
 @using SkipperModels.Models
+@using SkipperModels.InputModels
 @using SkipperWeb.ApiClients
 @using SkipperWeb.Components.Pages.Entities
 
@@ -9,8 +10,10 @@
 
 @page "/vessels"
 
-<ModelView T="VesselModel"
+<ModelView T="VesselInputModel"
+           TModel="VesselModel"
            TEntity="VesselEntity"
+           TEditModal="EditVesselModal"
            TClient="VesselClient"
            TClientConfig="VesselClientConfig"
            Title="Vessels"

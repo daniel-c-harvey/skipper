@@ -1,13 +1,16 @@
 ﻿@using NetBlocks.Utilities;
 @using SkipperModels.Entities
 @using SkipperModels.Models
+@using SkipperModels.InputModels
 @using SkipperWeb.ApiClients
 @using SkipperWeb.Components.Pages.Entities
 
 @page "/slipclassifications"
 
-<ModelView T="SlipClassificationModel"
+<ModelView T="SlipClassificationInputModel"
+            TModel="SlipClassificationModel"
             TEntity="SlipClassificationEntity"
+            TEditModal="EditSlipClassificationModal"
             TClient="SlipClassificationClient"
             TClientConfig="SlipClassificationClientConfig"
             Title="Slip Classifications"
@@ -17,7 +20,7 @@
     <Columns>
         <PropertyColumn Property="x => x.Name" />
         <PropertyColumn Property="x => x.Description" />
-        <PropertyColumn Property="@(x => (x.BasePrice / 100D).ToString("C"))" Title="Base Price"/>
+        <PropertyColumn Property="@(x => x.BasePrice.ToString("C"))" Title="Base Price"/>
         <PropertyColumn Property="x => LengthMeasureConverter.ToImperialString(x.MaxLength, 16)" Title="Max Length" />
         <PropertyColumn Property="x => LengthMeasureConverter.ToImperialString(x.MaxBeam, 16)" Title="Max Beam" />
     </Columns>

@@ -1,0 +1,85 @@
+﻿@using SkipperModels.InputModels
+
+<MudExpansionPanels>
+        <MudExpansionPanel Expanded>
+            <TitleContent>
+                <MudStack Row AlignItems="AlignItems.Center">
+                    @if (Model.Vessel is null)
+                    { <MudIcon Icon="@Icons.Material.Outlined.Close" Color="Color.Error"/> }
+                    else
+                    { <MudIcon Icon="@Icons.Material.Outlined.Check" Color="Color.Success"/> }
+                    <MudText Typo="Typo.h5" Color="Color.Primary">Vessels</MudText>
+                </MudStack>
+            </TitleContent>
+            <ChildContent>
+                <ChooseVessel Context="Model"/>
+            </ChildContent>
+        </MudExpansionPanel>  
+        <MudExpansionPanel>
+            <TitleContent>
+                <MudStack Row AlignItems="AlignItems.Center">
+                    @if (Model.Slip is null)
+                    { <MudIcon Icon="@Icons.Material.Outlined.Close" Color="Color.Error"/> }
+                    else
+                    { <MudIcon Icon="@Icons.Material.Outlined.Check" Color="Color.Success"/> }
+                    <MudText Typo="Typo.h5" Color="Color.Primary">Slip</MudText>
+                </MudStack>
+            </TitleContent>
+            <ChildContent>
+                <ChooseSlip Context="Model"/>
+            </ChildContent>
+        </MudExpansionPanel>
+        <MudExpansionPanel>
+            <TitleContent>
+                <MudStack Row AlignItems="AlignItems.Center">
+                    @if (Model.StartDate is null || Model.EndDate is null || 
+                         Model.Status is null || Model.PriceUnit is null)
+                    { <MudIcon Icon="@Icons.Material.Outlined.Close" Color="Color.Error"/> }
+                    else
+                    { <MudIcon Icon="@Icons.Material.Outlined.Check" Color="Color.Success"/> }
+                    <MudText Typo="Typo.h5" Color="Color.Primary">Details</MudText>
+                </MudStack>
+            </TitleContent>
+            <ChildContent>
+                <MudGrid Spacing="3" Class="pa-3">
+                    <MudItem xs="12" md="6">
+                        <MudNumericField Label="Price"
+                                         @bind-Value="@Model.PriceRate"
+                                         Format="C"/>
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudRadioGroup T="PriceUnitEnumeration"
+                                       @bind-Value="Model.PriceUnit">
+                            @foreach (PriceUnitEnumeration priceUnit in PriceUnitEnumeration.GetAll())
+                            {
+                                <MudRadio T="PriceUnitEnumeration" Value="priceUnit">
+                                    @priceUnit.DisplayName
+                                </MudRadio> 
+                            }
+                        </MudRadioGroup>
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudDatePicker Label="Start Date" @bind-Date="Model.StartDate" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudDatePicker Label="End Date" @bind-Date="Model.EndDate"/>
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudSelect T="RentalStatusEnumeration"
+                                   Label="Initial Rental Status"
+                                   @bind-Value="Model.Status">
+                            @foreach (RentalStatusEnumeration status in new[] { RentalStatusEnumeration.Quoted, RentalStatusEnumeration.Pending, RentalStatusEnumeration.Active})
+                            {    
+                                <MudSelectItem Value="status">@status.DisplayName</MudSelectItem>
+                            }
+                    </MudSelect>
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudExpansionPanel>
+    </MudExpansionPanels>
+
+@code {
+    [Parameter]
+    public required RentalAgreementInputModel Model { get; set; }
+}

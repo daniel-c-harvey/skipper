@@ -17,14 +17,14 @@
                 <MudText Typo="Typo.h5" Align="Align.Center">
                     <MudStack Row AlignItems="AlignItems.Center">
                         <MudIcon Icon="@Icons.Material.Outlined.AddCircleOutline"/>
-                        New @ModelDisplayName Entry
+                        New @ModelDisplayName
                     </MudStack>
                 </MudText>
             </MudCardHeader>
             <MudCardContent>
                 @ChildContent(Input)
             </MudCardContent>
-            <MudCardActions>
+            <MudCardActions Class="pa-4">
                 <MudButton Href="@($"/{PageRoute}")" StartIcon="@Icons.Material.Outlined.ArrowBack" Color="Color.Secondary"
                            Variant="Variant.Filled">Back to entries
                 </MudButton>

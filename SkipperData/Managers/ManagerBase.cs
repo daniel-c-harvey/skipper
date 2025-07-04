@@ -18,11 +18,24 @@ where TDto : class, IModel<TDto, TEntity>
         _repository = repository;
     }
     
-    public virtual async Task<Result> Add(TEntity vessel)
+    public virtual async Task<Result> Add(TEntity entity)
     {
         try
         {
-            await _repository.AddAsync(vessel);
+            await _repository.AddAsync(entity);
+            return await _repository.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            return Result.CreateFailResult(ex.Message);
+        }
+    }
+
+    public virtual async Task<Result> Update(TEntity entity)
+    {
+        try
+        {
+            await _repository.UpdateAsync(entity);
             return await _repository.SaveChangesAsync();
         }
         catch (Exception ex)

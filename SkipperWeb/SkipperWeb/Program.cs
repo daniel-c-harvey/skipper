@@ -41,16 +41,17 @@ public class Program
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
+            Console.WriteLine("Development Mode");
             app.UseWebAssemblyDebugging();
         }
         else
         {
+            Console.WriteLine("Production Mode");
             app.UseExceptionHandler("/Error");
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
         }
-
-        app.UseHttpsRedirection();
+                
 
         app.UseAntiforgery();
         app.UseStatusCodePagesWithRedirects("/404");
@@ -77,11 +78,14 @@ public class Program
         builderServices.AddScoped<SlipClient>();
         builderServices.AddSingleton(new SlipClassificationClientConfig(skipperEndpoint.ApiUrl));
         builderServices.AddScoped<SlipClassificationClient>();
+        builderServices.AddSingleton(new RentalAgreementClientConfig(skipperEndpoint.ApiUrl));
+        builderServices.AddScoped<RentalAgreementClient>();
 
         
         // Add ViewModels as scoped services
         builderServices.AddScoped<ModelPageViewModel<VesselModel, VesselEntity, VesselClient, VesselClientConfig>>();
         builderServices.AddScoped<ModelPageViewModel<SlipModel, SlipEntity, SlipClient, SlipClientConfig>>();
         builderServices.AddScoped<ModelPageViewModel<SlipClassificationModel, SlipClassificationEntity, SlipClassificationClient, SlipClassificationClientConfig>>();
+        builderServices.AddScoped<ModelPageViewModel<RentalAgreementModel, RentalAgreementEntity, RentalAgreementClient, RentalAgreementClientConfig>>();
     }
 }

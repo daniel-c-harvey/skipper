@@ -23,7 +23,8 @@ public class SlipClassificationModel : BaseModel<SlipClassificationModel, SlipCl
             CreatedAt = model.CreatedAt,
             UpdatedAt = model.UpdatedAt,
         };
-        entity.Slips = model.Slips?.Select(slip => SlipModel.CreateEntity(slip, entity))?.ToList() ?? [];
+        // Do not set the navigation properties when creating entities.
+        // entity.Slips = model.Slips?.Select(slip => SlipModel.CreateEntity(slip, entity))?.ToList() ?? [];
         return entity;
     }
 }

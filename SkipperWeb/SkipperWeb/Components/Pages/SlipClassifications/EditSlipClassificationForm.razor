@@ -1,0 +1,43 @@
+﻿@using SkipperModels.InputModels
+@using SkipperWeb.Shared.Converters
+<MudGrid Spacing="3">
+    <MudItem xs="7" md="6">
+        <MudTextField Label="Slip Classification Name"
+                      @bind-Value="Model.Name"
+                      For="() => Model.Name"
+                      Variant="Variant.Outlined" />
+    </MudItem>
+    <MudItem xs="5" md="2">
+        <MudNumericField Label="Base Price"
+                         @bind-Value="Model.BasePrice"
+                         For="() => Model.BasePrice"
+                         Format="C"
+                         Variant="Variant.Outlined" />
+    </MudItem>
+    <MudItem xs="3" md="2">
+        <MudTextField Label="Max Length"
+                      @bind-Value="Model.MaxLength"
+                      For="() => Model.MaxLength"
+                      Converter="LengthMeasureConverter.GetConverter"
+                      Variant="Variant.Outlined" />
+    </MudItem>
+    <MudItem xs="3" md="2">
+        <MudTextField Label="Max Beam"
+                      @bind-Value="Model.MaxBeam"
+                      For="() => Model.MaxBeam"
+                      Converter="LengthMeasureConverter.GetConverter"
+                      Variant="Variant.Outlined" />
+    </MudItem>
+    <MudItem xs="12" md="12">
+        <MudTextField Label="Description"
+                      @bind-Value="Model.Description"
+                      For="() => Model.Description"
+                      Lines="3"
+                      Variant="Variant.Outlined" />
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter]
+    public required SlipClassificationInputModel Model { get; set; }
+}

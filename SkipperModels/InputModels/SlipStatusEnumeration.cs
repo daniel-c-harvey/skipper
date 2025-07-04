@@ -13,7 +13,7 @@ public class SlipStatusEnumeration : DisplayEnumeration<SlipStatusEnumeration>
 
     public SlipStatus SlipStatus { get; init; }
 
-    public SlipStatusEnumeration(SlipStatus status, string name, string displayValue) : base((int)status, name, displayValue) 
+    private SlipStatusEnumeration(SlipStatus status, string name, string displayValue) : base((int)status, name, displayValue) 
     {
         SlipStatus = status;
     }

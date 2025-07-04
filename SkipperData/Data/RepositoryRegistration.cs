@@ -10,8 +10,8 @@ public static class RepositoryRegistration
         services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
         services.AddScoped<SlipRepository>();
         services.AddScoped<VesselRepository>();
-        services.AddScoped<RentalAgreementRepository>();
         services.AddScoped<SlipClassificationRepository>();
+        services.AddScoped<RentalAgreementRepository>();
         
         return services;
     }

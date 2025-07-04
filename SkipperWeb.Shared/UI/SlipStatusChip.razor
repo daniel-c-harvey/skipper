@@ -1,0 +1,25 @@
+﻿@using SkipperModels.InputModels
+@using MudBlazor
+
+<MudChip T="string" Size="Size.Small" Color="@(GetSlipStatusColor(Status))" Variant="Variant.Filled">
+    @Status.DisplayName
+</MudChip>
+
+@code {
+    [Parameter] public SlipStatusEnumeration Status { get; set; }
+
+    private static Dictionary<SlipStatusEnumeration, MudBlazor.Color> SlipStatusColorMap = new()
+    {
+        { SlipStatusEnumeration.Available, MudBlazor.Color.Success },
+        { SlipStatusEnumeration.Booked, MudBlazor.Color.Info },
+        { SlipStatusEnumeration.InUse, MudBlazor.Color.Warning },
+        { SlipStatusEnumeration.Maintenance, MudBlazor.Color.Error},
+        { SlipStatusEnumeration.Sold, MudBlazor.Color.Info },
+        { SlipStatusEnumeration.Archived, MudBlazor.Color.Info},
+    };
+
+    private MudBlazor.Color GetSlipStatusColor(SlipStatusEnumeration slipStatus)
+    {
+        return SlipStatusColorMap[slipStatus];
+    }
+}

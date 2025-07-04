@@ -1,0 +1,21 @@
+﻿@using NetBlocks.Utilities
+@using SkipperModels.Entities
+@using SkipperModels.Models
+@using SkipperModels.InputModels
+@using SkipperWeb.ApiClients
+@using SkipperWeb.Components.Pages.Entities.New
+@using SkipperWeb.Components.Pages.RentalAgreements.Forms
+
+
+
+@page "/rentalagreements/new"
+
+<NewModelView TInputModel="RentalAgreementInputModel"
+              TModel="RentalAgreementModel"
+              TEntity="RentalAgreementEntity"
+              TClient="RentalAgreementClient"
+              TClientConfig="RentalAgreementClientConfig"
+              ModelDisplayName="Rental Agreement"
+              PageRoute="rentalagreements">
+    <EditRentalAgreementForm Model="context" />
+</NewModelView>

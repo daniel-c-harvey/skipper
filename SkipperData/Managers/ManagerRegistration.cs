@@ -11,6 +11,7 @@ public static class ManagerRegistration
         services.AddScoped<IManager<VesselEntity, VesselModel>, VesselManager>();
         services.AddScoped<IManager<SlipEntity, SlipModel>, SlipManager>();
         services.AddScoped<IManager<SlipClassificationEntity, SlipClassificationModel>, SlipClassificationManager>();
+        services.AddScoped<IManager<RentalAgreementEntity, RentalAgreementModel>, RentalAgreementManager>();
         
         return services;
     }

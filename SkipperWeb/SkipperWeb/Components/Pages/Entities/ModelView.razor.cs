@@ -1,16 +1,19 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SkipperModels.Entities;
+using SkipperModels.InputModels;
 using SkipperModels.Models;
 using SkipperWeb.ApiClients;
 
 namespace SkipperWeb.Components.Pages.Entities;
 
 [CascadingTypeParameter(nameof(T))]
-public partial class ModelView<T, TEntity, TClient, TClientConfig>  : ComponentBase
-    where T : class, IModel<T, TEntity>, new()
-    where TEntity : class, IEntity<TEntity, T>, new()
-    where TClient : ModelControllerClient<T, TEntity, TClientConfig>
+public partial class ModelView<T, TModel, TEntity, TEditModal, TClient, TClientConfig>  : ComponentBase
+    where T : class, IInputModel<T, TModel, TEntity>, new()
+    where TModel : class, IModel<TModel, TEntity>, new()
+    where TEntity : class, IEntity<TEntity, TModel>, new()
+    where TEditModal : IEditModal<T>
+    where TClient : ModelControllerClient<TModel, TEntity, TClientConfig>
     where TClientConfig : ModelControllerClientConfig
 {
     [SupplyParameterFromQuery]
@@ -23,10 +26,13 @@ public partial class ModelView<T, TEntity, TClient, TClientConfig>  : ComponentB
     public string? SearchTerm { get; set; }
     
     [Inject]
-    public required ModelPageViewModel<T, TEntity, TClient, TClientConfig> ViewModel { get; set; }
+    public required ModelPageViewModel<TModel, TEntity, TClient, TClientConfig> ViewModel { get; set; }
     
     [Inject]
     public required NavigationManager Nav { get; set; }
+    
+    [Inject]
+    public required IDialogService DialogService { get; set; }
     
     [Parameter]
     public required string PageRoute { get; set; }
@@ -73,7 +79,7 @@ public partial class ModelView<T, TEntity, TClient, TClientConfig>  : ComponentB
 
         return new GridData<T>()
         {
-            Items = ViewModel.Page?.Items ?? Enumerable.Empty<T>(),
+            Items = ViewModel.Page?.Items.Select(T.From) ?? Enumerable.Empty<T>(),
             TotalItems = ViewModel.Page?.TotalCount ?? 0
         };
     }
@@ -113,5 +119,20 @@ public partial class ModelView<T, TEntity, TClient, TClientConfig>  : ComponentB
     private void NewEntity()
     {
         Nav.NavigateTo($"{PageRoute}/new");
+    }
+    
+    private async Task EditItem(T inputModel)
+    {
+        var parameters = new DialogParameters<TEditModal>
+        {
+            { x => x.Model, inputModel },
+        };
+
+        var dialog = await DialogService.ShowAsync<TEditModal>("Edit Item", parameters);
+        var result = await dialog.Result;
+        if (result is { Canceled: false, Data: T model })
+        {
+            await ViewModel.UpdateItem(T.MakeModel(model));
+        }
     }
 }

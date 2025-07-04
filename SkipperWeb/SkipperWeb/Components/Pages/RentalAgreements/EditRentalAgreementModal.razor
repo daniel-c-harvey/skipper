@@ -1,0 +1,29 @@
+﻿@using SkipperModels.InputModels
+@using SkipperWeb.Components.Pages.Entities
+@using SkipperWeb.Components.Pages.RentalAgreements.Forms
+
+@implements IEditModal<RentalAgreementInputModel>
+
+<EditModelModal TModel="RentalAgreementInputModel"
+                Model="Model">
+    <EditRentalAgreementForm Model="Model" />
+</EditModelModal>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public required RentalAgreementInputModel Model { get; set; }
+
+    private void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(Model));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Close(DialogResult.Cancel());
+    }
+
+}

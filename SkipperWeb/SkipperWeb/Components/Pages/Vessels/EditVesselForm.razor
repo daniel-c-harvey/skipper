@@ -1,0 +1,45 @@
+﻿@using SkipperModels
+@using SkipperModels.InputModels
+
+<MudGrid Spacing="3">
+    <MudItem xs="12" md="6">
+        <MudTextField Label="Registration No."
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Outlined.Receipt"
+                      @bind-Value="Vessel.RegistrationNumber"
+                      For="() => Vessel.RegistrationNumber" />
+    </MudItem>
+    <MudItem xs="12" md="6">
+        <MudTextField Label="Vessel Name"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Outlined.DirectionsBoat"
+                      @bind-Value="Vessel.Name"
+                      For="() => Vessel.Name" />
+    </MudItem>
+
+    <MudItem xs="6" md="4">
+        <MudNumericField Label="Length"
+                         @bind-Value="Vessel.Length"
+                         For="() => Vessel.Length" />
+    </MudItem>
+    <MudItem xs="6" md="4">
+        <MudNumericField Label="Beam"
+                         @bind-Value="Vessel.Beam"
+                         For="() => Vessel.Beam" />
+    </MudItem>
+    <MudItem xs="6" md="4">
+        <MudSelect Label="Select Vessel Type"
+                   @bind-Value="Vessel.VesselType"
+                   For="() => Vessel.VesselType">
+            @foreach (VesselType vesselType in Enum.GetValues<VesselType>()) @* todo make the enumeration with full display support *@
+            {
+                <MudSelectItem Value="@vesselType">@vesselType</MudSelectItem>
+            }
+        </MudSelect>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter]
+    public VesselInputModel Vessel { get; set; }
+}

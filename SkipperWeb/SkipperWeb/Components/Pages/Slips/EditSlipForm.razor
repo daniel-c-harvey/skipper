@@ -1,0 +1,72 @@
+﻿@using SkipperModels.Common
+@using SkipperModels.InputModels
+@using SkipperWeb.ApiClients
+
+<MudGrid Spacing="3">
+    <MudItem xs="12" md="4">
+        <MudTextField Label="Slip Number"
+                      @bind-Value="Slip.SlipNumber"
+                      For="() => Slip.SlipNumber"
+                      Variant="Variant.Outlined"/>
+    </MudItem>
+    <MudItem xs="12" md="8">
+        <MudSelect Label="Classification"
+                   T="SlipClassificationInputModel"
+                   @bind-Value="Slip.SlipClassification"
+                   For="() => Slip.SlipClassification"
+                   Variant="Variant.Outlined">
+            @foreach (SlipClassificationInputModel model in _slipClassifications)
+            {
+                <MudSelectItem T="SlipClassificationInputModel" 
+                               Value="model">
+                    <MudStack Row AlignItems="AlignItems.Center">
+                        <MudText Typo="Typo.caption">@model.Name</MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Tertiary">|</MudText>
+                        <MudText Typo="Typo.caption">Base Price: @model.BasePrice.ToString("C")</MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Tertiary">|</MudText>
+                        <MudText Typo="Typo.caption">@($"{model.MaxLength:F} x {model.MaxBeam:F}")</MudText>
+                    </MudStack>
+                </MudSelectItem>
+            }
+        </MudSelect>
+    </MudItem>
+
+    <MudItem xs="12" md="8">
+        <MudTextField Label="Location Code"
+                      @bind-Value="Slip.LocationCode"
+                      For="() => Slip.LocationCode"
+                      Variant="Variant.Outlined"/>
+    </MudItem>
+    <MudItem xs="12" md="4">
+        <MudSelect Label="Status"
+                   @bind-Value="Slip.Status"
+                   For="() => Slip.Status"
+                   Variant="Variant.Outlined">
+            @foreach (SlipStatusEnumeration slipStatus in SlipStatusEnumeration.GetAll())
+            {
+                <MudSelectItem Value="@slipStatus">@slipStatus.DisplayName</MudSelectItem>
+            }
+        </MudSelect>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Inject]
+    public required SlipClassificationClient SlipClassificationClient { get; set; }
+
+    [Parameter]
+    public required SlipInputModel Slip { get; set; }
+    
+    private IEnumerable<SlipClassificationInputModel> _slipClassifications = [];
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var modelResults = await SlipClassificationClient.GetByPage(new PagedQuery() { PageSize = 100 });
+
+        if (!modelResults.Success || modelResults.Value is null) throw new Exception("Could not load slip classifications");
+        if (modelResults.Value.HasNextPage) throw new Exception("Too many slip classifications for the drop down page!");
+
+        _slipClassifications = modelResults.Value.Items.Select(SlipClassificationInputModel.From);
+    }
+
+}

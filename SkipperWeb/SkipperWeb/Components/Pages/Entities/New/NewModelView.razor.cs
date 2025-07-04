@@ -6,7 +6,6 @@ using SkipperModels.Entities;
 using SkipperModels.InputModels;
 using SkipperModels.Models;
 using SkipperWeb.ApiClients;
-using SkipperWeb.Components.Pages.Vessels.New;
 
 namespace SkipperWeb.Components.Pages.Entities.New;
 

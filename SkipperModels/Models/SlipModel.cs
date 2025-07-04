@@ -16,7 +16,7 @@ public class SlipModel : BaseModel<SlipModel, SlipEntity>, IModel<SlipModel, Sli
         {
             Id = model.Id,
             SlipClassificationId = model.SlipClassification?.Id ?? 0,
-            SlipClassificationEntity = SlipClassificationModel.CreateEntity(model.SlipClassification),
+            // SlipClassificationEntity = SlipClassificationModel.CreateEntity(model.SlipClassification),
             SlipNumber = model.SlipNumber,
             LocationCode = model.LocationCode,
             Status = model.Status,
@@ -32,7 +32,7 @@ public class SlipModel : BaseModel<SlipModel, SlipEntity>, IModel<SlipModel, Sli
         {
             Id = model.Id,
             SlipClassificationId = model.SlipClassification?.Id ?? 0,
-            SlipClassificationEntity = slipClassification,
+            // SlipClassificationEntity = slipClassification,
             SlipNumber = model.SlipNumber,
             LocationCode = model.LocationCode,
             Status = model.Status,

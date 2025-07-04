@@ -2,7 +2,7 @@ import random
 from datetime import datetime, timedelta
 
 # SlipClassification IDs from the database (51-88)
-slip_classification_ids = list(range(51, 89))
+slip_classification_ids = list(range(1, 38))
 
 # Marina location codes (different docks/piers)
 location_codes = [

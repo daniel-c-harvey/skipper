@@ -1,0 +1,29 @@
+﻿@using SkipperModels.InputModels
+@using SkipperWeb.Components.Pages.Entities
+@using SkipperWeb.Shared.Modal
+
+@implements IEditModal<VesselInputModel>
+
+<EditModelModal TModel="VesselInputModel"
+                Model="Model">
+    <EditVesselForm Vessel="Model" />
+</EditModelModal>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public required VesselInputModel Model { get; set; }
+
+    private void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(Model));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Close(DialogResult.Cancel());
+    }
+
+}
