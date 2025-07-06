@@ -1,6 +1,7 @@
 ﻿@using SkipperModels.Common
 @using SkipperModels.InputModels
 @using SkipperWeb.ApiClients
+@using SkipperWeb.Shared.UI
 
 <MudGrid Spacing="3">
     <MudItem xs="12" md="4">
@@ -44,7 +45,9 @@
                    Variant="Variant.Outlined">
             @foreach (SlipStatusEnumeration slipStatus in SlipStatusEnumeration.GetAll())
             {
-                <MudSelectItem Value="@slipStatus">@slipStatus.DisplayName</MudSelectItem>
+                <MudSelectItem Value="@slipStatus">
+                    <SlipStatusChip Status="@slipStatus"/>
+                </MudSelectItem>
             }
         </MudSelect>
     </MudItem>

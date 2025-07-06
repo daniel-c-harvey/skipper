@@ -73,11 +73,11 @@ where TEntity : class, IEntity<TEntity, TModel>, new()
         }
     }
 
-    public async Task<ApiResult<TModel>> Add(TModel entity)
+    public async Task<ApiResult<TModel>> Post(TModel model)
     {
         try
         {
-            var response = await http.PostAsJsonAsync($"api/{config.ControllerName}/new", entity, _options);
+            var response = await http.PostAsJsonAsync($"api/{config.ControllerName}", model, _options);
             if (response == null) throw new HttpRequestException(HttpRequestError.InvalidResponse);
             
             var result = await response.Content.ReadFromJsonAsync<ApiResultDto<TModel>>(_options)
@@ -90,22 +90,19 @@ where TEntity : class, IEntity<TEntity, TModel>, new()
             return ApiResult<TModel>.CreateFailResult(e.Message);
         }
     }
-
-    public async Task<ApiResult<TModel>> Update(TModel model)
+    
+    public async Task<ApiResult> Delete(TModel model)
     {
         try
         {
-            var response = await http.PostAsJsonAsync($"api/{config.ControllerName}", model, _options);
-            if (response == null) throw new HttpRequestException(HttpRequestError.InvalidResponse);
-            
-            var result = await response.Content.ReadFromJsonAsync<ApiResultDto<TModel>>(_options)
-                         ?? throw new HttpRequestException("Failed to deserialize response");
+            var result = await http.DeleteFromJsonAsync<ApiResultDto>($"api/{config.ControllerName}/{model.Id}");
+            if (result == null) throw new HttpRequestException(HttpRequestError.InvalidResponse);
 
             return result.From();
         }
         catch (Exception e)
         {
-            return ApiResult<TModel>.CreateFailResult(e.Message);
+            return ApiResult.CreateFailResult(e.Message);
         }
     }
 }

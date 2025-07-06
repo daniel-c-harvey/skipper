@@ -37,6 +37,7 @@
         <TemplateColumn CellClass="d-flex justify-end px-3">
             <CellTemplate>
                 <MudIconButton Size="@Size.Small" Color="Color.Secondary" Icon="@Icons.Material.Outlined.Edit" OnClick="async () => await EditItem(context.Item)"/>
+                <MudIconButton Size="@Size.Small" Color="Color.Error" Icon="@Icons.Material.Outlined.Delete" OnClick="async () => await DeleteItem(context.Item)"/>
             </CellTemplate>
         </TemplateColumn>
     </Columns>

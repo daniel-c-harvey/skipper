@@ -28,10 +28,10 @@ public class ModelPageViewModel<TModel, TEntity, TClient, TClientConfig>
         _client = client;
     }
 
-    public async Task<(int, int)> SetPage(int pageNumber, int pageSize, string searchTerm)
+    public async Task<(int, int)> SetPage(int pageNumber, int pageSize, string searchTerm, bool refresh = false)
     {        
         // Avoid unnecessary API calls if we're requesting the same page
-        if (_currentPage == pageNumber && _currentPageSize == pageSize && 
+        if (!refresh && _currentPage == pageNumber && _currentPageSize == pageSize && 
             searchTerm == _currentSearchTerm && Page != null)
         {
             return (pageNumber, pageSize);
@@ -94,10 +94,19 @@ public class ModelPageViewModel<TModel, TEntity, TClient, TClientConfig>
 
     public async Task UpdateItem(TModel model)
     {
-        var result = await _client.Update(model);
+        var result = await _client.Post(model);
         if (!result.Success)
         {
             Debugger.Break(); // TODO show error
         }
     }
+    public async Task DeleteItem(TModel model)
+    {
+        var result = await _client.Delete(model);
+        if (!result.Success)
+        {
+            Debugger.Break(); // TODO show error
+        }
+    }
+    
 }

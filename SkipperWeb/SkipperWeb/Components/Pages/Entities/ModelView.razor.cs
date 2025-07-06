@@ -51,8 +51,8 @@ public partial class ModelView<T, TModel, TEntity, TEditModal, TClient, TClientC
 
     private MudDataGrid<T>? _grid;
     private bool _updatingParameters = false;
-    
-    
+    private bool _forceReload = false;
+
     protected override async Task OnParametersSetAsync()
     {
         // If parameters are missing, set defaults and update URL
@@ -107,7 +107,7 @@ public partial class ModelView<T, TModel, TEntity, TEditModal, TClient, TClientC
     private async Task LoadServerData(int page, int pageSize, string searchTerm)
     {
         // Ensure ViewModel has the latest data
-        (page, pageSize) = await ViewModel.SetPage(page, pageSize, searchTerm);
+        (page, pageSize) = await ViewModel.SetPage(page, pageSize, searchTerm, _forceReload);
 
         // if page was coerced, update again
         if (page != Page || pageSize != PageSize)
@@ -133,6 +133,24 @@ public partial class ModelView<T, TModel, TEntity, TEditModal, TClient, TClientC
         if (result is { Canceled: false, Data: T model })
         {
             await ViewModel.UpdateItem(T.MakeModel(model));
+            // Refresh data
+            _forceReload = true;
+            await (_grid?.ReloadServerData() ?? Task.CompletedTask);
+            _forceReload = false;
+        }
+    }
+    
+    private async Task DeleteItem(T inputModel)
+    {
+        var dialog = await DialogService.ShowAsync<ConfirmDeleteModal>("Delete Item");
+        var result = await dialog.Result;
+        if (result is { Canceled: false, Data: bool confirm })
+        {
+            await ViewModel.DeleteItem(T.MakeModel(inputModel));
+            // Refresh data
+            _forceReload = true;
+            await (_grid?.ReloadServerData() ?? Task.CompletedTask);
+            _forceReload = false;
         }
     }
 }

@@ -1,18 +1,27 @@
 ﻿@typeparam TModel where TModel : new()
 @implements IEditModal<TModel>
 
-<EditForm Model="EditModel" OnValidSubmit="Submit" FormName="edit-model" method="post">
-    <MudDialog>
-        <DialogContent>
+
+<MudDialog>
+    <DialogContent>
+        <EditForm EditContext="editContext" FormName="edit-model">
             <DataAnnotationsValidator/>
             @ChildContent
-        </DialogContent>
-        <DialogActions>
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Cancel">Cancel</MudButton>
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">Submit</MudButton>
-        </DialogActions>
-    </MudDialog>
-</EditForm>
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" 
+                    Variant="Variant.Filled" 
+                    OnClick="Cancel">
+            Cancel
+        </MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled"
+                    OnClick="Submit"
+                    Disabled="@(!IsFormValid())">
+            Save
+        </MudButton>
+    </DialogActions>
+</MudDialog>
 
 @code {
     [CascadingParameter]
@@ -21,14 +30,36 @@
     [Parameter]
     public required TModel Model { get; set; }
 
-    [SupplyParameterFromForm]
-    public TModel EditModel { get; set; } = new();
-    // public TModel EditModel { get => Model; set => Model = value; }
-
     [Parameter]
     public required RenderFragment ChildContent { get; set; }
 
+    private EditContext editContext;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(Model);
+        editContext.OnValidationStateChanged += ValidationEvent;
+    }
+
+    private void ValidationEvent(object? sender, ValidationStateChangedEventArgs args)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private bool IsFormValid()
+    {
+        return !editContext.GetValidationMessages().Any();
+    }
+
     private void Submit()
+    {
+        if (editContext.Validate())
+        {
+            ValidSubmit();
+        }
+    }
+
+    private void ValidSubmit()
     {
         MudDialog.Close(DialogResult.Ok(Model));
     }

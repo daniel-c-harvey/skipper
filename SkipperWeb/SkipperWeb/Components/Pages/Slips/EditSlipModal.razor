@@ -9,20 +9,6 @@
 </EditModelModal>
 
 @code {
-    [CascadingParameter]
-    private IMudDialogInstance MudDialog { get; set; }
-
     [Parameter]
     public required SlipInputModel Model { get; set; }
-
-    private void Submit()
-    {
-        MudDialog.Close(DialogResult.Ok(Model));
-    }
-
-    private void Cancel()
-    {
-        MudDialog.Close(DialogResult.Cancel());
-    }
-
 }

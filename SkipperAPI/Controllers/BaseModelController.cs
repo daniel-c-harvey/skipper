@@ -92,22 +92,55 @@ namespace SkipperAPI.Controllers
                 Ok(dto) : 
                 StatusCode(500, dto);
         }
-
+        
         /// <summary>
         /// Create entity - accepts domain entity directly
         /// </summary>
         [HttpPost]
         public virtual async Task<ActionResult<ApiResultDto<TModel>>> Post([FromBody] TModel model)
         {
-            var addResult = await Manager.Add(TModel.CreateEntity(model));
-            ApiResult<TModel> result = ApiResult<TModel>.From(addResult);
-            result.Value = model;
+            var entity = TModel.CreateEntity(model);
+            var existsResult = await Manager.Exists(entity); 
+            if (existsResult is not { Success: true }) { return StatusCode(500, ApiResult<TModel>.From(existsResult)); }
+
+            // Add or update based on entity existence
+            if (existsResult.Value)
+            {
+                // Entity exists, update
+                var updateResult = await Manager.Update(entity);
+                ApiResult<TModel> result = ApiResult<TModel>.From(updateResult);
+                result.Value = model;
+                
+                ApiResultDto<TModel> dto = new(result);
+                
+                return result.Success ? 
+                    AcceptedAtAction(nameof(Post), new { id = model.Id }, dto) :
+                    StatusCode(500, dto);
+            }
+            else
+            {
+                // Entity does NOT exist, insert
+                var addResult = await Manager.Add(entity);
+                ApiResult<TModel> result = ApiResult<TModel>.From(addResult);
+                result.Value = model;
+                
+                ApiResultDto<TModel> dto = new(result);
+                
+                return result.Success ? 
+                    CreatedAtAction(nameof(Post), new { id = model.Id }, dto) :
+                    StatusCode(500, dto);
+            }
+        }
+
+        [HttpDelete("{id:long}")]
+        public virtual async Task<ActionResult<ApiResultDto>> Delete(long id)
+        {
+            var result = await Manager.Delete(id);
+            var dto = new ApiResultDto(ApiResult.From(result));
             
-            ApiResultDto<TModel> dto = new(result);
-            
-            return result.Success ? 
-                CreatedAtAction(nameof(Get), new { id = model.Id }, dto) :
-                StatusCode(500, dto);
+            return result.Success ?
+                Ok(dto)
+                : StatusCode(500, dto);
         }
 
         /// <summary>

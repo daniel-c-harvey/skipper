@@ -43,7 +43,7 @@ where TClientConfig : ModelControllerClientConfig
         {
             TModel newVessel = TInputModel.MakeModel(Input);
 
-            ApiResult<TModel> addResult = await Client.Add(newVessel);
+            ApiResult<TModel> addResult = await Client.Post(newVessel);
             return addResult.Success ? Result.CreatePassResult() : Result.From(addResult);
         });
 

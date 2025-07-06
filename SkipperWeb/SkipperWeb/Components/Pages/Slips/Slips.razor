@@ -3,6 +3,7 @@
 @using SkipperModels.Models
 @using SkipperWeb.ApiClients
 @using SkipperWeb.Components.Pages.Entities
+@using SkipperWeb.Shared.UI
 
 @page "/slips"
 
@@ -20,6 +21,10 @@
         <PropertyColumn Property="x => x.SlipNumber" Title="Slip Number" />
         <PropertyColumn Property="x => x.SlipClassification.Name" Title="Classification" />
         <PropertyColumn Property="x => x.LocationCode" Title="Location" />
-        <PropertyColumn Property="x => x.Status" />
+        <TemplateColumn>
+            <CellTemplate Context="row">
+                <SlipStatusChip Status="@row.Item.Status"/>
+            </CellTemplate>
+        </TemplateColumn>
     </Columns>
 </ModelView>
