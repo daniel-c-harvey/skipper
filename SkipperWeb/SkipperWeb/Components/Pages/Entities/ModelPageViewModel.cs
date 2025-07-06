@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
+using NetBlocks.Models;
 using SkipperModels.Common;
 using SkipperModels.Entities;
-using SkipperModels.InputModels;
 using SkipperModels.Models;
 using SkipperWeb.ApiClients;
 
@@ -14,6 +14,7 @@ public class ModelPageViewModel<TModel, TEntity, TClient, TClientConfig>
     where TClientConfig : ModelControllerClientConfig
 {
     public PagedResult<TModel>? Page { get; private set; }
+    public Result? ErrorResults { get; set; }
 
     public string SearchTerm => _currentSearchTerm;
     
@@ -46,9 +47,15 @@ public class ModelPageViewModel<TModel, TEntity, TClient, TClientConfig>
                     PageSize = pageSize, 
                     Search = searchTerm 
                 });
-            if (!countResult.Success || countResult.Value is null) { throw new Exception("TODO present error"); }
-            pageCount = countResult.Value.Count;
-            _cachedPageCount = pageCount;
+            if (!countResult.Success || countResult.Value is null) 
+            {
+                ErrorResults = Result.From(countResult);
+            }
+            else
+            {
+                pageCount = countResult.Value.Count;
+                _cachedPageCount = pageCount;
+            }
         }
         else
         {
@@ -73,11 +80,11 @@ public class ModelPageViewModel<TModel, TEntity, TClient, TClientConfig>
             _currentSearchTerm = searchTerm;
             _currentPage = pageNumber;
             _currentPageSize = pageSize;
+            ErrorResults = null;
         }
         else
         {
-            // TODO show the error
-            Debugger.Break();
+            ErrorResults = Result.From(result);
         }
 
         return (pageNumber, pageSize);
@@ -95,18 +102,14 @@ public class ModelPageViewModel<TModel, TEntity, TClient, TClientConfig>
     public async Task UpdateItem(TModel model)
     {
         var result = await _client.Post(model);
-        if (!result.Success)
-        {
-            Debugger.Break(); // TODO show error
-        }
+
+        ErrorResults = result.Success ? null : Result.From(result);
     }
     public async Task DeleteItem(TModel model)
     {
         var result = await _client.Delete(model);
-        if (!result.Success)
-        {
-            Debugger.Break(); // TODO show error
-        }
+        
+        ErrorResults = result.Success ? null : Result.From(result);
     }
     
 }

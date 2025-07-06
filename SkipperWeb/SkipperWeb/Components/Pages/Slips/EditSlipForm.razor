@@ -1,4 +1,5 @@
-﻿@using SkipperModels.Common
+﻿@using NetBlocks.Models
+@using SkipperModels.Common
 @using SkipperModels.InputModels
 @using SkipperWeb.ApiClients
 @using SkipperWeb.Shared.UI
@@ -59,15 +60,25 @@
 
     [Parameter]
     public required SlipInputModel Slip { get; set; }
-    
+
     private IEnumerable<SlipClassificationInputModel> _slipClassifications = [];
-    
+    private Result? _errorResult = null;
+
     protected override async Task OnInitializedAsync()
     {
         var modelResults = await SlipClassificationClient.GetByPage(new PagedQuery() { PageSize = 100 });
 
-        if (!modelResults.Success || modelResults.Value is null) throw new Exception("Could not load slip classifications");
-        if (modelResults.Value.HasNextPage) throw new Exception("Too many slip classifications for the drop down page!");
+        if (!modelResults.Success || modelResults.Value is null)
+        {
+            _errorResult = Result.From(modelResults);
+            return;
+        }
+
+        if (modelResults.Value.HasNextPage)
+        {
+            _errorResult = Result.CreateFailResult("Too many slip classifications for the drop down page!");
+            return;
+        }
 
         _slipClassifications = modelResults.Value.Items.Select(SlipClassificationInputModel.From);
     }

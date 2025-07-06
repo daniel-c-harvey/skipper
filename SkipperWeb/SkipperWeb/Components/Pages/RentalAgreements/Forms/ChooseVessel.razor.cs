@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using NetBlocks.Models;
 using SkipperModels.Common;
 using SkipperModels.InputModels;
 using SkipperModels.Models;
@@ -17,7 +18,8 @@ public partial class ChooseVessel : ComponentBase
     
     private IEnumerable<VesselInputModel> _vessels = [];
     private string _vesselSearch = string.Empty;
-    
+    private Result? _errorResult = null;
+
     // Pagination state for vessels
     private int _currentVesselPage = 1;
     private bool _hasMoreVessels = false;
@@ -46,7 +48,11 @@ public partial class ChooseVessel : ComponentBase
             Search = _vesselSearch
         });
 
-        if (!vesselResults.Success || vesselResults.Value is null) throw new Exception("Could not load vessels");
+        if (!vesselResults.Success || vesselResults.Value is null)
+        {
+            _errorResult = Result.From(vesselResults);
+            return;
+        }
 
         var newVessels = vesselResults.Value.Items.Select(VesselInputModel.From);
         

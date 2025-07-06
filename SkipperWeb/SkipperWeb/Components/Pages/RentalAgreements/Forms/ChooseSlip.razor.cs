@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using NetBlocks.Models;
 using SkipperModels.Common;
 using SkipperModels.InputModels;
 using SkipperModels.Models;
@@ -17,6 +18,7 @@ public partial class ChooseSlip : ComponentBase
 
     private IEnumerable<SlipInputModel> _slips = [];    
     private string _slipSearch = string.Empty;
+    private Result? _errorResult = null;
     
     // Pagination state for vessels
     private int _currentSlipsPage = 1;
@@ -46,7 +48,11 @@ public partial class ChooseSlip : ComponentBase
             Search = _slipSearch
         });
 
-        if (!slipResults.Success || slipResults.Value is null) throw new Exception("Could not load vessels");
+        if (!slipResults.Success || slipResults.Value is null)
+        {
+            _errorResult = Result.From(slipResults);
+            return;
+        }
 
         var newSlips = slipResults.Value.Items.Select(SlipInputModel.From);
         

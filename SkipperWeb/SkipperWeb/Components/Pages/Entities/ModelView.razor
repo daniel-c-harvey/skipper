@@ -1,5 +1,7 @@
-﻿@using SkipperModels.Entities
+﻿@using NetBlocks.Models
+@using SkipperModels.Entities
 @using SkipperWeb.ApiClients
+@using SkipperWeb.Shared.Result
 
 @typeparam T where T : class, SkipperModels.InputModels.IInputModel<T, TModel, TEntity>, new()
 @typeparam TModel where TModel : class, SkipperModels.Models.IModel<TModel, TEntity>, new()
@@ -27,24 +29,32 @@
     </MudItem>
 </MudGrid>
 
-<MudDataGrid @ref="_grid"
-             T="T" 
-             ServerData="LoadGridServerData"
-             CurrentPage="@(Page.GetValueOrDefault(1) - 1)"
-             RowsPerPage="@(PageSize.GetValueOrDefault(10))">
-    <Columns>
-        @Columns
-        <TemplateColumn CellClass="d-flex justify-end px-3">
-            <CellTemplate>
-                <MudIconButton Size="@Size.Small" Color="Color.Secondary" Icon="@Icons.Material.Outlined.Edit" OnClick="async () => await EditItem(context.Item)"/>
-                <MudIconButton Size="@Size.Small" Color="Color.Error" Icon="@Icons.Material.Outlined.Delete" OnClick="async () => await DeleteItem(context.Item)"/>
-            </CellTemplate>
-        </TemplateColumn>
-    </Columns>
-    <PagerContent>
-        <MudDataGridPager T="T" 
-                          PageSizeOptions="@(new[] { 5, 10, 15, 25, 50})" 
-                          RowsPerPageString="@($"{ModelDisplayName}s per page")"
-                          InfoFormat="{first_item}-{last_item} of {all_items}"/>
-    </PagerContent>
-</MudDataGrid>
+@if (ViewModel.ErrorResults != null)
+{
+    <ResultDetails TResult="Result"
+                   Result="ViewModel.ErrorResults"/>  
+}
+else
+{
+    <MudDataGrid @ref="_grid"
+                 T="T" 
+                 ServerData="LoadGridServerData"
+                 CurrentPage="@(Page.GetValueOrDefault(1) - 1)"
+                 RowsPerPage="@(PageSize.GetValueOrDefault(10))">
+        <Columns>
+            @Columns
+            <TemplateColumn CellClass="d-flex justify-end px-3">
+                <CellTemplate>
+                    <MudIconButton Size="@Size.Small" Color="Color.Secondary" Icon="@Icons.Material.Outlined.Edit" OnClick="async () => await EditItem(context.Item)"/>
+                    <MudIconButton Size="@Size.Small" Color="Color.Error" Icon="@Icons.Material.Outlined.Delete" OnClick="async () => await DeleteItem(context.Item)"/>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="T" 
+                              PageSizeOptions="@(new[] { 5, 10, 15, 25, 50})" 
+                              RowsPerPageString="@($"{ModelDisplayName}s per page")"
+                              InfoFormat="{first_item}-{last_item} of {all_items}"/>
+        </PagerContent>
+    </MudDataGrid>
+}

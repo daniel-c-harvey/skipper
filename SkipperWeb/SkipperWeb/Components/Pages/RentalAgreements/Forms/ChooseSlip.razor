@@ -1,5 +1,7 @@
-﻿@using NetBlocks.Utilities
+﻿@using NetBlocks.Models
+@using NetBlocks.Utilities
 @using SkipperModels.InputModels
+@using SkipperWeb.Shared.Result
 @using SkipperWeb.Shared.UI
 
 @code {
@@ -165,48 +167,57 @@
 }
 
 <MudPaper Class="rounded-tb-xl px-1 py-5" MaxWidth="md" Elevation="0">
-    <MudText Typo="Typo.h6">Selected Slip:</MudText>
-    @if (Context.Slip != null)
+    @if (_errorResult != null)
     {
-        <MudStack>
-            <MudStack Row>
-                <MudText>Slip Number: </MudText>
-                <MudText>@Context.Slip.SlipNumber</MudText>
-            </MudStack>
-                    
-            <MudStack Row>
-                <MudText>Slip Name: </MudText>
-                <MudText>@Context.Slip.SlipClassification.Name</MudText>
-            </MudStack>
-                    
-            <MudStack Row>
-                <MudText>Description: </MudText>
-                <MudText>@Context.Slip.SlipClassification.Description</MudText>
-            </MudStack>
-                    
-            <MudStack Row>
-                <MudText>Max Length: </MudText>
-                <MudText>@(LengthMeasureConverter.ToImperialString(Context.Slip.SlipClassification.MaxLength))</MudText>
-            </MudStack>
-                    
-            <MudStack Row>
-                <MudText>Max Beam: </MudText>
-                <MudText>@(LengthMeasureConverter.ToImperialString(Context.Slip.SlipClassification.MaxBeam))</MudText>
-            </MudStack>
-
-            <MudStack Row>
-                <MudText>Location Code: </MudText>
-                <MudText>@Context.Slip.LocationCode</MudText>
-            </MudStack>
-
-            <MudStack Row>
-                <MudText>Slip Status: </MudText>
-                <MudText>@Context.Slip.Status</MudText>
-            </MudStack>
-        </MudStack>
+    
+        <MudText>Unable to load slips:</MudText>
+        <ResultDetails TResult="Result" Result="_errorResult"/>
     }
     else
-    {
-        <MudText>You must select a slip.</MudText>
+    {   
+        <MudText Typo="Typo.h6">Selected Slip:</MudText>
+        @if (Context.Slip != null)
+        {
+            <MudStack>
+                <MudStack Row>
+                    <MudText>Slip Number: </MudText>
+                    <MudText>@Context.Slip.SlipNumber</MudText>
+                </MudStack>
+                    
+                <MudStack Row>
+                    <MudText>Slip Name: </MudText>
+                    <MudText>@Context.Slip.SlipClassification.Name</MudText>
+                </MudStack>
+                    
+                <MudStack Row>
+                    <MudText>Description: </MudText>
+                    <MudText>@Context.Slip.SlipClassification.Description</MudText>
+                </MudStack>
+                    
+                <MudStack Row>
+                    <MudText>Max Length: </MudText>
+                    <MudText>@(LengthMeasureConverter.ToImperialString(Context.Slip.SlipClassification.MaxLength))</MudText>
+                </MudStack>
+                    
+                <MudStack Row>
+                    <MudText>Max Beam: </MudText>
+                    <MudText>@(LengthMeasureConverter.ToImperialString(Context.Slip.SlipClassification.MaxBeam))</MudText>
+                </MudStack>
+
+                <MudStack Row>
+                    <MudText>Location Code: </MudText>
+                    <MudText>@Context.Slip.LocationCode</MudText>
+                </MudStack>
+
+                <MudStack Row>
+                    <MudText>Slip Status: </MudText>
+                    <MudText>@Context.Slip.Status</MudText>
+                </MudStack>
+            </MudStack>
+        }
+        else
+        {
+            <MudText>You must select a slip.</MudText>
+        }
     }
 </MudPaper>

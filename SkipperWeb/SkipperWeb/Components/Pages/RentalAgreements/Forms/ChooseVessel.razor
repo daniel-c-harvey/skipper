@@ -1,5 +1,7 @@
-﻿@using NetBlocks.Utilities
+﻿@using NetBlocks.Models
+@using NetBlocks.Utilities
 @using SkipperModels.InputModels
+@using SkipperWeb.Shared.Result
 
 @code {
     private bool _showVesselResults = false;
@@ -156,38 +158,47 @@
 }
 
 <MudPaper Class="rounded-tb-xl px-1 py-5" MaxWidth="md" Elevation="0">
-    <MudText Typo="Typo.h6">Selected Vessel:</MudText>
-    @if (Context.Vessel != null)
+    @if (_errorResult != null)
     {
-        <MudStack>
-            <MudStack Row>
-                <MudText>Registration Number: </MudText>
-                <MudText>@Context.Vessel.RegistrationNumber</MudText>
-            </MudStack>
-                    
-            <MudStack Row>
-                <MudText>Vessel Name: </MudText>
-                <MudText>@Context.Vessel.Name</MudText>
-            </MudStack>
-                    
-            <MudStack Row>
-                <MudText>Length: </MudText>
-                <MudText>@(LengthMeasureConverter.ToImperialString(Context.Vessel.Length))</MudText>
-            </MudStack>
-                    
-            <MudStack Row>
-                <MudText>Beam: </MudText>
-                <MudText>@(LengthMeasureConverter.ToImperialString(Context.Vessel.Beam))</MudText>
-            </MudStack>
-                    
-            <MudStack Row>
-                <MudText>Vessel Type: </MudText>
-                <MudText>@Context.Vessel.VesselType</MudText>
-            </MudStack>
-        </MudStack>
+    
+        <MudText>Unable to load vessels:</MudText>
+        <ResultDetails TResult="Result" Result="_errorResult"/>
     }
     else
     {
-        <MudText>You must select a vessel.</MudText>
+        <MudText Typo="Typo.h6">Selected Vessel:</MudText>
+        @if (Context.Vessel != null)
+        {
+            <MudStack>
+                <MudStack Row>
+                    <MudText>Registration Number: </MudText>
+                    <MudText>@Context.Vessel.RegistrationNumber</MudText>
+                </MudStack>
+                    
+                <MudStack Row>
+                    <MudText>Vessel Name: </MudText>
+                    <MudText>@Context.Vessel.Name</MudText>
+                </MudStack>
+                    
+                <MudStack Row>
+                    <MudText>Length: </MudText>
+                    <MudText>@(LengthMeasureConverter.ToImperialString(Context.Vessel.Length))</MudText>
+                </MudStack>
+                    
+                <MudStack Row>
+                    <MudText>Beam: </MudText>
+                    <MudText>@(LengthMeasureConverter.ToImperialString(Context.Vessel.Beam))</MudText>
+                </MudStack>
+                    
+                <MudStack Row>
+                    <MudText>Vessel Type: </MudText>
+                    <MudText>@Context.Vessel.VesselType</MudText>
+                </MudStack>
+            </MudStack>
+        }
+        else
+        {
+            <MudText>You must select a vessel.</MudText>
+        }
     }
 </MudPaper>
