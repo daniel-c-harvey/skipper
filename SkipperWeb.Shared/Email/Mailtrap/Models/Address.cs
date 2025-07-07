@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RazorCore.Email.Mailtrap.Models;
+namespace SkipperWeb.Shared.Email.Mailtrap.Models;
 
 public class Address
 {

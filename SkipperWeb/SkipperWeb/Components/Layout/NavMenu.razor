@@ -1,9 +1,8 @@
-﻿<MudNavMenu>
-    <MudStack Row AlignItems="AlignItems.Center" Class="pa-3 ma-1">
-        <MudIcon Icon="@Icons.Material.Rounded.Person"/>
-        <MudText>User: skipper</MudText>
-    </MudStack>
-    <MudSpacer />
+﻿@using AuthBlocksWeb.Components.Layout
+
+<MudNavMenu>
+    <AccountNavMenu />
+    <MudSpacer/>
     <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.House">Home</MudNavLink>
     <MudNavLink Href="/vessels" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.DirectionsBoat">Vessels</MudNavLink>
     <MudNavLink Href="/slips" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Houseboat">Slips</MudNavLink>

@@ -21,6 +21,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperModels", "SkipperMod
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperWeb.Shared", "SkipperWeb.Shared\SkipperWeb.Shared.csproj", "{D36AFAD0-89F7-4FCB-9908-7C0BB40E85E8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthBlocksModels", "AuthBlocksModels\AuthBlocksModels.csproj", "{2CBE206E-AE77-4CC2-BBE9-7F681C4888E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthBlocksData", "AuthBlocksData\AuthBlocksData.csproj", "{908BA468-9054-49E1-9A59-5A155510FBCF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthBlocksAPI", "AuthBlocksAPI\AuthBlocksAPI.csproj", "{923F37F2-7150-45BF-A3A9-CAB4740B3AFB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthBlocksWeb", "AuthBlocksWeb\AuthBlocksWeb.csproj", "{93B55B88-4AEE-4157-8E12-54505CF318CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthBlocksWeb.Client", "AuthBlocksWeb.Client\AuthBlocksWeb.Client.csproj", "{05377549-C664-4EB3-AFB9-1BB253100C0E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +73,26 @@ Global
 		{D36AFAD0-89F7-4FCB-9908-7C0BB40E85E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D36AFAD0-89F7-4FCB-9908-7C0BB40E85E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D36AFAD0-89F7-4FCB-9908-7C0BB40E85E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CBE206E-AE77-4CC2-BBE9-7F681C4888E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CBE206E-AE77-4CC2-BBE9-7F681C4888E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CBE206E-AE77-4CC2-BBE9-7F681C4888E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CBE206E-AE77-4CC2-BBE9-7F681C4888E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{908BA468-9054-49E1-9A59-5A155510FBCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{908BA468-9054-49E1-9A59-5A155510FBCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{908BA468-9054-49E1-9A59-5A155510FBCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{908BA468-9054-49E1-9A59-5A155510FBCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{923F37F2-7150-45BF-A3A9-CAB4740B3AFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{923F37F2-7150-45BF-A3A9-CAB4740B3AFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{923F37F2-7150-45BF-A3A9-CAB4740B3AFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{923F37F2-7150-45BF-A3A9-CAB4740B3AFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93B55B88-4AEE-4157-8E12-54505CF318CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93B55B88-4AEE-4157-8E12-54505CF318CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93B55B88-4AEE-4157-8E12-54505CF318CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93B55B88-4AEE-4157-8E12-54505CF318CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05377549-C664-4EB3-AFB9-1BB253100C0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05377549-C664-4EB3-AFB9-1BB253100C0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05377549-C664-4EB3-AFB9-1BB253100C0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05377549-C664-4EB3-AFB9-1BB253100C0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace RazorCore.Email.Mailtrap.Models;
+namespace SkipperWeb.Shared.Email.Mailtrap.Models;
 
 public class Attachment
 {

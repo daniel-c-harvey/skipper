@@ -14,4 +14,8 @@
         <PackageReference Include="Microsoft.NET.Sdk.WebAssembly.Pack" Version="9.0.6" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="C:\lib\AuthBlocks\AuthBlocksWeb.Client\AuthBlocksWeb.Client.csproj" />
+    </ItemGroup>
+
 </Project>

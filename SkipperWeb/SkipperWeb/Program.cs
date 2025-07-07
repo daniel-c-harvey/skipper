@@ -26,7 +26,9 @@ public class Program
         builder.Services
             .AddMudServices();
 
+        LoadAuthBlocksServices(builder.Services);
         LoadSkipperServices(builder.Services);
+        
 
         builder.Services.Configure<JsonSerializerOptions>(options =>
         {
@@ -51,21 +53,28 @@ public class Program
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
         }
-                
 
         app.UseAntiforgery();
         app.UseStatusCodePagesWithRedirects("/404");
 
         app.MapStaticAssets();
         app.UseRequestLocalization("en-US");
-        
+
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode()
             .AddInteractiveWebAssemblyRenderMode()
             .AddAdditionalAssemblies(typeof(Client._Imports).Assembly)
-            .AddAdditionalAssemblies(typeof(Shared._Imports).Assembly);
+            .AddAdditionalAssemblies(typeof(Shared._Imports).Assembly)
+            .AddAdditionalAssemblies(typeof(AuthBlocksWeb._Imports).Assembly)
+            .AddAdditionalAssemblies(typeof(AuthBlocksWeb.Client._Imports).Assembly);
 
         app.Run();
+    }
+
+    private static void LoadAuthBlocksServices(IServiceCollection builderServices)
+    {
+        ApiEndpoint userEndpoint = EndpointsTools.LoadFromFile("environment/endpoints.json", "user-api");
+        AuthBlocksWeb.Startup.ConfigureServices(builderServices, userEndpoint.ApiUrl);
     }
 
     private static void LoadSkipperServices(IServiceCollection builderServices)

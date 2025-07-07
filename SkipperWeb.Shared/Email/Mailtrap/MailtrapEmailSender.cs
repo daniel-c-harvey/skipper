@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Text;
+using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NetBlocks.Models.Environment;
-using RazorCore.Email.Mailtrap.Models;
-using System.Text;
-using System.Net.Http;
-using System.Text.Json;
+using SkipperWeb.Shared.Email.Mailtrap.Models;
 
-namespace RazorCore.Email;
+namespace SkipperWeb.Shared.Email.Mailtrap;
 
 public class MailtrapEmailSender(
     IOptions<EmailConnections> connectionOptions,

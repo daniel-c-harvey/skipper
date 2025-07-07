@@ -10,6 +10,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperData", "SkipperData\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetBlocks", "C:\lib\NetBlocks\NetBlocks.csproj", "{2E3C8FBF-22BA-47B1-A875-792BCCF4A80C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthBlocksData", "AuthBlocksData\AuthBlocksData.csproj", "{63D71282-29EF-47B1-A76B-D46379A4333B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthBlocksModels", "AuthBlocksModels\AuthBlocksModels.csproj", "{2524CFA1-60CF-4A4F-95B4-79EC5BC93F0D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthBlocksAPI", "AuthBlocksAPI\AuthBlocksAPI.csproj", "{F171DF10-A7F2-4E82-915A-8A1035BB3CD3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +42,17 @@ Global
 		{2E3C8FBF-22BA-47B1-A875-792BCCF4A80C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E3C8FBF-22BA-47B1-A875-792BCCF4A80C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E3C8FBF-22BA-47B1-A875-792BCCF4A80C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63D71282-29EF-47B1-A76B-D46379A4333B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63D71282-29EF-47B1-A76B-D46379A4333B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63D71282-29EF-47B1-A76B-D46379A4333B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63D71282-29EF-47B1-A76B-D46379A4333B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2524CFA1-60CF-4A4F-95B4-79EC5BC93F0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2524CFA1-60CF-4A4F-95B4-79EC5BC93F0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2524CFA1-60CF-4A4F-95B4-79EC5BC93F0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2524CFA1-60CF-4A4F-95B4-79EC5BC93F0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F171DF10-A7F2-4E82-915A-8A1035BB3CD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F171DF10-A7F2-4E82-915A-8A1035BB3CD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F171DF10-A7F2-4E82-915A-8A1035BB3CD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F171DF10-A7F2-4E82-915A-8A1035BB3CD3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
