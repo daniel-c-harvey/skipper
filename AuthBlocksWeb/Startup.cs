@@ -20,9 +20,9 @@ public static class Startup
 
         // Add custom JWT-based authentication services
         services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
-        services.AddScoped<JwtAuthenticationStateProvider, JwtAuthenticationStateProvider>();
-        
+        services.AddScoped<JwtAuthenticationStateProvider>();
+        services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<JwtAuthenticationStateProvider>());
+
         // Add authorization
         services.AddAuthorizationCore();
     }

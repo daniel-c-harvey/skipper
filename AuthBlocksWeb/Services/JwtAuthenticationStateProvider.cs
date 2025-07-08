@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using AuthBlocksWeb.ApiClients;
-using AuthBlocksWeb.Models.Api;
+using AuthBlocksModels.ApiModels;
 
 namespace AuthBlocksWeb.Services;
 
@@ -62,15 +62,21 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
         }
     }
-
     public async Task<bool> LoginAsync(LoginRequest loginRequest)
     {
         try
         {
             var response = await _authApiClient.LoginAsync(loginRequest);
-            if (response.Success && response.Data != null)
+            if (response.Success && response.Value != null)
             {
-                NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+                // Ensure localStorage operations are complete before notifying
+                var token = await _tokenService.GetAccessTokenAsync();
+                if (!string.IsNullOrEmpty(token))
+                {
+                    // Pre-compute the authentication state to ensure it's ready
+                    var authState = await GetAuthenticationStateAsync();
+                    NotifyAuthenticationStateChanged(Task.FromResult(authState));
+                }
                 return true;
             }
             return false;
@@ -86,9 +92,16 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
         try
         {
             var response = await _authApiClient.RegisterAsync(registerRequest);
-            if (response.Success && response.Data != null)
+            if (response.Success && response.Value != null)
             {
-                NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+                // Ensure localStorage operations are complete before notifying
+                var token = await _tokenService.GetAccessTokenAsync();
+                if (!string.IsNullOrEmpty(token))
+                {
+                    // Pre-compute the authentication state to ensure it's ready
+                    var authState = await GetAuthenticationStateAsync();
+                    NotifyAuthenticationStateChanged(Task.FromResult(authState));
+                }
                 return true;
             }
             return false;
@@ -117,12 +130,14 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
         }
         catch
         {
-            // Continue with logout even if API call fails
+            // Continue with logout even if the API call fails
         }
         finally
         {
             await _tokenService.ClearTokensAsync();
-            NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+            // Pre-compute the authentication state to ensure it's ready
+            var authState = await GetAuthenticationStateAsync();
+            NotifyAuthenticationStateChanged(Task.FromResult(authState));
         }
     }
 
@@ -145,9 +160,12 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
             };
 
             var response = await _authApiClient.RefreshTokenAsync(refreshRequest);
-            if (response.Success && response.Data != null)
+            if (response.Success && response.Value != null)
             {
-                return (true, response.Data.AccessToken);
+                // Token is saved in AuthApiClient, notify about state change
+                var authState = await GetAuthenticationStateAsync();
+                NotifyAuthenticationStateChanged(Task.FromResult(authState));
+                return (true, response.Value.AccessToken);
             }
 
             return (false, string.Empty);

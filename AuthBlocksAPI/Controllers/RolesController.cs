@@ -4,6 +4,8 @@ using AuthBlocksModels.Entities.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using AuthBlocksModels.ApiModels;
+using NetBlocks.Models;
 
 namespace AuthBlocksAPI.Controllers;
 
@@ -22,7 +24,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<ApiResponse<List<RoleInfo>>>> GetRoles()
+    public async Task<ActionResult<ApiResultDto<List<RoleInfo>>>> GetRoles()
     {
         try
         {
@@ -47,39 +49,30 @@ public class RolesController : ControllerBase
                 Modified = r.Modified
             }).ToList();
 
-            return Ok(new ApiResponse<List<RoleInfo>>
-            {
-                Success = true,
-                Message = "Roles retrieved successfully",
-                Data = roleInfos
-            });
+            var resultSuccess = ApiResult<List<RoleInfo>>.CreatePassResult(roleInfos)
+                .Inform("Roles retrieved successfully");
+            return Ok(new ApiResultDto<List<RoleInfo>>(resultSuccess));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving roles");
-            return StatusCode(500, new ApiResponse<List<RoleInfo>>
-            {
-                Success = false,
-                Message = "An error occurred while retrieving roles",
-                Errors = new List<string> { "Internal server error" }
-            });
+            var resultError = ApiResult<List<RoleInfo>>.CreateFailResult("An error occurred while retrieving roles")
+                .Fail("Internal server error");
+            return StatusCode(500, new ApiResultDto<List<RoleInfo>>(resultError));
         }
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ApiResponse<RoleInfo>>> GetRole(long id)
+    public async Task<ActionResult<ApiResultDto<RoleInfo>>> GetRole(long id)
     {
         try
         {
             var role = await _roleService.GetActiveRoleByIdAsync(id);
             if (role == null)
             {
-                return NotFound(new ApiResponse<RoleInfo>
-                {
-                    Success = false,
-                    Message = "Role not found",
-                    Errors = new List<string> { "Role does not exist" }
-                });
+                var resultFailure = ApiResult<RoleInfo>.CreateFailResult("Role not found")
+                    .Fail("Role does not exist");
+                return NotFound(new ApiResultDto<RoleInfo>(resultFailure));
             }
 
             var roleInfo = new RoleInfo
@@ -91,27 +84,21 @@ public class RolesController : ControllerBase
                 Modified = role.Modified
             };
 
-            return Ok(new ApiResponse<RoleInfo>
-            {
-                Success = true,
-                Message = "Role retrieved successfully",
-                Data = roleInfo
-            });
+            var resultSuccess = ApiResult<RoleInfo>.CreatePassResult(roleInfo)
+                .Inform("Role retrieved successfully");
+            return Ok(new ApiResultDto<RoleInfo>(resultSuccess));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving role {RoleId}", id);
-            return StatusCode(500, new ApiResponse<RoleInfo>
-            {
-                Success = false,
-                Message = "An error occurred while retrieving role",
-                Errors = new List<string> { "Internal server error" }
-            });
+            var resultError = ApiResult<RoleInfo>.CreateFailResult("An error occurred while retrieving role")
+                .Fail("Internal server error");
+            return StatusCode(500, new ApiResultDto<RoleInfo>(resultError));
         }
     }
 
     [HttpPost]
-    public async Task<ActionResult<ApiResponse<RoleInfo>>> CreateRole([FromBody] CreateRoleRequest request)
+    public async Task<ActionResult<ApiResultDto<RoleInfo>>> CreateRole([FromBody] CreateRoleRequest request)
     {
         try
         {
@@ -119,12 +106,9 @@ public class RolesController : ControllerBase
             var existingRole = await _roleService.FindByNameAsync(request.Name);
             if (existingRole != null)
             {
-                return BadRequest(new ApiResponse<RoleInfo>
-                {
-                    Success = false,
-                    Message = "Role creation failed",
-                    Errors = new List<string> { "Role with this name already exists" }
-                });
+                var resultFailure = ApiResult<RoleInfo>.CreateFailResult("Role creation failed")
+                    .Fail("Role with this name already exists");
+                return BadRequest(new ApiResultDto<RoleInfo>(resultFailure));
             }
 
             var role = new ApplicationRole
@@ -139,12 +123,12 @@ public class RolesController : ControllerBase
             var result = await _roleService.CreateRoleAsync(role);
             if (!result.Succeeded)
             {
-                return BadRequest(new ApiResponse<RoleInfo>
+                var resultFailure = ApiResult<RoleInfo>.CreateFailResult("Role creation failed");
+                foreach (var error in result.Errors)
                 {
-                    Success = false,
-                    Message = "Role creation failed",
-                    Errors = result.Errors.Select(e => e.Description).ToList()
-                });
+                    resultFailure.Fail(error.Description);
+                }
+                return BadRequest(new ApiResultDto<RoleInfo>(resultFailure));
             }
 
             var roleInfo = new RoleInfo
@@ -156,39 +140,30 @@ public class RolesController : ControllerBase
                 Modified = role.Modified
             };
 
-            return CreatedAtAction(nameof(GetRole), new { id = role.Id }, new ApiResponse<RoleInfo>
-            {
-                Success = true,
-                Message = "Role created successfully",
-                Data = roleInfo
-            });
+            var resultSuccess = ApiResult<RoleInfo>.CreatePassResult(roleInfo)
+                .Inform("Role created successfully");
+            return CreatedAtAction(nameof(GetRole), new { id = role.Id }, new ApiResultDto<RoleInfo>(resultSuccess));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating role {RoleName}", request.Name);
-            return StatusCode(500, new ApiResponse<RoleInfo>
-            {
-                Success = false,
-                Message = "An error occurred while creating role",
-                Errors = new List<string> { "Internal server error" }
-            });
+            var resultError = ApiResult<RoleInfo>.CreateFailResult("An error occurred while creating role")
+                .Fail("Internal server error");
+            return StatusCode(500, new ApiResultDto<RoleInfo>(resultError));
         }
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<ApiResponse<RoleInfo>>> UpdateRole(long id, [FromBody] UpdateRoleRequest request)
+    public async Task<ActionResult<ApiResultDto<RoleInfo>>> UpdateRole(long id, [FromBody] UpdateRoleRequest request)
     {
         try
         {
             var role = await _roleService.GetActiveRoleByIdAsync(id);
             if (role == null)
             {
-                return NotFound(new ApiResponse<RoleInfo>
-                {
-                    Success = false,
-                    Message = "Role not found",
-                    Errors = new List<string> { "Role does not exist" }
-                });
+                var resultFailure = ApiResult<RoleInfo>.CreateFailResult("Role not found")
+                    .Fail("Role does not exist");
+                return NotFound(new ApiResultDto<RoleInfo>(resultFailure));
             }
 
             // Check if new name conflicts with existing role
@@ -197,12 +172,9 @@ public class RolesController : ControllerBase
                 var existingRole = await _roleService.FindByNameAsync(request.Name);
                 if (existingRole != null && existingRole.Id != id)
                 {
-                    return BadRequest(new ApiResponse<RoleInfo>
-                    {
-                        Success = false,
-                        Message = "Role update failed",
-                        Errors = new List<string> { "Role with this name already exists" }
-                    });
+                    var resultFailure = ApiResult<RoleInfo>.CreateFailResult("Role update failed")
+                        .Fail("Role with this name already exists");
+                    return BadRequest(new ApiResultDto<RoleInfo>(resultFailure));
                 }
 
                 role.Name = request.Name;
@@ -214,12 +186,12 @@ public class RolesController : ControllerBase
             var result = await _roleService.UpdateRoleAsync(role);
             if (!result.Succeeded)
             {
-                return BadRequest(new ApiResponse<RoleInfo>
+                var resultFailure = ApiResult<RoleInfo>.CreateFailResult("Role update failed");
+                foreach (var error in result.Errors)
                 {
-                    Success = false,
-                    Message = "Role update failed",
-                    Errors = result.Errors.Select(e => e.Description).ToList()
-                });
+                    resultFailure.Fail(error.Description);
+                }
+                return BadRequest(new ApiResultDto<RoleInfo>(resultFailure));
             }
 
             var roleInfo = new RoleInfo
@@ -231,69 +203,52 @@ public class RolesController : ControllerBase
                 Modified = role.Modified
             };
 
-            return Ok(new ApiResponse<RoleInfo>
-            {
-                Success = true,
-                Message = "Role updated successfully",
-                Data = roleInfo
-            });
+            var resultSuccess = ApiResult<RoleInfo>.CreatePassResult(roleInfo)
+                .Inform("Role updated successfully");
+            return Ok(new ApiResultDto<RoleInfo>(resultSuccess));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating role {RoleId}", id);
-            return StatusCode(500, new ApiResponse<RoleInfo>
-            {
-                Success = false,
-                Message = "An error occurred while updating role",
-                Errors = new List<string> { "Internal server error" }
-            });
+            var resultError = ApiResult<RoleInfo>.CreateFailResult("An error occurred while updating role")
+                .Fail("Internal server error");
+            return StatusCode(500, new ApiResultDto<RoleInfo>(resultError));
         }
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<ApiResponse>> DeleteRole(long id)
+    public async Task<ActionResult<ApiResultDto>> DeleteRole(long id)
     {
         try
         {
             var role = await _roleService.GetActiveRoleByIdAsync(id);
             if (role == null)
             {
-                return NotFound(new ApiResponse
-                {
-                    Success = false,
-                    Message = "Role not found",
-                    Errors = new List<string> { "Role does not exist" }
-                });
+                var resultFailure = ApiResult.CreateFailResult("Role not found")
+                    .Fail("Role does not exist");
+                return NotFound(new ApiResultDto(resultFailure));
             }
 
             // Prevent deletion of system roles
             if (role.Name == "Admin")
             {
-                return BadRequest(new ApiResponse
-                {
-                    Success = false,
-                    Message = "Cannot delete system role",
-                    Errors = new List<string> { "Admin role cannot be deleted" }
-                });
+                var resultFailure = ApiResult.CreateFailResult("Cannot delete system role")
+                    .Fail("Admin role cannot be deleted");
+                return BadRequest(new ApiResultDto(resultFailure));
             }
 
             await _roleService.SoftDeleteRoleAsync(role);
 
-            return Ok(new ApiResponse
-            {
-                Success = true,
-                Message = "Role deleted successfully"
-            });
+            var resultSuccess = ApiResult.CreatePassResult()
+                .Inform("Role deleted successfully");
+            return Ok(new ApiResultDto(resultSuccess));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting role {RoleId}", id);
-            return StatusCode(500, new ApiResponse
-            {
-                Success = false,
-                Message = "An error occurred while deleting role",
-                Errors = new List<string> { "Internal server error" }
-            });
+            var resultError = ApiResult.CreateFailResult("An error occurred while deleting role")
+                .Fail("Internal server error");
+            return StatusCode(500, new ApiResultDto(resultError));
         }
     }
 }

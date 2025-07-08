@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AuthBlocksAPI.Models;
+namespace AuthBlocksModels.ApiModels;
 
 public class LoginRequest
 {
@@ -54,18 +54,6 @@ public class UserInfo
     public string UserName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public List<string> Roles { get; set; } = new();
-}
-
-public class ApiResponse<T>
-{
-    public bool Success { get; set; }
-    public string Message { get; set; } = string.Empty;
-    public T? Data { get; set; }
-    public List<string> Errors { get; set; } = new();
-}
-
-public class ApiResponse : ApiResponse<object>
-{
 }
 
 public class UpdateUserRequest

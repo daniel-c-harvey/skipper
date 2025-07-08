@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using AuthBlocksModels.ApiModels;
+using NetBlocks.Models;
 
 namespace AuthBlocksAPI.Controllers;
 
@@ -29,7 +31,7 @@ public class UsersController : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<ApiResponse<List<UserInfo>>>> GetUsers()
+    public async Task<ActionResult<ApiResultDto<List<UserInfo>>>> GetUsers()
     {
         try
         {
@@ -54,27 +56,21 @@ public class UsersController : ControllerBase
                 });
             }
 
-            return Ok(new ApiResponse<List<UserInfo>>
-            {
-                Success = true,
-                Message = "Users retrieved successfully",
-                Data = userInfos
-            });
+            var resultSuccess = ApiResult<List<UserInfo>>.CreatePassResult(userInfos)
+                .Inform("Users retrieved successfully");
+            return Ok(new ApiResultDto<List<UserInfo>>(resultSuccess));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving users");
-            return StatusCode(500, new ApiResponse<List<UserInfo>>
-            {
-                Success = false,
-                Message = "An error occurred while retrieving users",
-                Errors = new List<string> { "Internal server error" }
-            });
+            var resultError = ApiResult<List<UserInfo>>.CreateFailResult("An error occurred while retrieving users")
+                .Fail("Internal server error");
+            return StatusCode(500, new ApiResultDto<List<UserInfo>>(resultError));
         }
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ApiResponse<UserInfo>>> GetUser(long id)
+    public async Task<ActionResult<ApiResultDto<UserInfo>>> GetUser(long id)
     {
         try
         {
@@ -89,12 +85,9 @@ public class UsersController : ControllerBase
             var user = await _userService.GetActiveUserByIdAsync(id);
             if (user == null)
             {
-                return NotFound(new ApiResponse<UserInfo>
-                {
-                    Success = false,
-                    Message = "User not found",
-                    Errors = new List<string> { "User does not exist" }
-                });
+                var resultFailure = ApiResult<UserInfo>.CreateFailResult("User not found")
+                    .Fail("User does not exist");
+                return NotFound(new ApiResultDto<UserInfo>(resultFailure));
             }
 
             var roles = await _userService.GetActiveUserRolesAsync(user);
@@ -106,27 +99,21 @@ public class UsersController : ControllerBase
                 Roles = roles.ToList()
             };
 
-            return Ok(new ApiResponse<UserInfo>
-            {
-                Success = true,
-                Message = "User retrieved successfully",
-                Data = userInfo
-            });
+            var resultSuccess = ApiResult<UserInfo>.CreatePassResult(userInfo)
+                .Inform("User retrieved successfully");
+            return Ok(new ApiResultDto<UserInfo>(resultSuccess));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving user {UserId}", id);
-            return StatusCode(500, new ApiResponse<UserInfo>
-            {
-                Success = false,
-                Message = "An error occurred while retrieving user",
-                Errors = new List<string> { "Internal server error" }
-            });
+            var resultError = ApiResult<UserInfo>.CreateFailResult("An error occurred while retrieving user")
+                .Fail("Internal server error");
+            return StatusCode(500, new ApiResultDto<UserInfo>(resultError));
         }
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<ApiResponse<UserInfo>>> UpdateUser(long id, [FromBody] UpdateUserRequest request)
+    public async Task<ActionResult<ApiResultDto<UserInfo>>> UpdateUser(long id, [FromBody] UpdateUserRequest request)
     {
         try
         {
@@ -141,12 +128,9 @@ public class UsersController : ControllerBase
             var user = await _userService.GetActiveUserByIdAsync(id);
             if (user == null)
             {
-                return NotFound(new ApiResponse<UserInfo>
-                {
-                    Success = false,
-                    Message = "User not found",
-                    Errors = new List<string> { "User does not exist" }
-                });
+                var resultFailure = ApiResult<UserInfo>.CreateFailResult("User not found")
+                    .Fail("User does not exist");
+                return NotFound(new ApiResultDto<UserInfo>(resultFailure));
             }
 
             // Update user properties
@@ -154,15 +138,15 @@ public class UsersController : ControllerBase
             user.Email = request.Email ?? user.Email;
             user.Modified = DateTime.UtcNow;
 
-            var result = await _userService.UpdateUserAsync(user);
-            if (!result.Succeeded)
+            var updateResult = await _userService.UpdateUserAsync(user);
+            if (!updateResult.Succeeded)
             {
-                return BadRequest(new ApiResponse<UserInfo>
+                var resultFailure = ApiResult<UserInfo>.CreateFailResult("Update failed");
+                foreach (var error in updateResult.Errors)
                 {
-                    Success = false,
-                    Message = "Update failed",
-                    Errors = result.Errors.Select(e => e.Description).ToList()
-                });
+                    resultFailure.Fail(error.Description);
+                }
+                return BadRequest(new ApiResultDto<UserInfo>(resultFailure));
             }
 
             var roles = await _userService.GetActiveUserRolesAsync(user);
@@ -174,145 +158,112 @@ public class UsersController : ControllerBase
                 Roles = roles.ToList()
             };
 
-            return Ok(new ApiResponse<UserInfo>
-            {
-                Success = true,
-                Message = "User updated successfully",
-                Data = userInfo
-            });
+            var resultSuccess = ApiResult<UserInfo>.CreatePassResult(userInfo)
+                .Inform("User updated successfully");
+            return Ok(new ApiResultDto<UserInfo>(resultSuccess));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating user {UserId}", id);
-            return StatusCode(500, new ApiResponse<UserInfo>
-            {
-                Success = false,
-                Message = "An error occurred while updating user",
-                Errors = new List<string> { "Internal server error" }
-            });
+            var resultError = ApiResult<UserInfo>.CreateFailResult("An error occurred while updating user")
+                .Fail("Internal server error");
+            return StatusCode(500, new ApiResultDto<UserInfo>(resultError));
         }
     }
 
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<ApiResponse>> DeleteUser(long id)
+    public async Task<ActionResult<ApiResultDto>> DeleteUser(long id)
     {
         try
         {
             var user = await _userService.GetActiveUserByIdAsync(id);
             if (user == null)
             {
-                return NotFound(new ApiResponse
-                {
-                    Success = false,
-                    Message = "User not found",
-                    Errors = new List<string> { "User does not exist" }
-                });
+                var resultFailure = ApiResult.CreateFailResult("User not found")
+                    .Fail("User does not exist");
+                return NotFound(new ApiResultDto(resultFailure));
             }
 
             // Prevent admin from deleting themselves
             var currentUserId = GetCurrentUserId();
             if (currentUserId == id)
             {
-                return BadRequest(new ApiResponse
-                {
-                    Success = false,
-                    Message = "Cannot delete your own account",
-                    Errors = new List<string> { "Self-deletion not allowed" }
-                });
+                var resultFailure = ApiResult.CreateFailResult("Cannot delete your own account")
+                    .Fail("Self-deletion not allowed");
+                return BadRequest(new ApiResultDto(resultFailure));
             }
 
             await _userService.SoftDeleteUserAsync(user);
 
-            return Ok(new ApiResponse
-            {
-                Success = true,
-                Message = "User deleted successfully"
-            });
+            var resultSuccess = ApiResult.CreatePassResult()
+                .Inform("User deleted successfully");
+            return Ok(new ApiResultDto(resultSuccess));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting user {UserId}", id);
-            return StatusCode(500, new ApiResponse
-            {
-                Success = false,
-                Message = "An error occurred while deleting user",
-                Errors = new List<string> { "Internal server error" }
-            });
+            var resultError = ApiResult.CreateFailResult("An error occurred while deleting user")
+                .Fail("Internal server error");
+            return StatusCode(500, new ApiResultDto(resultError));
         }
     }
 
     [HttpPost("{id}/roles")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<ApiResponse>> AddUserToRole(long id, [FromBody] UserRoleRequest request)
+    public async Task<ActionResult<ApiResultDto>> AddUserToRole(long id, [FromBody] UserRoleRequest request)
     {
         try
         {
             var user = await _userService.GetActiveUserByIdAsync(id);
             if (user == null)
             {
-                return NotFound(new ApiResponse
-                {
-                    Success = false,
-                    Message = "User not found",
-                    Errors = new List<string> { "User does not exist" }
-                });
+                var resultFailure = ApiResult.CreateFailResult("User not found")
+                    .Fail("User does not exist");
+                return NotFound(new ApiResultDto(resultFailure));
             }
 
             await _userService.AddUserToRoleAsync(user, request.RoleName);
 
-            return Ok(new ApiResponse
-            {
-                Success = true,
-                Message = $"User added to role '{request.RoleName}' successfully"
-            });
+            var resultSuccess = ApiResult.CreatePassResult()
+                .Inform($"User added to role '{request.RoleName}' successfully");
+            return Ok(new ApiResultDto(resultSuccess));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error adding user {UserId} to role {RoleName}", id, request.RoleName);
-            return StatusCode(500, new ApiResponse
-            {
-                Success = false,
-                Message = "An error occurred while adding user to role",
-                Errors = new List<string> { "Internal server error" }
-            });
+            var resultError = ApiResult.CreateFailResult("An error occurred while adding user to role")
+                .Fail("Internal server error");
+            return StatusCode(500, new ApiResultDto(resultError));
         }
     }
 
     [HttpDelete("{id}/roles")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<ApiResponse>> RemoveUserFromRole(long id, [FromBody] UserRoleRequest request)
+    public async Task<ActionResult<ApiResultDto>> RemoveUserFromRole(long id, [FromBody] UserRoleRequest request)
     {
         try
         {
             var user = await _userService.GetActiveUserByIdAsync(id);
             if (user == null)
             {
-                return NotFound(new ApiResponse
-                {
-                    Success = false,
-                    Message = "User not found",
-                    Errors = new List<string> { "User does not exist" }
-                });
+                var resultFailure = ApiResult.CreateFailResult("User not found")
+                    .Fail("User does not exist");
+                return NotFound(new ApiResultDto(resultFailure));
             }
 
             await _userService.RemoveUserFromRoleAsync(user, request.RoleName);
 
-            return Ok(new ApiResponse
-            {
-                Success = true,
-                Message = $"User removed from role '{request.RoleName}' successfully"
-            });
+            var resultSuccess = ApiResult.CreatePassResult()
+                .Inform($"User removed from role '{request.RoleName}' successfully");
+            return Ok(new ApiResultDto(resultSuccess));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error removing user {UserId} from role {RoleName}", id, request.RoleName);
-            return StatusCode(500, new ApiResponse
-            {
-                Success = false,
-                Message = "An error occurred while removing user from role",
-                Errors = new List<string> { "Internal server error" }
-            });
+            var resultError = ApiResult.CreateFailResult("An error occurred while removing user from role")
+                .Fail("Internal server error");
+            return StatusCode(500, new ApiResultDto(resultError));
         }
     }
 

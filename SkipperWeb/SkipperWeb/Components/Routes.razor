@@ -1,9 +1,29 @@
-﻿<Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(Client._Imports).Assembly, typeof(Shared._Imports).Assembly, typeof(AuthBlocksWeb._Imports).Assembly, typeof(AuthBlocksWeb.Client._Imports).Assembly }">
+﻿@using SkipperWeb.Components.Layout
+@using Microsoft.AspNetCore.Components.Authorization
+@using AuthBlocksWeb.Components
+
+<CascadingAuthenticationState>
+    <Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(Client._Imports).Assembly, typeof(Shared._Imports).Assembly, typeof(AuthBlocksWeb._Imports).Assembly, typeof(AuthBlocksWeb.Client._Imports).Assembly }">
     <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)"/>
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <NotAuthorized Context="authContext">
+                @if (authContext.User.Identity?.IsAuthenticated != true)
+                {
+                    <RedirectToLogin />
+                }
+                else
+                {
+                    <MudText Typo="Typo.body1" Color="Color.Error">You are not authorized to access this resource.</MudText>
+                }
+            </NotAuthorized>
+            <Authorizing>
+                <p>Authorizing...</p>
+            </Authorizing>
+        </AuthorizeRouteView>
         <FocusOnNavigate RouteData="routeData" Selector="h1"/>
     </Found>
     <NotFound>
         Test
     </NotFound>
 </Router>
+</CascadingAuthenticationState>

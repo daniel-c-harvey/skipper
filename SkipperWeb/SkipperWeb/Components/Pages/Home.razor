@@ -9,3 +9,12 @@
 <MudText Typo="Typo.body1">
     Check out the vessel registration.
 </MudText>
+
+<Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
+    <Authorized>
+        <MudText>@context.User?.Identity?.Name</MudText>
+    </Authorized>
+    <NotAuthorized>
+        <MudText>Not Authorized</MudText>
+    </NotAuthorized>
+</Microsoft.AspNetCore.Components.Authorization.AuthorizeView>

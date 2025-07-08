@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using AuthBlocksModels.ApiModels;
+using NetBlocks.Models;
 
 namespace AuthBlocksAPI.Controllers;
 
@@ -31,30 +33,24 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<ApiResponse<AuthResponse>>> Login([FromBody] LoginRequest request)
+    public async Task<ActionResult<ApiResultDto<AuthResponse>>> Login([FromBody] LoginRequest request)
     {
         try
         {
             var user = await _userService.FindByEmailAsync(request.Email);
             if (user == null)
             {
-                return BadRequest(new ApiResponse<AuthResponse>
-                {
-                    Success = false,
-                    Message = "Invalid email or password",
-                    Errors = new List<string> { "User not found" }
-                });
+                var emailresult = ApiResult<AuthResponse>.CreateFailResult("Invalid email or password")
+                    .Fail("User not found");
+                return BadRequest(new ApiResultDto<AuthResponse>(emailresult));
             }
 
             var passwordValid = await _userManager.CheckPasswordAsync(user, request.Password);
             if (!passwordValid)
             {
-                return BadRequest(new ApiResponse<AuthResponse>
-                {
-                    Success = false,
-                    Message = "Invalid email or password",
-                    Errors = new List<string> { "Invalid password" }
-                });
+                var passwordResult = ApiResult<AuthResponse>.CreateFailResult("Invalid email or password")
+                    .Fail("Invalid password");
+                return BadRequest(new ApiResultDto<AuthResponse>(passwordResult));
             }
 
             var accessToken = await _jwtService.GenerateTokenAsync(user);
@@ -77,39 +73,30 @@ public class AuthController : ControllerBase
                 }
             };
 
-            return Ok(new ApiResponse<AuthResponse>
-            {
-                Success = true,
-                Message = "Login successful",
-                Data = response
-            });
+            var resultSuccess = ApiResult<AuthResponse>.CreatePassResult(response)
+                .Inform("Login successful");
+            return Ok(new ApiResultDto<AuthResponse>(resultSuccess));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during login for user {Email}", request.Email);
-            return StatusCode(500, new ApiResponse<AuthResponse>
-            {
-                Success = false,
-                Message = "An error occurred during login",
-                Errors = new List<string> { "Internal server error" }
-            });
+            var result = ApiResult<AuthResponse>.CreateFailResult("An error occurred during login")
+                .Fail("Internal server error");
+            return StatusCode(500, new ApiResultDto<AuthResponse>(result));
         }
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<ApiResponse<AuthResponse>>> Register([FromBody] RegisterRequest request)
+    public async Task<ActionResult<ApiResultDto<AuthResponse>>> Register([FromBody] RegisterRequest request)
     {
         try
         {
             var existingUser = await _userService.FindByEmailAsync(request.Email);
             if (existingUser != null)
             {
-                return BadRequest(new ApiResponse<AuthResponse>
-                {
-                    Success = false,
-                    Message = "Registration failed",
-                    Errors = new List<string> { "User with this email already exists" }
-                });
+                var resultFailure = ApiResult<AuthResponse>.CreateFailResult("Registration failed")
+                    .Fail("User with this email already exists");
+                return BadRequest(new ApiResultDto<AuthResponse>(resultFailure));
             }
 
             var user = new ApplicationUser
@@ -121,15 +108,15 @@ public class AuthController : ControllerBase
                 Modified = DateTime.UtcNow
             };
 
-            var result = await _userService.CreateUserAsync(user, request.Password);
-            if (!result.Succeeded)
+            var createResult = await _userService.CreateUserAsync(user, request.Password);
+            if (!createResult.Succeeded)
             {
-                return BadRequest(new ApiResponse<AuthResponse>
+                var resultFailure = ApiResult<AuthResponse>.CreateFailResult("Registration failed");
+                foreach (var error in createResult.Errors)
                 {
-                    Success = false,
-                    Message = "Registration failed",
-                    Errors = result.Errors.Select(e => e.Description).ToList()
-                });
+                    resultFailure.Fail(error.Description);
+                }
+                return BadRequest(new ApiResultDto<AuthResponse>(resultFailure));
             }
 
             var accessToken = await _jwtService.GenerateTokenAsync(user);
@@ -150,72 +137,54 @@ public class AuthController : ControllerBase
                 }
             };
 
-            return Ok(new ApiResponse<AuthResponse>
-            {
-                Success = true,
-                Message = "Registration successful",
-                Data = response
-            });
+            var resultSuccess = ApiResult<AuthResponse>.CreatePassResult(response)
+                .Inform("Registration successful");
+            return Ok(new ApiResultDto<AuthResponse>(resultSuccess));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during registration for user {Email}", request.Email);
-            return StatusCode(500, new ApiResponse<AuthResponse>
-            {
-                Success = false,
-                Message = "An error occurred during registration",
-                Errors = new List<string> { "Internal server error" }
-            });
+            var resultError = ApiResult<AuthResponse>.CreateFailResult("An error occurred during registration")
+                .Fail("Internal server error");
+            return StatusCode(500, new ApiResultDto<AuthResponse>(resultError));
         }
     }
 
     [HttpPost("refresh")]
-    public async Task<ActionResult<ApiResponse<AuthResponse>>> RefreshToken([FromBody] RefreshTokenRequest request)
+    public async Task<ActionResult<ApiResultDto<AuthResponse>>> RefreshToken([FromBody] RefreshTokenRequest request)
     {
         try
         {
             var principal = _jwtService.ValidateToken(request.AccessToken);
             if (principal == null)
             {
-                return BadRequest(new ApiResponse<AuthResponse>
-                {
-                    Success = false,
-                    Message = "Invalid access token",
-                    Errors = new List<string> { "Token validation failed" }
-                });
+                var resultFailure = ApiResult<AuthResponse>.CreateFailResult("Invalid access token")
+                    .Fail("Token validation failed");
+                return BadRequest(new ApiResultDto<AuthResponse>(resultFailure));
             }
 
             var userIdClaim = principal.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var userId))
             {
-                return BadRequest(new ApiResponse<AuthResponse>
-                {
-                    Success = false,
-                    Message = "Invalid token claims",
-                    Errors = new List<string> { "User ID not found in token" }
-                });
+                var resultFailure = ApiResult<AuthResponse>.CreateFailResult("Invalid token claims")
+                    .Fail("User ID not found in token");
+                return BadRequest(new ApiResultDto<AuthResponse>(resultFailure));
             }
 
             var isValidRefreshToken = await _jwtService.ValidateRefreshTokenAsync(request.RefreshToken, userId);
             if (!isValidRefreshToken)
             {
-                return BadRequest(new ApiResponse<AuthResponse>
-                {
-                    Success = false,
-                    Message = "Invalid refresh token",
-                    Errors = new List<string> { "Refresh token validation failed" }
-                });
+                var resultFailure = ApiResult<AuthResponse>.CreateFailResult("Invalid refresh token")
+                    .Fail("Refresh token validation failed");
+                return BadRequest(new ApiResultDto<AuthResponse>(resultFailure));
             }
 
             var user = await _userService.GetActiveUserByIdAsync(userId);
             if (user == null)
             {
-                return BadRequest(new ApiResponse<AuthResponse>
-                {
-                    Success = false,
-                    Message = "User not found",
-                    Errors = new List<string> { "User does not exist" }
-                });
+                var resultFailure = ApiResult<AuthResponse>.CreateFailResult("User not found")
+                    .Fail("User does not exist");
+                return BadRequest(new ApiResultDto<AuthResponse>(resultFailure));
             }
 
             // Revoke old refresh token and generate new tokens
@@ -241,77 +210,59 @@ public class AuthController : ControllerBase
                 }
             };
 
-            return Ok(new ApiResponse<AuthResponse>
-            {
-                Success = true,
-                Message = "Token refreshed successfully",
-                Data = response
-            });
+            var resultSuccess = ApiResult<AuthResponse>.CreatePassResult(response)
+                .Inform("Token refreshed successfully");
+            return Ok(new ApiResultDto<AuthResponse>(resultSuccess));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during token refresh");
-            return StatusCode(500, new ApiResponse<AuthResponse>
-            {
-                Success = false,
-                Message = "An error occurred during token refresh",
-                Errors = new List<string> { "Internal server error" }
-            });
+            var resultError = ApiResult<AuthResponse>.CreateFailResult("An error occurred during token refresh")
+                .Fail("Internal server error");
+            return StatusCode(500, new ApiResultDto<AuthResponse>(resultError));
         }
     }
 
     [HttpPost("logout")]
     [Authorize]
-    public async Task<ActionResult<ApiResponse>> Logout([FromBody] RefreshTokenRequest request)
+    public async Task<ActionResult<ApiResultDto>> Logout([FromBody] RefreshTokenRequest request)
     {
         try
         {
             await _jwtService.RevokeRefreshTokenAsync(request.RefreshToken);
             
-            return Ok(new ApiResponse
-            {
-                Success = true,
-                Message = "Logout successful"
-            });
+            var resultSuccess = ApiResult.CreatePassResult().Inform("Logout successful");
+            return Ok(new ApiResultDto(resultSuccess));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during logout");
-            return StatusCode(500, new ApiResponse
-            {
-                Success = false,
-                Message = "An error occurred during logout",
-                Errors = new List<string> { "Internal server error" }
-            });
+            var resultError = ApiResult.CreateFailResult("An error occurred during logout")
+                .Fail("Internal server error");
+            return StatusCode(500, new ApiResultDto(resultError));
         }
     }
 
     [HttpGet("me")]
     [Authorize]
-    public async Task<ActionResult<ApiResponse<UserInfo>>> GetCurrentUser()
+    public async Task<ActionResult<ApiResultDto<UserInfo>>> GetCurrentUser()
     {
         try
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var userId))
             {
-                return BadRequest(new ApiResponse<UserInfo>
-                {
-                    Success = false,
-                    Message = "Invalid user claims",
-                    Errors = new List<string> { "User ID not found in token" }
-                });
+                var resultFailure = ApiResult<UserInfo>.CreateFailResult("Invalid user claims")
+                    .Fail("User ID not found in token");
+                return BadRequest(new ApiResultDto<UserInfo>(resultFailure));
             }
 
             var user = await _userService.GetActiveUserByIdAsync(userId);
             if (user == null)
             {
-                return NotFound(new ApiResponse<UserInfo>
-                {
-                    Success = false,
-                    Message = "User not found",
-                    Errors = new List<string> { "User does not exist" }
-                });
+                var resultFailure = ApiResult<UserInfo>.CreateFailResult("User not found")
+                    .Fail("User does not exist");
+                return NotFound(new ApiResultDto<UserInfo>(resultFailure));
             }
 
             var userRoles = await _userService.GetActiveUserRolesAsync(user);
@@ -324,22 +275,16 @@ public class AuthController : ControllerBase
                 Roles = userRoles.ToList()
             };
 
-            return Ok(new ApiResponse<UserInfo>
-            {
-                Success = true,
-                Message = "User info retrieved successfully",
-                Data = userInfo
-            });
+            var resultSuccess = ApiResult<UserInfo>.CreatePassResult(userInfo)
+                .Inform("User info retrieved successfully");
+            return Ok(new ApiResultDto<UserInfo>(resultSuccess));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving current user info");
-            return StatusCode(500, new ApiResponse<UserInfo>
-            {
-                Success = false,
-                Message = "An error occurred while retrieving user info",
-                Errors = new List<string> { "Internal server error" }
-            });
+            var resultError = ApiResult<UserInfo>.CreateFailResult("An error occurred while retrieving user info")
+                .Fail("Internal server error");
+            return StatusCode(500, new ApiResultDto<UserInfo>(resultError));
         }
     }
 } 

@@ -1,12 +1,13 @@
-using AuthBlocksWeb.Models.Api;
+using AuthBlocksModels.ApiModels;
+using NetBlocks.Models;
 
 namespace AuthBlocksWeb.ApiClients;
 
 public interface IAuthApiClient
 {
-    Task<ApiResponse<AuthResponse>> LoginAsync(LoginRequest request);
-    Task<ApiResponse<AuthResponse>> RegisterAsync(RegisterRequest request);
-    Task<ApiResponse<AuthResponse>> RefreshTokenAsync(RefreshTokenRequest request);
-    Task<ApiResponse> LogoutAsync(RefreshTokenRequest request);
-    Task<ApiResponse<UserInfo>> GetCurrentUserAsync();
+    Task<ApiResult<AuthResponse>> LoginAsync(LoginRequest request);
+    Task<ApiResult<AuthResponse>> RegisterAsync(RegisterRequest request);
+    Task<ApiResult<AuthResponse>> RefreshTokenAsync(RefreshTokenRequest request);
+    Task<ApiResult> LogoutAsync(RefreshTokenRequest request);
+    Task<ApiResult<UserInfo>> GetCurrentUserAsync();
 } 

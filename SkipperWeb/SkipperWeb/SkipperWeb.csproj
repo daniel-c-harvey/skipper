@@ -12,9 +12,13 @@
         <ProjectReference Include="..\..\SkipperWeb.Shared\SkipperWeb.Shared.csproj" />
         <ProjectReference Include="..\SkipperWeb.Client\SkipperWeb.Client.csproj" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.6" />
-        <ProjectReference Include="C:\lib\AuthBlocks\AuthBlocksModels\AuthBlocksModels.csproj" />
-        <ProjectReference Include="C:\lib\AuthBlocks\AuthBlocksWeb\AuthBlocksWeb.csproj" />
+        <ProjectReference Include="..\..\AuthBlocksModels\AuthBlocksModels.csproj" />
+        <ProjectReference Include="..\..\AuthBlocksWeb\AuthBlocksWeb.csproj" />
         <ProjectReference Include="C:\lib\NetBlocks\NetBlocks.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\lib\" />
     </ItemGroup>
 
 </Project>

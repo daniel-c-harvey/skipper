@@ -24,7 +24,7 @@
     </MudItem>
     <MudItem xs="4" md="4" Class="d-flex justify-end">
         <MudButton Color="Color.Primary" EndIcon="@Icons.Material.Outlined.AddCircleOutline" Variant="Variant.Filled" OnClick="NewEntity">
-            Enter New @ModelDisplayName
+            New @ModelDisplayName
         </MudButton>
     </MudItem>
 </MudGrid>
@@ -45,8 +45,10 @@ else
             @Columns
             <TemplateColumn CellClass="d-flex justify-end px-3">
                 <CellTemplate>
-                    <MudIconButton Size="@Size.Small" Color="Color.Secondary" Icon="@Icons.Material.Outlined.Edit" OnClick="async () => await EditItem(context.Item)"/>
-                    <MudIconButton Size="@Size.Small" Color="Color.Error" Icon="@Icons.Material.Outlined.Delete" OnClick="async () => await DeleteItem(context.Item)"/>
+                    <MudStack Row AlignItems="AlignItems.Center">
+                        <MudIconButton Size="@Size.Small" Color="Color.Secondary" Icon="@Icons.Material.Outlined.Edit" OnClick="async () => await EditItem(context.Item)"/>
+                        <MudIconButton Size="@Size.Small" Color="Color.Error" Icon="@Icons.Material.Outlined.Delete" OnClick="async () => await DeleteItem(context.Item)"/>
+                    </MudStack>
                 </CellTemplate>
             </TemplateColumn>
         </Columns>
