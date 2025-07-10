@@ -32,14 +32,13 @@ public static class Startup
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<JwtAuthenticationStateProvider>();
         services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<JwtAuthenticationStateProvider>());
-
-        services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
-        
-        // Add authorization with hierarchical role support
-        services.AddAuthorization();
         
         // Register the hierarchical role service and authorization handlers
         services.AddScoped<IHierarchicalRoleService, HierarchicalRoleService>();
-        services.AddScoped<IAuthorizationHandler, HierarchicalRoleRequirementHandler>();
+        services.AddScoped<IAuthorizationHandler, HierarchicalRolesAuthorizationHandler>();
+        
+        // Add authorization with hierarchical role support
+        services.AddAuthentication().AddCookie(IdentityConstants.BearerScheme);
+        services.AddAuthorization();
     }
 }

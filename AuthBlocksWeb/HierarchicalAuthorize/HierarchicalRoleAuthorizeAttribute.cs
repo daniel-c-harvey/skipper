@@ -2,73 +2,21 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace AuthBlocksWeb.HierarchicalAuthorize;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
-public class HierarchicalRoleAuthorizeAttribute : AuthorizeAttribute, IAsyncAuthorizationFilter
+public class HierarchicalRoleAuthorizeAttribute : AuthorizeAttribute
 {
-    private readonly string[] _roles;
-
-    public HierarchicalRoleAuthorizeAttribute(params string[] roles)
+    public HierarchicalRoleAuthorizeAttribute(params string[]? roles)
     {
-        _roles = roles;
-    }
-
-    public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
-    {
-        var user = context.HttpContext.User;
-        
-        if (!(user.Identity?.IsAuthenticated ?? false))
+        // Only set Roles if roles are actually specified
+        // If no roles are specified, it works like [Authorize] - just requires authentication
+        if (roles != null && roles.Length > 0)
         {
-            context.Result = new UnauthorizedResult();
-            return;
+            Roles = string.Join(",", roles);
         }
-
-        if (_roles.Length == 0)
-        {
-            // No roles specified, just need to be authenticated
-            return;
-        }
-
-        // Get the hierarchical role service from the service provider
-        var hierarchicalRoleService = context.HttpContext.RequestServices.GetService<IHierarchicalRoleService>();
-        if (hierarchicalRoleService == null)
-        {
-            context.Result = new StatusCodeResult(500);
-            return;
-        }
-
-        // Get user's roles from JWT claims
-        var userRoles = user.Claims
-            .Where(c => c.Type == System.Security.Claims.ClaimTypes.Role)
-            .Select(c => c.Value)
-            .ToList();
-
-        // Check if user has any of the required roles or inherits from them
-        foreach (var requiredRole in _roles)
-        {
-            if (await hierarchicalRoleService.HasRoleOrInheritsAsync(userRoles, requiredRole))
-            {
-                return; // User is authorized
-            }
-        }
-
-        // User is not authorized
-        context.Result = new ForbidResult();
-    }
-}
-
-public class HierarchicalRoleRequirement : IAuthorizationRequirement
-{
-    public string[] RequiredRoles { get; }
-
-    public HierarchicalRoleRequirement(string[] requiredRoles)
-    {
-        RequiredRoles = requiredRoles;
+        // If roles is null or empty, don't set Roles property - this makes it work like [Authorize]
     }
 }
 
@@ -137,7 +85,7 @@ public class HierarchicalRoleAuthorizeView : ComponentBase
             {
                 // Check hierarchical role authorization using the authorization service
                 // Create a custom requirement with the specific roles we need to check
-                var requirement = new HierarchicalRoleRequirement(RolesList);
+                var requirement = new RolesAuthorizationRequirement(RolesList);
                 var result = await AuthorizationService.AuthorizeAsync(user, null, requirement);
                 _isAuthorized = result.Succeeded;
             }

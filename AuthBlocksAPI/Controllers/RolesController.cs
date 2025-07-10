@@ -11,7 +11,7 @@ namespace AuthBlocksAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Authorize]
 public class RolesController : ControllerBase
 {
     private readonly RoleService _roleService;
@@ -55,6 +55,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<ApiResultDto<RoleInfo>>> GetRole(long id)
     {
         try
@@ -90,6 +91,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<ApiResultDto<RoleInfo>>> CreateRole([FromBody] CreateRoleRequest request)
     {
         try
@@ -162,6 +164,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<ApiResultDto<RoleInfo>>> UpdateRole(long id, [FromBody] UpdateRoleRequest request)
     {
         try
@@ -249,6 +252,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<ApiResultDto>> DeleteRole(long id)
     {
         try

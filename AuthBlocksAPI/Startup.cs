@@ -123,11 +123,12 @@ internal static class Startup
             var existingRole = await roleService.FindByNameAsync(systemRole.Name);
             if (existingRole == null)
             {
+                var existingParentRole = await roleService.FindByNameAsync(systemRole.ParentRole?.Name);
                 var role = new ApplicationRole
                 {
                     Name = systemRole.Name,
                     NormalizedName = systemRole.Name.ToUpperInvariant(),
-                    ParentRoleId = systemRole.ParentRole?.Id,
+                    ParentRoleId = existingParentRole?.Id,
                     ConcurrencyStamp = DateTime.UtcNow.ToString(),
                     Created = DateTime.UtcNow,
                     Modified = DateTime.UtcNow

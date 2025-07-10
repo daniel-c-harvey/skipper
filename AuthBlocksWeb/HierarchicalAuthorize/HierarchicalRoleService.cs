@@ -1,4 +1,5 @@
 ﻿using AuthBlocksWeb.ApiClients;
+using AuthBlocksModels.ApiModels;
 using Microsoft.Extensions.Logging;
 
 namespace AuthBlocksWeb.HierarchicalAuthorize;
@@ -22,13 +23,23 @@ public class HierarchicalRoleService : IHierarchicalRoleService
     {
         // Direct role check
         if (userRoles.Contains(requiredRole))
+        {
             return true;
+        }
+
+        // If user has no roles, they can't inherit anything
+        if (userRoles.Count == 0)
+        {
+            return false;
+        }
 
         // Check if any of user's roles inherit from the required role
         foreach (var userRole in userRoles)
         {
             if (await InheritsFromRoleAsync(userRole, requiredRole))
+            {
                 return true;
+            }
         }
 
         return false;
@@ -79,28 +90,9 @@ public class HierarchicalRoleService : IHierarchicalRoleService
                 return false;
             }
 
-            // Check if user's role inherits from target role by traversing up the hierarchy
-            var currentRole = userRole;
-            var result = false;
-            
-            while (currentRole.ParentRoleId.HasValue)
-            {
-                var parentRole = roles.FirstOrDefault(r => r.Id == currentRole.ParentRoleId.Value);
-                if (parentRole == null)
-                {
-                    _logger.LogWarning("Parent role with ID {ParentRoleId} not found for role {RoleName}", 
-                        currentRole.ParentRoleId.Value, currentRole.Name);
-                    break;
-                }
-
-                if (parentRole.Name.Equals(targetRoleName, StringComparison.OrdinalIgnoreCase))
-                {
-                    result = true;
-                    break;
-                }
-
-                currentRole = parentRole;
-            }
+            // Check if user's role inherits from target role by searching down the hierarchy
+            // Parent roles inherit access from their children
+            var result = HasChildRole(userRole, targetRoleName, roles);
 
             // Cache the result
             lock (_cacheLock)
@@ -120,5 +112,28 @@ public class HierarchicalRoleService : IHierarchicalRoleService
             // If API call fails, fall back to direct role check only
             return false;
         }
+    }
+
+    private bool HasChildRole(RoleInfo userRole, string targetRoleName, List<RoleInfo> roles)
+    {
+        // Check if the user's role has the target role as a direct child
+        var directChildren = roles.Where(r => r.ParentRoleId == userRole.Id).ToList();
+        
+        foreach (var child in directChildren)
+        {
+            // Check if this child is the target role
+            if (child.Name.Equals(targetRoleName, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+            
+            // Recursively check if any of this child's children contain the target role
+            if (HasChildRole(child, targetRoleName, roles))
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }
