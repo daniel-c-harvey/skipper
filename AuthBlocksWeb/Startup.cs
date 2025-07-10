@@ -38,7 +38,8 @@ public static class Startup
         // Add authorization with hierarchical role support
         services.AddAuthorization();
         
-        // Register the hierarchical role authorization handler
+        // Register the hierarchical role service and authorization handlers
+        services.AddScoped<IHierarchicalRoleService, HierarchicalRoleService>();
         services.AddScoped<IAuthorizationHandler, HierarchicalRoleRequirementHandler>();
     }
 }
