@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using AuthBlocksWeb.ApiClients;
 using AuthBlocksWeb.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 
 namespace AuthBlocksWeb;
 
@@ -23,25 +25,9 @@ public static class Startup
         services.AddScoped<JwtAuthenticationStateProvider>();
         services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<JwtAuthenticationStateProvider>());
 
-        // Add authorization
-        services.AddAuthorizationCore();
+        services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
+        
+        // Add authorization for Blazor components with proper policies
+        services.AddAuthorization();
     }
 }
-
-// Example usage in Program.cs:
-/*
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container
-NewStartupExample.ConfigureServices(
-    builder.Services, 
-    builder.Configuration.GetConnectionString("DefaultConnection")!);
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline
-await NewStartupExample.ConfigureAppAsync(app);
-
-// Configure the app...
-app.Run();
-*/ 

@@ -42,9 +42,6 @@ public class Program
 
         var app = builder.Build();
 
-        // Use JWT middleware to add token to requests and authenticate server-side
-        app.UseMiddleware<JwtMiddleware>();
-
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
@@ -58,10 +55,6 @@ public class Program
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
         }
-        
-        // Add basic authentication middleware (required by Blazor)
-        app.UseAuthentication();
-        app.UseAuthorization();
         
         app.UseAntiforgery();
         app.UseStatusCodePagesWithRedirects("/404");

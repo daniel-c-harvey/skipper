@@ -9,7 +9,14 @@
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@_currentLayout">
             <NotAuthorized Context="authContext">
-                <RedirectToLogin />
+                @if (authContext.User.Identity?.IsAuthenticated != true)
+                {
+                    <RedirectToLogin />
+                }
+                else
+                {
+                    <MudText Typo="Typo.body1" Color="Color.Error">You are not authorized to access this resource.</MudText>
+                }
             </NotAuthorized>
             <Authorizing>
                 <p>Authorizing...</p>

@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using AuthBlocksWeb.ApiClients;
 using AuthBlocksModels.ApiModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace AuthBlocksWeb.Services;
 
@@ -50,7 +51,8 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
 
             // Create claims from JWT token
             var claims = jwtToken.Claims.ToList();
-            var identity = new ClaimsIdentity(claims, "jwt");
+            // Use "Blazor" as the authentication type to match our authentication scheme
+            var identity = new ClaimsIdentity(claims, IdentityConstants.ApplicationScheme);
             var user = new ClaimsPrincipal(identity);
 
             return new AuthenticationState(user);
