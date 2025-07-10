@@ -2,6 +2,7 @@
 using AuthBlocksAPI.Models;
 using AuthBlocksData.Services;
 using AuthBlocksModels.Entities.Identity;
+using AuthBlocksModels.SystemDefinitions;
 using NetBlocks.Models.Environment;
 using NetBlocks.Utilities.Environment;
 
@@ -108,25 +109,31 @@ internal static class Startup
     {
         using var scope = serviceProvider.CreateScope();
 
-        await SeedAdminRole(scope);
+        await SeedSystemRoles(scope);
         await SeedAdminUser(scope);
     }
     
-    private static async Task SeedAdminRole(IServiceScope scope)
+    private static async Task SeedSystemRoles(IServiceScope scope)
     {
         var roleService = scope.ServiceProvider.GetRequiredService<RoleService>();
-        var existingRole = await roleService.FindByNameAsync("Admin");
-        if (existingRole == null)
+        
+        // Create roles in hierarchical order (parents first)
+        foreach (var systemRole in SystemRole.GetAll().OrderBy(r => r.ParentRole?.Id ?? 0))
         {
-            var adminRole = new ApplicationRole
+            var existingRole = await roleService.FindByNameAsync(systemRole.Name);
+            if (existingRole == null)
             {
-                Name = "Admin",
-                NormalizedName = "ADMIN",
-                ConcurrencyStamp = DateTime.UtcNow.ToString(),
-                Created = DateTime.UtcNow,
-                Modified = DateTime.UtcNow
-            };
-            await roleService.CreateRoleAsync(adminRole);
+                var role = new ApplicationRole
+                {
+                    Name = systemRole.Name,
+                    NormalizedName = systemRole.Name.ToUpperInvariant(),
+                    ParentRoleId = systemRole.ParentRole?.Id,
+                    ConcurrencyStamp = DateTime.UtcNow.ToString(),
+                    Created = DateTime.UtcNow,
+                    Modified = DateTime.UtcNow
+                };
+                await roleService.CreateRoleAsync(role);
+            }
         }
     }
     

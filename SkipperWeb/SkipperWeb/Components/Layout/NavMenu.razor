@@ -1,10 +1,12 @@
 ﻿@using AuthBlocksWeb.Components.Layout
+@using Microsoft.AspNetCore.Components.Authorization
 
 <MudNavMenu>
     <AccountNavMenu />
     <MudSpacer/>
     <MudNavLink Href="/dashboard" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Dashboard">Dashboard</MudNavLink>
-    <MudNavGroup Icon="@Icons.Material.Filled.Extension" Title="Maintenance">
+    <UserAdminMenu />
+    <MudNavGroup Icon="@Icons.Material.Filled.Extension" Title="Maintenance" Expanded="true">
         <MudNavLink Href="/maintenance/vessels" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.DirectionsBoat">Vessels</MudNavLink>
         <MudNavLink Href="/maintenance/slips" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Houseboat">Slips</MudNavLink>
         <MudNavLink Href="/maintenance/slipclassifications" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Home">Slip Classifications</MudNavLink>

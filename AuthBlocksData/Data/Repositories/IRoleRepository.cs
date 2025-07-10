@@ -9,4 +9,10 @@ public interface IRoleRepository
     Task<ApplicationRole> CreateAsync(ApplicationRole role);
     Task<ApplicationRole> UpdateAsync(ApplicationRole role);
     Task DeleteAsync(ApplicationRole role);
+    
+    // Simple hierarchy methods
+    Task<IEnumerable<ApplicationRole>> GetRootRolesAsync();
+    Task<IEnumerable<ApplicationRole>> GetChildRolesAsync(long parentRoleId);
+    Task<IEnumerable<ApplicationRole>> GetAncestorsAsync(long roleId);
+    Task<IEnumerable<ApplicationRole>> GetAllAsync();
 } 

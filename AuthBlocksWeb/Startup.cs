@@ -4,6 +4,9 @@ using AuthBlocksWeb.ApiClients;
 using AuthBlocksWeb.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using AuthBlocksModels.Entities.Identity;
+using AuthBlocksWeb.HierarchicalAuthorize;
 
 namespace AuthBlocksWeb;
 
@@ -19,6 +22,11 @@ public static class Startup
         {
             client.BaseAddress = new Uri(apiBaseUrl);
         });
+        
+        services.AddHttpClient<IUsersApiClient, UsersApiClient>(client =>
+        {
+            client.BaseAddress = new Uri(apiBaseUrl);
+        });
 
         // Add custom JWT-based authentication services
         services.AddScoped<ITokenService, TokenService>();
@@ -27,7 +35,10 @@ public static class Startup
 
         services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
         
-        // Add authorization for Blazor components with proper policies
+        // Add authorization with hierarchical role support
         services.AddAuthorization();
+        
+        // Register the hierarchical role authorization handler
+        services.AddScoped<IAuthorizationHandler, HierarchicalRoleRequirementHandler>();
     }
 }

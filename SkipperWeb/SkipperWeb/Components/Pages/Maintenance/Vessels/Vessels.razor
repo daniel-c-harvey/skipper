@@ -1,16 +1,18 @@
 ﻿@using Microsoft.AspNetCore.Authorization
+@using AuthBlocksWeb.HierarchicalAuthorize
 @using NetBlocks.Utilities
-@using SkipperModels.Entities
+@using SkipperWeb.Components.Pages.Maintenance.Entities
 @using SkipperModels.Models
+@using SkipperModels.Entities
 @using SkipperModels.InputModels
 @using SkipperWeb.ApiClients
-@using SkipperWeb.Components.Pages.Maintenance.Entities
+@inject ModelPageViewModel<VesselModel, VesselEntity, VesselClient, VesselClientConfig> ViewModel
 
 @inject VesselClient Client
 @inject NavigationManager Nav
 
+@attribute [HierarchicalRoleAuthorize("Admin")]
 @page "/maintenance/vessels"
-@attribute [Authorize(Roles="Admin")]
 
 <ModelView T="VesselInputModel"
            TModel="VesselModel"

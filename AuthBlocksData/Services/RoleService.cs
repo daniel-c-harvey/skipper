@@ -51,4 +51,25 @@ public class RoleService
     {
         await _roleRepository.DeleteAsync(role);
     }
+    
+    // Hierarchy methods
+    public async Task<IEnumerable<ApplicationRole>> GetRootRolesAsync()
+    {
+        return await _roleRepository.GetRootRolesAsync();
+    }
+    
+    public async Task<IEnumerable<ApplicationRole>> GetChildRolesAsync(long parentRoleId)
+    {
+        return await _roleRepository.GetChildRolesAsync(parentRoleId);
+    }
+    
+    public async Task<IEnumerable<ApplicationRole>> GetAncestorsAsync(long roleId)
+    {
+        return await _roleRepository.GetAncestorsAsync(roleId);
+    }
+    
+    public async Task<IEnumerable<ApplicationRole>> GetAllRolesAsync()
+    {
+        return await _roleRepository.GetAllAsync();
+    }
 } 

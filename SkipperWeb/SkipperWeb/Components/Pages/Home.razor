@@ -1,6 +1,7 @@
 ﻿@using SkipperWeb.Components.Layout
 @using Microsoft.AspNetCore.Components.Authorization
 @using SkipperWeb.Components.Redirectors
+@using AuthBlocksWeb.HierarchicalAuthorize
 
 @page "/"
 @layout MainHomeLayout
@@ -9,7 +10,7 @@
 
 <PageTitle>Home</PageTitle>
 
-<AuthorizeView>
+<HierarchicalRoleAuthorizeView>
     <Authorized>
         <RedirectToDashboard/>
     </Authorized>
@@ -29,4 +30,4 @@
             </MudStack>
         </MudContainer>
     </NotAuthorized>
-</AuthorizeView>
+</HierarchicalRoleAuthorizeView>

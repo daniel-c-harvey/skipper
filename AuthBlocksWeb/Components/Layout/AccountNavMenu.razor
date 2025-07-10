@@ -1,8 +1,9 @@
 @using System.Diagnostics
+@using AuthBlocksWeb.HierarchicalAuthorize
 
 <MudNavGroup HeaderClass="ps-1">
     <TitleContent>
-        <AuthorizeView>
+        <HierarchicalRoleAuthorizeView>
             <Authorized>
                 <MudStack Row AlignItems="AlignItems.Center">
                     <MudAvatar Size="Size.Small">
@@ -17,10 +18,10 @@
                     <MudText>User Account</MudText>
                 </MudStack>
             </NotAuthorized>
-        </AuthorizeView>
+        </HierarchicalRoleAuthorizeView>
     </TitleContent>
     <ChildContent>
-        <AuthorizeView>
+        <HierarchicalRoleAuthorizeView>
             <Authorized>
                 <MudNavLink Href="/account/logout" Match="NavLinkMatch.All">Logout</MudNavLink>
             </Authorized>
@@ -28,6 +29,6 @@
                 <MudNavLink Href="/account/login" Match="NavLinkMatch.All">Login</MudNavLink>
                 <MudNavLink Href="/account/register" Match="NavLinkMatch.All">Register</MudNavLink>
             </NotAuthorized>
-        </AuthorizeView>
+        </HierarchicalRoleAuthorizeView>
     </ChildContent>
 </MudNavGroup>

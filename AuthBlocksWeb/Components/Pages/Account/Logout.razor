@@ -1,5 +1,6 @@
 ﻿@page "/account/logout"
 @using AuthBlocksModels.ApiModels
+@using AuthBlocksWeb.HierarchicalAuthorize
 @using AuthBlocksWeb.Services
 @using Microsoft.AspNetCore.Http
 @inject JwtAuthenticationStateProvider AuthStateProvider
@@ -7,7 +8,7 @@
 
 
 <MudContainer Class="py-5 ma-3">
-    <AuthorizeView>
+    <HierarchicalRoleAuthorizeView>
         <Authorized>
             <MudText Typo="Typo.h6">Logging Out @context.User?.Identity?.Name...</MudText>
         </Authorized>
@@ -21,7 +22,7 @@
                 </MudButton>
             </MudStack>
         </NotAuthorized>
-    </AuthorizeView>
+    </HierarchicalRoleAuthorizeView>
 </MudContainer>
 
 @code {

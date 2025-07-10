@@ -1,0 +1,52 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using AuthBlocksWeb.HierarchicalAuthorize
+@using AuthBlocksWeb.ApiClients
+@using AuthBlocksModels.ApiModels
+@using NetBlocks.Models
+
+@attribute [HierarchicalRoleAuthorize("UserAdmin")]
+@page "/useradmin/permissions"
+
+<h3>User Permissions Management</h3>
+
+<p>This page demonstrates how to use the UsersApiClient for managing user roles and permissions.</p>
+
+<div class="row">
+    <div class="col-md-6">
+        <h4>Available Operations</h4>
+        <ul>
+            <li><strong>GetUsersAsync()</strong> - Retrieve all users</li>
+            <li><strong>GetUserAsync(long id)</strong> - Get specific user by ID</li>
+            <li><strong>UpdateUserAsync(long id, UpdateUserRequest)</strong> - Update user information</li>
+            <li><strong>DeleteUserAsync(long id)</strong> - Delete a user</li>
+            <li><strong>AddUserToRoleAsync(long id, UserRoleRequest)</strong> - Add user to role</li>
+            <li><strong>RemoveUserFromRoleAsync(long id, UserRoleRequest)</strong> - Remove user from role</li>
+        </ul>
+    </div>
+    <div class="col-md-6">
+        <h4>Example Usage</h4>
+        <pre><code>
+// Inject the client
+[Inject]
+private IUsersApiClient UsersApiClient { get; set; } = default!;
+
+// Get all users
+var result = await UsersApiClient.GetUsersAsync();
+if (result.Success && result.Value != null)
+{
+    var users = result.Value;
+}
+
+// Add user to role
+var roleRequest = new UserRoleRequest { RoleName = "Admin" };
+var addResult = await UsersApiClient.AddUserToRoleAsync(userId, roleRequest);
+        </code></pre>
+    </div>
+</div>
+
+@code {
+    [Inject]
+    private IUsersApiClient UsersApiClient { get; set; } = default!;
+
+    // This page serves as documentation and example
+}

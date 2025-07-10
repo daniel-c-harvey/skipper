@@ -58,6 +58,9 @@ namespace AuthBlocksData.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<long?>("ParentRoleId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Deleted")
@@ -66,6 +69,9 @@ namespace AuthBlocksData.Migrations
                     b.HasIndex("NormalizedName")
                         .IsUnique()
                         .HasDatabaseName("ix_roles_normalizedname");
+
+                    b.HasIndex("ParentRoleId")
+                        .HasDatabaseName("ix_roles_parentroleid");
 
                     b.ToTable("roles", "user");
                 });
@@ -396,6 +402,16 @@ namespace AuthBlocksData.Migrations
                     b.ToTable("user_tokens", "user");
                 });
 
+            modelBuilder.Entity("AuthBlocksModels.Entities.Identity.ApplicationRole", b =>
+                {
+                    b.HasOne("AuthBlocksModels.Entities.Identity.ApplicationRole", "ParentRole")
+                        .WithMany("ChildRoles")
+                        .HasForeignKey("ParentRoleId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentRole");
+                });
+
             modelBuilder.Entity("AuthBlocksModels.Entities.Identity.ApplicationRoleClaim", b =>
                 {
                     b.HasOne("AuthBlocksModels.Entities.Identity.ApplicationRole", null)
@@ -445,6 +461,11 @@ namespace AuthBlocksData.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("AuthBlocksModels.Entities.Identity.ApplicationRole", b =>
+                {
+                    b.Navigation("ChildRoles");
                 });
 #pragma warning restore 612, 618
         }

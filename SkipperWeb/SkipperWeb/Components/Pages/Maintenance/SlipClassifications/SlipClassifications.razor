@@ -1,10 +1,13 @@
-﻿@using NetBlocks.Utilities;
-@using SkipperModels.Entities
+﻿@using Microsoft.AspNetCore.Authorization
+@using AuthBlocksWeb.HierarchicalAuthorize
+@using NetBlocks.Utilities
 @using SkipperModels.Models
+@using SkipperModels.Entities
 @using SkipperModels.InputModels
 @using SkipperWeb.ApiClients
 @using SkipperWeb.Components.Pages.Maintenance.Entities
 
+@attribute [HierarchicalRoleAuthorize("Admin")]
 @page "/maintenance/slipclassifications"
 
 <ModelView T="SlipClassificationInputModel"

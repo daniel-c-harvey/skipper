@@ -26,6 +26,10 @@ public class ApplicationRoleConfiguration : IEntityTypeConfiguration<Application
         builder.Property(r => r.ConcurrencyStamp)
             .IsConcurrencyToken();
         
+        // Configure hierarchy
+        builder.Property(r => r.ParentRoleId)
+            .IsRequired(false);
+        
         // Configure additional custom properties
         builder.Property(r => r.Deleted)
             .HasDefaultValue(false)
@@ -39,6 +43,12 @@ public class ApplicationRoleConfiguration : IEntityTypeConfiguration<Application
             .HasDefaultValueSql("NOW()")
             .IsRequired();
 
+        // Configure hierarchy relationship
+        builder.HasOne(r => r.ParentRole)
+            .WithMany(r => r.ChildRoles)
+            .HasForeignKey(r => r.ParentRoleId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         // Indexes
         builder.HasIndex(r => r.NormalizedName)
             .HasDatabaseName("ix_roles_normalizedname")
@@ -46,5 +56,8 @@ public class ApplicationRoleConfiguration : IEntityTypeConfiguration<Application
             
         builder.HasIndex(r => r.Deleted)
             .HasDatabaseName("ix_roles_deleted");
+            
+        builder.HasIndex(r => r.ParentRoleId)
+            .HasDatabaseName("ix_roles_parentroleid");
     }
 } 

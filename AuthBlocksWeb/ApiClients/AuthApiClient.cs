@@ -162,4 +162,35 @@ public class AuthApiClient : IAuthApiClient
             return ApiResult<UserInfo>.CreateFailResult(ex.Message);
         }
     }
+
+    public async Task<ApiResult<List<RoleInfo>>> GetRolesAsync()
+    {
+        try
+        {
+            // Add authorization header
+            var token = await _tokenService.GetAccessTokenAsync();
+            if (string.IsNullOrEmpty(token))
+            {
+                return ApiResult<List<RoleInfo>>.CreateFailResult("No access token available");
+            }
+
+            _httpClient.DefaultRequestHeaders.Authorization = 
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _httpClient.GetAsync("api/roles");
+            var dtoResult = await response.Content.ReadFromJsonAsync<ApiResultDto<List<RoleInfo>>>(_jsonOptions);
+
+            // Clear authorization header
+            _httpClient.DefaultRequestHeaders.Authorization = null;
+
+            if (dtoResult == null) return ApiResult<List<RoleInfo>>.CreateFailResult("Failed to parse response");
+            var result = dtoResult.From();
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            return ApiResult<List<RoleInfo>>.CreateFailResult(ex.Message);
+        }
+    }
 } 

@@ -27,7 +27,6 @@ public class RegisterRequest
     public string ConfirmPassword { get; set; } = string.Empty;
 
     [Required]
-    [StringLength(256)]
     public string UserName { get; set; } = string.Empty;
 }
 
@@ -54,6 +53,17 @@ public class UserInfo
     public string UserName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public List<string> Roles { get; set; } = new();
+}
+
+public class RoleInfo
+{
+    public long Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string NormalizedName { get; set; } = string.Empty;
+    public long? ParentRoleId { get; set; }
+    public string ParentRoleName { get; set; } = string.Empty;
+    public DateTime Created { get; set; }
+    public DateTime Modified { get; set; }
 }
 
 public class UpdateUserRequest

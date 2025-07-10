@@ -1,10 +1,10 @@
 using AuthBlocksAPI.Models;
 using AuthBlocksData.Services;
 using AuthBlocksModels.Entities.Identity;
+using AuthBlocksModels.ApiModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-using AuthBlocksModels.ApiModels;
 using NetBlocks.Models;
 
 namespace AuthBlocksAPI.Controllers;
@@ -28,23 +28,15 @@ public class RolesController : ControllerBase
     {
         try
         {
-            // Since we don't have a GetAll method, we'll get by specific role names
-            // In a real implementation, you'd add a GetAll method to the repository
-            var roles = new List<ApplicationRole>();
+            var roles = await _roleService.GetAllRolesAsync();
             
-            // Get Admin role
-            var adminRole = await _roleService.GetActiveRoleByNameAsync("ADMIN");
-            if (adminRole != null) roles.Add(adminRole);
-            
-            // Get User role (if exists)
-            var userRole = await _roleService.GetActiveRoleByNameAsync("USER");
-            if (userRole != null) roles.Add(userRole);
-
             var roleInfos = roles.Select(r => new RoleInfo
             {
                 Id = r.Id,
                 Name = r.Name ?? string.Empty,
                 NormalizedName = r.NormalizedName ?? string.Empty,
+                ParentRoleId = r.ParentRoleId,
+                ParentRoleName = r.ParentRole?.Name ?? string.Empty,
                 Created = r.Created,
                 Modified = r.Modified
             }).ToList();
@@ -111,10 +103,24 @@ public class RolesController : ControllerBase
                 return BadRequest(new ApiResultDto<RoleInfo>(resultFailure));
             }
 
+            // Validate parent role if specified
+            ApplicationRole? parentRole = null;
+            if (request.ParentRoleId.HasValue)
+            {
+                parentRole = await _roleService.GetActiveRoleByIdAsync(request.ParentRoleId.Value);
+                if (parentRole == null)
+                {
+                    var resultFailure = ApiResult<RoleInfo>.CreateFailResult("Role creation failed")
+                        .Fail("Parent role not found");
+                    return BadRequest(new ApiResultDto<RoleInfo>(resultFailure));
+                }
+            }
+
             var role = new ApplicationRole
             {
                 Name = request.Name,
                 NormalizedName = request.Name.ToUpperInvariant(),
+                ParentRoleId = parentRole?.Id,
                 Created = DateTime.UtcNow,
                 Modified = DateTime.UtcNow,
                 ConcurrencyStamp = Guid.NewGuid().ToString()
@@ -136,6 +142,8 @@ public class RolesController : ControllerBase
                 Id = role.Id,
                 Name = role.Name ?? string.Empty,
                 NormalizedName = role.NormalizedName ?? string.Empty,
+                ParentRoleId = role.ParentRoleId,
+                ParentRoleName = parentRole?.Name ?? string.Empty,
                 Created = role.Created,
                 Modified = role.Modified
             };
@@ -181,6 +189,28 @@ public class RolesController : ControllerBase
                 role.NormalizedName = request.Name.ToUpperInvariant();
             }
 
+            // Validate and update parent role if specified
+            if (request.ParentRoleId.HasValue && request.ParentRoleId != role.ParentRoleId)
+            {
+                // Prevent circular references
+                if (request.ParentRoleId == id)
+                {
+                    var resultFailure = ApiResult<RoleInfo>.CreateFailResult("Role update failed")
+                        .Fail("Role cannot be its own parent");
+                    return BadRequest(new ApiResultDto<RoleInfo>(resultFailure));
+                }
+
+                var parentRole = await _roleService.GetActiveRoleByIdAsync(request.ParentRoleId.Value);
+                if (parentRole == null)
+                {
+                    var resultFailure = ApiResult<RoleInfo>.CreateFailResult("Role update failed")
+                        .Fail("Parent role not found");
+                    return BadRequest(new ApiResultDto<RoleInfo>(resultFailure));
+                }
+
+                role.ParentRoleId = parentRole.Id;
+            }
+
             role.Modified = DateTime.UtcNow;
 
             var result = await _roleService.UpdateRoleAsync(role);
@@ -199,6 +229,8 @@ public class RolesController : ControllerBase
                 Id = role.Id,
                 Name = role.Name ?? string.Empty,
                 NormalizedName = role.NormalizedName ?? string.Empty,
+                ParentRoleId = role.ParentRoleId,
+                ParentRoleName = role.ParentRole?.Name ?? string.Empty,
                 Created = role.Created,
                 Modified = role.Modified
             };
@@ -253,24 +285,17 @@ public class RolesController : ControllerBase
     }
 }
 
-public class RoleInfo
-{
-    public long Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string NormalizedName { get; set; } = string.Empty;
-    public DateTime Created { get; set; }
-    public DateTime Modified { get; set; }
-}
-
 public class CreateRoleRequest
 {
     [Required]
     [StringLength(256, MinimumLength = 1)]
     public string Name { get; set; } = string.Empty;
+    public long? ParentRoleId { get; set; }
 }
 
 public class UpdateRoleRequest
 {
     [StringLength(256, MinimumLength = 1)]
     public string? Name { get; set; }
+    public long? ParentRoleId { get; set; }
 } 

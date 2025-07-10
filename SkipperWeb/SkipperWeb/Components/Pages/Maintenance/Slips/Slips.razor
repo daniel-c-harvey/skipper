@@ -1,10 +1,13 @@
-﻿@using SkipperModels.Entities
-@using SkipperModels.InputModels
+﻿@using Microsoft.AspNetCore.Authorization
+@using AuthBlocksWeb.HierarchicalAuthorize
 @using SkipperModels.Models
+@using SkipperModels.Entities
+@using SkipperModels.InputModels
 @using SkipperWeb.ApiClients
-@using SkipperWeb.Shared.UI
 @using SkipperWeb.Components.Pages.Maintenance.Entities
+@using SkipperWeb.Shared.UI
 
+@attribute [HierarchicalRoleAuthorize("Admin")]
 @page "/maintenance/slips"
 
 <ModelView T="SlipInputModel"
@@ -23,7 +26,7 @@
         <PropertyColumn Property="x => x.LocationCode" Title="Location" />
         <TemplateColumn>
             <CellTemplate Context="row">
-                <SlipStatusChip Status="@row.Item.Status"/>
+                <SlipStatusChip Status="@row?.Item?.Status"/>
             </CellTemplate>
         </TemplateColumn>
     </Columns>

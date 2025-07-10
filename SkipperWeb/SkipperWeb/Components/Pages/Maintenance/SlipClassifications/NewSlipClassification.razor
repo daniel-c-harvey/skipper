@@ -1,9 +1,12 @@
-﻿@using SkipperModels.Entities
+﻿@using Microsoft.AspNetCore.Authorization
+@using AuthBlocksWeb.HierarchicalAuthorize
 @using SkipperModels.Models
+@using SkipperModels.Entities
 @using SkipperModels.InputModels
 @using SkipperWeb.ApiClients
 @using SkipperWeb.Components.Pages.Maintenance.Entities.New
 
+@attribute [HierarchicalRoleAuthorize("Admin")]
 @page "/maintenance/slipclassifications/new"
 
 <NewModelView TInputModel="SlipClassificationInputModel"

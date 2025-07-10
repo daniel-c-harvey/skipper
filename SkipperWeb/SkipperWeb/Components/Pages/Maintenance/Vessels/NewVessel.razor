@@ -1,12 +1,13 @@
 ﻿@using Microsoft.AspNetCore.Authorization
+@using AuthBlocksWeb.HierarchicalAuthorize
+@using SkipperModels.Models
 @using SkipperModels.Entities
 @using SkipperModels.InputModels
-@using SkipperModels.Models
 @using SkipperWeb.ApiClients
 @using SkipperWeb.Components.Pages.Maintenance.Entities.New
 
+@attribute [HierarchicalRoleAuthorize("Admin")]
 @page "/maintenance/vessels/new"
-@attribute [Authorize]
 
 <NewModelView TInputModel="VesselInputModel"
               TModel="VesselModel"

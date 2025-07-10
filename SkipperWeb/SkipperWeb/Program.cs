@@ -7,7 +7,6 @@ using SkipperWeb.Components;
 using System.Text.Json;
 using SkipperModels.Models;
 using SkipperWeb.Components.Pages.Maintenance.Entities;
-using SkipperWeb.Middleware;
 
 namespace SkipperWeb;
 
@@ -28,9 +27,6 @@ public class Program
 
         LoadAuthBlocksServices(builder.Services);
         LoadSkipperServices(builder.Services);
-
-        
-        
 
         builder.Services.Configure<JsonSerializerOptions>(options =>
         {

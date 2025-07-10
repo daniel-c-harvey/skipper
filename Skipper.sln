@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthBlocksWeb", "AuthBlocks
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthBlocksWeb.Client", "AuthBlocksWeb.Client\AuthBlocksWeb.Client.csproj", "{05377549-C664-4EB3-AFB9-1BB253100C0E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperDataAgent", "SkipperDataAgent\SkipperDataAgent.csproj", "{AD2AD469-C7DA-43DC-A506-8ACA2B0E855B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{05377549-C664-4EB3-AFB9-1BB253100C0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05377549-C664-4EB3-AFB9-1BB253100C0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05377549-C664-4EB3-AFB9-1BB253100C0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD2AD469-C7DA-43DC-A506-8ACA2B0E855B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD2AD469-C7DA-43DC-A506-8ACA2B0E855B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD2AD469-C7DA-43DC-A506-8ACA2B0E855B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD2AD469-C7DA-43DC-A506-8ACA2B0E855B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
