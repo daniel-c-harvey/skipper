@@ -45,7 +45,10 @@ namespace SkipperAPI.Controllers
             var pageResult = await Manager.GetPage(predicate, paging);
             
             var result = ApiResult<PagedResult<TModel>>.From(pageResult);
-            result.Value = PagedResult<TModel>.From(pageResult.Value, pageResult.Value.Items.Select(TEntity.CreateModel));
+            if (pageResult.Value != null)
+            {
+                result.Value = PagedResult<TModel>.From(pageResult.Value, pageResult.Value.Items?.Select(TEntity.CreateModel) ?? []);
+            }
             ApiResultDto<PagedResult<TModel>> dto = new(result);
             
             return result.Success ? Ok(dto) : StatusCode(500, dto);
