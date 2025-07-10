@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GenBlocks\GenBlocks.csproj" OutputItemType="Analyzer"/>
     <ProjectReference Include="C:\lib\NetBlocks\NetBlocks.csproj" />
   </ItemGroup>
 

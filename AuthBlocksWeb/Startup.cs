@@ -27,6 +27,11 @@ public static class Startup
         {
             client.BaseAddress = new Uri(apiBaseUrl);
         });
+        
+        services.AddHttpClient<IRolesApiClient, RolesApiClient>(client =>
+        {
+            client.BaseAddress = new Uri(apiBaseUrl);
+        });
 
         // Add custom JWT-based authentication services
         services.AddScoped<ITokenService, TokenService>();

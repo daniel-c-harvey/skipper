@@ -80,4 +80,19 @@ public class UserRoleRequest
     [Required]
     [StringLength(256)]
     public string RoleName { get; set; } = string.Empty;
+}
+
+public class CreateRoleRequest
+{
+    [Required]
+    [StringLength(256, MinimumLength = 1)]
+    public string Name { get; set; } = string.Empty;
+    public long? ParentRoleId { get; set; }
+}
+
+public class UpdateRoleRequest
+{
+    [StringLength(256, MinimumLength = 1)]
+    public string? Name { get; set; }
+    public long? ParentRoleId { get; set; }
 } 

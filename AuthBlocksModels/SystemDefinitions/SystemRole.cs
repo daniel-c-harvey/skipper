@@ -1,7 +1,9 @@
-﻿using NetBlocks.Utilities;
+﻿using GenBlocks.Generators;
+using NetBlocks.Utilities;
 
 namespace AuthBlocksModels.SystemDefinitions;
 
+[GenerateConstants]
 public class SystemRole : Enumeration<SystemRole>
 {
     public static SystemRole UserAdmin = new(2, "UserAdmin");

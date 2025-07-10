@@ -19,8 +19,4 @@
       <None Include="environment\connections.json" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Common\" />
-    </ItemGroup>
-
 </Project>

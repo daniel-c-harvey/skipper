@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using NetBlocks.Models;
+using AuthBlocksModels.SystemDefinitions;
 
 namespace AuthBlocksAPI.Controllers;
 
@@ -55,7 +56,6 @@ public class RolesController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<ApiResultDto<RoleInfo>>> GetRole(long id)
     {
         try
@@ -91,7 +91,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = SystemRoleConstants.UserAdmin)]
     public async Task<ActionResult<ApiResultDto<RoleInfo>>> CreateRole([FromBody] CreateRoleRequest request)
     {
         try
@@ -164,7 +164,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = SystemRoleConstants.UserAdmin)]
     public async Task<ActionResult<ApiResultDto<RoleInfo>>> UpdateRole(long id, [FromBody] UpdateRoleRequest request)
     {
         try
@@ -252,7 +252,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = SystemRoleConstants.UserAdmin)]
     public async Task<ActionResult<ApiResultDto>> DeleteRole(long id)
     {
         try
@@ -287,19 +287,4 @@ public class RolesController : ControllerBase
             return StatusCode(500, new ApiResultDto(resultError));
         }
     }
-}
-
-public class CreateRoleRequest
-{
-    [Required]
-    [StringLength(256, MinimumLength = 1)]
-    public string Name { get; set; } = string.Empty;
-    public long? ParentRoleId { get; set; }
-}
-
-public class UpdateRoleRequest
-{
-    [StringLength(256, MinimumLength = 1)]
-    public string? Name { get; set; }
-    public long? ParentRoleId { get; set; }
 } 

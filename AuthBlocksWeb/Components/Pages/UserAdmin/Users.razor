@@ -2,18 +2,19 @@
 @using AuthBlocksWeb.HierarchicalAuthorize
 @using AuthBlocksWeb.ApiClients
 @using AuthBlocksModels.ApiModels
+@using AuthBlocksModels.SystemDefinitions
 @using NetBlocks.Models
 
-@attribute [HierarchicalRoleAuthorize("UserAdmin")]
+@attribute [HierarchicalRoleAuthorize(SystemRoleConstants.UserAdmin)]
 @page "/useradmin/users"
 
 <h3>Users</h3>
 
-@if (users == null)
+@if (_users == null)
 {
     <p>Loading users...</p>
 }
-else if (!users.Any())
+else if (!_users.Any())
 {
     <p>No users found.</p>
 }
@@ -30,7 +31,7 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach (var user in users)
+                @foreach (var user in _users)
                 {
                     <tr>
                         <td>@user.Id</td>
@@ -48,14 +49,14 @@ else
     [Inject]
     private IUsersApiClient UsersApiClient { get; set; } = default!;
 
-    private List<UserInfo> users = new();
+    private List<UserInfo>? _users;
 
     protected override async Task OnInitializedAsync()
     {
         var result = await UsersApiClient.GetUsersAsync();
         if (result.Success && result.Value != null)
         {
-            users = result.Value;
+            _users = result.Value;
         }
     }
 }
