@@ -1,32 +1,19 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode"/>
+<MudThemeProvider Theme="_theme" IsDarkMode="IsDarkMode"/>
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h6">Skipper</MudText>
-        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
-    </MudAppBar>
-    <MudDrawer @bind-Open="@_drawerOpen" Elevation="2">
-        <NavMenu/>
-    </MudDrawer>
-    <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pa-6">
-            @Body
-        </MudContainer>
-        @* <NavFooter /> *@
-    </MudMainContent>
+    @Body
 </MudLayout>
 
-@code {    
-    bool _drawerOpen = false;
-    private bool _isDarkMode = true;
+@code {
     private MudTheme? _theme = null;
 
+    [Parameter] public required bool IsDarkMode { get; set; }
+    
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -37,16 +24,6 @@
             PaletteDark = _darkPalette,
             LayoutProperties = new LayoutProperties()
         };
-    }
-
-    void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
-
-    private void DarkModeToggle()
-    {
-        _isDarkMode = !_isDarkMode;
     }
 
     private readonly PaletteLight _lightPalette = new()
@@ -177,11 +154,5 @@
         OverlayLight = "#26323880",
         HoverOpacity = 0.06,
         RippleOpacity = 0.1,
-    };
-
-    public string DarkLightModeButtonIcon => _isDarkMode switch
-    {
-        false => Icons.Material.Rounded.LightMode,
-        true => Icons.Material.Outlined.DarkMode,
     };
 }

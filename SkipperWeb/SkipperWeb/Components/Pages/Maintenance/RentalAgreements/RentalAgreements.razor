@@ -1,0 +1,30 @@
+﻿@using SkipperModels.Entities
+@using SkipperModels.Models
+@using SkipperModels.InputModels
+@using SkipperWeb.ApiClients
+@using SkipperWeb.Components.Pages.Maintenance.Entities
+
+@page "/maintenance/rentalagreements"
+
+<ModelView T="RentalAgreementInputModel"
+           TModel="RentalAgreementModel"
+           TEntity="RentalAgreementEntity"
+           TEditModal="EditRentalAgreementModal"
+           TClient="RentalAgreementClient"
+           TClientConfig="RentalAgreementClientConfig"
+           Title="Rental Agreements"
+           PageRoute="/maintenance/rentalagreements"
+           ModelDisplayName="Rental Agreement"
+           Placeholder="Search for rental agreements...">
+    <Columns>
+        <PropertyColumn Property="x => x.Slip.SlipNumber" Title="Slip Number"/>
+        <PropertyColumn Property="x => x.Vessel.RegistrationNumber" Title="Vessel Reg. No."/>
+        <PropertyColumn Property="x => x.Vessel.Name" Title="Vessel Name"/>
+        <PropertyColumn Property="x => x.StartDate" Title="Start Date"/>
+        <PropertyColumn Property="x => x.EndDate" Title="End Date"/>
+        <PropertyColumn Property="@(x => x.PriceRate.ToString("C"))" Title="Price"/>
+        <PropertyColumn Property="x => x.PriceUnit.DisplayName" Title="Unit"/>
+        <PropertyColumn Property="x => x.Status.DisplayName" Title="Status"/>
+    </Columns>
+
+</ModelView>

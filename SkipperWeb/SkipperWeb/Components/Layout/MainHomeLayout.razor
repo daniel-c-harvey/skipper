@@ -1,0 +1,36 @@
+﻿@using SkipperWeb.Shared.Icons
+@inherits LayoutComponentBase
+
+<MainLayout IsDarkMode="_isDarkMode">
+    <Body>
+    <MudAppBar Elevation="1">
+        <MudLink Href="/" Underline="Underline.None">
+            <MudStack Row AlignItems="AlignItems.Center">
+                <MudImage Fluid="true" Width="24" Src="img/skipper-hero-boat-md.png"/>
+                <MudText Typo="Typo.button">Skipper</MudText>
+            </MudStack>
+        </MudLink>
+        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle"/>
+    </MudAppBar>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="pa-12">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+    </Body>
+</MainLayout>
+
+@code {
+    private bool _isDarkMode = false;
+
+    private void DarkModeToggle()
+    {
+        _isDarkMode = !_isDarkMode;
+    }
+
+    private string DarkLightModeButtonIcon => _isDarkMode switch
+    {
+        false => Icons.Material.Rounded.LightMode,
+        true => Icons.Material.Outlined.DarkMode,
+    };
+}

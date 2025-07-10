@@ -1,7 +1,7 @@
 @page "/account/login"
 @using AuthBlocksModels.ApiModels
 @using AuthBlocksWeb.Services
-@using Microsoft.AspNetCore.Http
+
 @inject JwtAuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
 
@@ -46,7 +46,7 @@
                 <MudButton Href="/account/register"
                            Color="Color.Secondary"
                            Variant="Variant.Outlined">
-                    Register as a new user
+                    Use Registration Code
                 </MudButton>
             </MudStack>
         </MudItem>

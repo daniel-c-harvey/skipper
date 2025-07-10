@@ -1,0 +1,30 @@
+﻿@using SkipperModels.Entities
+@using SkipperModels.InputModels
+@using SkipperModels.Models
+@using SkipperWeb.ApiClients
+@using SkipperWeb.Shared.UI
+@using SkipperWeb.Components.Pages.Maintenance.Entities
+
+@page "/maintenance/slips"
+
+<ModelView T="SlipInputModel"
+           TModel="SlipModel"
+           TEntity="SlipEntity"
+           TEditModal="EditSlipModal"
+           TClient="SlipClient"
+           TClientConfig="SlipClientConfig"
+           Title="Slips"
+           ModelDisplayName="Slip"
+           PageRoute="maintenance/slips"
+           Placeholder="Search for slips...">
+    <Columns>
+        <PropertyColumn Property="x => x.SlipNumber" Title="Slip Number" />
+        <PropertyColumn Property="x => x.SlipClassification.Name" Title="Classification" />
+        <PropertyColumn Property="x => x.LocationCode" Title="Location" />
+        <TemplateColumn>
+            <CellTemplate Context="row">
+                <SlipStatusChip Status="@row.Item.Status"/>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+</ModelView>

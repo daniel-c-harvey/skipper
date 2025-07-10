@@ -1,0 +1,45 @@
+﻿@using SkipperWeb.Shared.Icons
+@inherits LayoutComponentBase
+
+<MudAppBar Elevation="1">
+    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+    <MudLink Href="/" Underline="Underline.None">
+        <MudStack Row AlignItems="AlignItems.Center">
+            <MudImage Fluid="true" Width="24" Src="img/skipper-hero-boat-md.png"/>
+            <MudText Typo="Typo.h6">Skipper</MudText>
+        </MudStack>
+    </MudLink>
+    <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
+</MudAppBar>
+<MudDrawer @bind-Open="@_drawerOpen" Elevation="2">
+    <NavMenu/>
+</MudDrawer>
+<MudMainContent>
+    <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pa-6">
+        @Body
+    </MudContainer>
+</MudMainContent>
+
+@code {
+    bool _drawerOpen = false;
+    [Parameter] public required bool IsDarkMode { get; set; } = false;
+    [Parameter] public required EventCallback<bool> IsDarkModeChanged { get; set; }
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private void DarkModeToggle()
+    {
+        IsDarkMode = !IsDarkMode;
+        IsDarkModeChanged.InvokeAsync(IsDarkMode);
+    }
+
+    private string DarkLightModeButtonIcon => IsDarkMode switch
+    {
+        false => Icons.Material.Rounded.LightMode,
+        true => Icons.Material.Outlined.DarkMode,
+    };
+    
+}

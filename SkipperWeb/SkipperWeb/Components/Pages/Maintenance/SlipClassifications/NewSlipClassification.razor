@@ -1,0 +1,21 @@
+﻿@using SkipperModels.Entities
+@using SkipperModels.Models
+@using SkipperModels.InputModels
+@using SkipperWeb.ApiClients
+@using SkipperWeb.Components.Pages.Maintenance.Entities.New
+
+@page "/maintenance/slipclassifications/new"
+
+<NewModelView TInputModel="SlipClassificationInputModel"
+              TModel="SlipClassificationModel"
+              TEntity="SlipClassificationEntity"
+              TClient="SlipClassificationClient"
+              TClientConfig="SlipClassificationClientConfig"
+              ModelDisplayName="Slip Classification"
+              PageRoute="maintenance/slipclassifications">
+    <EditSlipClassificationForm Model="context" />
+</NewModelView>
+
+@code {
+    
+}

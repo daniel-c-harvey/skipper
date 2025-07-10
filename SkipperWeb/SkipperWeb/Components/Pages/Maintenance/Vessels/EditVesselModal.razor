@@ -1,0 +1,14 @@
+﻿@using SkipperModels.InputModels
+@using SkipperWeb.Components.Pages.Maintenance.Entities
+
+@implements SkipperWeb.Components.Pages.Maintenance.Entities.IEditModal<VesselInputModel>
+
+<EditModelModal TModel="VesselInputModel"
+                Model="Model">
+    <EditVesselForm Vessel="Model" />
+</EditModelModal>
+
+@code {
+    [Parameter]
+    public required VesselInputModel Model { get; set; }
+}

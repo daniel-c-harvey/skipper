@@ -1,20 +1,32 @@
-﻿@page "/"
+﻿@using SkipperWeb.Components.Layout
+@using Microsoft.AspNetCore.Components.Authorization
+@using SkipperWeb.Components.Redirectors
+
+@page "/"
+@layout MainHomeLayout
+
+@inject NavigationManager NavigationManager
 
 <PageTitle>Home</PageTitle>
 
-<MudText Typo="Typo.h4">
-    Ahoy, skipper!
-</MudText>
-<br />
-<MudText Typo="Typo.body1">
-    Check out the vessel registration.
-</MudText>
-
-<Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
+<AuthorizeView>
     <Authorized>
-        <MudText>@context.User?.Identity?.Name</MudText>
+        <RedirectToDashboard/>
     </Authorized>
     <NotAuthorized>
-        <MudText>Not Authorized</MudText>
+        <MudContainer MaxWidth="MaxWidth.Large">
+            <MudStack AlignItems="AlignItems.Center">
+                <MudImage Fluid="true" Src="img/skipper-hero.png"/>
+                <MudText Typo="Typo.h2" Class="bold text-justify">SKIPPER</MudText>
+                <MudText Typo="Typo.h6" Class="text-justify">ERP FOR MARINA MANAGEMENT</MudText>
+                <MudSpacer/>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" Href="@($"account/login?returnUrl={Uri.EscapeDataString("dashboard")}")">Login</MudButton>
+                <MudSpacer/>
+                <MudStack Row AlignItems="AlignItems.Center">
+                    <MudText Typo="Typo.body2" Color="Color.Tertiary">Have a registration code? </MudText>
+                    <MudButton Href="@($"account/register?returnUrl={Uri.EscapeDataString("account/login")}")" Variant="Variant.Outlined">Register Account</MudButton>
+                </MudStack>
+            </MudStack>
+        </MudContainer>
     </NotAuthorized>
-</Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
+</AuthorizeView>

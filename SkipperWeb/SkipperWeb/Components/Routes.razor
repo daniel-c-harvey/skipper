@@ -1,20 +1,15 @@
 ﻿@using SkipperWeb.Components.Layout
 @using Microsoft.AspNetCore.Components.Authorization
 @using AuthBlocksWeb.Components
+@using SkipperWeb.Components.Redirectors
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
 
-<CascadingAuthenticationState>
-    <Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(Client._Imports).Assembly, typeof(Shared._Imports).Assembly, typeof(AuthBlocksWeb._Imports).Assembly, typeof(AuthBlocksWeb.Client._Imports).Assembly }">
+<Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(Client._Imports).Assembly, typeof(Shared._Imports).Assembly, typeof(AuthBlocksWeb._Imports).Assembly, typeof(AuthBlocksWeb.Client._Imports).Assembly }">
     <Found Context="routeData">
-        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@_currentLayout">
             <NotAuthorized Context="authContext">
-                @if (authContext.User.Identity?.IsAuthenticated != true)
-                {
-                    <RedirectToLogin />
-                }
-                else
-                {
-                    <MudText Typo="Typo.body1" Color="Color.Error">You are not authorized to access this resource.</MudText>
-                }
+                <RedirectToLogin />
             </NotAuthorized>
             <Authorizing>
                 <p>Authorizing...</p>
@@ -23,7 +18,25 @@
         <FocusOnNavigate RouteData="routeData" Selector="h1"/>
     </Found>
     <NotFound>
-        Test
+        <RedirectToNotFound/>
     </NotFound>
 </Router>
-</CascadingAuthenticationState>
+
+@code {
+    [Parameter] public Type AuthenticatedLayout { get; set; } = typeof(MainApplicationLayout);
+    [Parameter] public Type UnauthenticatedLayout { get; set; } = typeof(MainHomeLayout);
+    [CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
+
+    private Type _currentLayout = typeof(MainHomeLayout);
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (AuthenticationState != null)
+        {
+            var authState = await AuthenticationState;
+            _currentLayout = authState.User.Identity?.IsAuthenticated == true 
+                ? AuthenticatedLayout 
+                : UnauthenticatedLayout;
+        }
+    }
+}

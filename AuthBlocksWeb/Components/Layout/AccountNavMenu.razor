@@ -1,19 +1,33 @@
 @using System.Diagnostics
 
-<MudNavGroup Icon="@Icons.Material.Rounded.Person" Title="User">
-    <AuthorizeView>
-        <Authorized>
-            <MudStack Row AlignItems="AlignItems.Center" Class="ps-3 ma-1">
-                <MudAvatar>
-                    @(context.User.Identity?.Name?.FirstOrDefault())
-                </MudAvatar>
-                <MudText Typo="Typo.body1">Welcome @context.User.Identity?.Name</MudText>
-            </MudStack>
-            <MudNavLink Href="/account/logout" Match="NavLinkMatch.All">Logout</MudNavLink>
-        </Authorized>   
-        <NotAuthorized>
-            <MudNavLink Href="/account/login" Match="NavLinkMatch.All">Login</MudNavLink>
-            <MudNavLink Href="/account/register" Match="NavLinkMatch.All">Register</MudNavLink>
-        </NotAuthorized>
-    </AuthorizeView>
+<MudNavGroup HeaderClass="ps-1">
+    <TitleContent>
+        <AuthorizeView>
+            <Authorized>
+                <MudStack Row AlignItems="AlignItems.Center">
+                    <MudAvatar Size="Size.Small">
+                        @(char.ToUpper(context.User.Identity?.Name?.FirstOrDefault() ?? '?'))
+                    </MudAvatar>
+                    <MudText>Welcome, @context.User.Identity?.Name</MudText>
+                </MudStack>
+            </Authorized>
+            <NotAuthorized>
+                <MudStack Row AlignItems="AlignItems.Center">
+                    <MudIcon Icon="@Icons.Material.Filled.AccountCircle" Size="Size.Medium"/>
+                    <MudText>User Account</MudText>
+                </MudStack>
+            </NotAuthorized>
+        </AuthorizeView>
+    </TitleContent>
+    <ChildContent>
+        <AuthorizeView>
+            <Authorized>
+                <MudNavLink Href="/account/logout" Match="NavLinkMatch.All">Logout</MudNavLink>
+            </Authorized>
+            <NotAuthorized>
+                <MudNavLink Href="/account/login" Match="NavLinkMatch.All">Login</MudNavLink>
+                <MudNavLink Href="/account/register" Match="NavLinkMatch.All">Register</MudNavLink>
+            </NotAuthorized>
+        </AuthorizeView>
+    </ChildContent>
 </MudNavGroup>

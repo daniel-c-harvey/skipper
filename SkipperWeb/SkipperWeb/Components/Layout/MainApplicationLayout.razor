@@ -1,0 +1,15 @@
+﻿@inherits LayoutComponentBase
+
+<MainLayout IsDarkMode="_isDarkMode">
+    <Body>
+        <AppLayout @bind-IsDarkMode="_isDarkMode">
+            <Body>
+                @Body
+            </Body>
+        </AppLayout>
+    </Body>
+</MainLayout>
+
+@code {
+    private bool _isDarkMode = false;
+}

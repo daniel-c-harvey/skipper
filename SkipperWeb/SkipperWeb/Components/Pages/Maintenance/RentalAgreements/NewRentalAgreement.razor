@@ -1,0 +1,20 @@
+﻿@using SkipperModels.Entities
+@using SkipperModels.Models
+@using SkipperModels.InputModels
+@using SkipperWeb.ApiClients
+@using SkipperWeb.Components.Pages.Maintenance.Entities.New
+@using SkipperWeb.Components.Pages.Maintenance.RentalAgreements.Forms
+
+
+
+@page "/maintenance/rentalagreements/new"
+
+<NewModelView TInputModel="RentalAgreementInputModel"
+              TModel="RentalAgreementModel"
+              TEntity="RentalAgreementEntity"
+              TClient="RentalAgreementClient"
+              TClientConfig="RentalAgreementClientConfig"
+              ModelDisplayName="Rental Agreement"
+              PageRoute="/maintenance/rentalagreements">
+    <EditRentalAgreementForm Model="context" />
+</NewModelView>
