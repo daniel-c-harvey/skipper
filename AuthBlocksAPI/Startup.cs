@@ -1,0 +1,161 @@
+﻿using AuthBlocksAPI.Common;
+using AuthBlocksAPI.Models;
+using AuthBlocksData.Services;
+using AuthBlocksModels.Entities.Identity;
+using NetBlocks.Models.Environment;
+using NetBlocks.Utilities.Environment;
+
+namespace AuthBlocksAPI;
+
+internal static class Startup
+{
+    public static Connection LoadConnection()
+    {
+        const string configPath = "environment/connections.json";
+        
+        if (!File.Exists(configPath))
+        {
+            throw new FileNotFoundException($"Database connection configuration file not found at: {configPath}");
+        }
+
+        try
+        {
+            Connections? connections = ConnectionStringTools.LoadFromFile(configPath);
+            
+            if (connections == null) 
+                throw new InvalidOperationException("No connections configuration found in file");
+
+            Connection? connection = connections.ConnectionStrings
+                .FirstOrDefault(c => c.ID == connections.ActiveConnectionID);
+            
+            if (connection == null) 
+                throw new InvalidOperationException($"Active connection with ID '{connections.ActiveConnectionID}' not found in connections file");
+            
+            return connection;
+        }
+        catch (Exception ex) when (!(ex is FileNotFoundException || ex is InvalidOperationException))
+        {
+            throw new InvalidOperationException($"Failed to load database connection configuration: {ex.Message}", ex);
+        }
+    }
+    
+    public static JwtSettings LoadJwtConfig()
+    {
+        const string configPath = "environment/jwt_settings.json";
+        
+        if (!File.Exists(configPath))
+        {
+            throw new FileNotFoundException($"JWT settings configuration file not found at: {configPath}");
+        }
+
+        try
+        {
+            var jwtSettings = JwtSettingsTools.LoadFromFile(configPath);
+            
+            // Validate required settings
+            if (string.IsNullOrEmpty(jwtSettings.Secret))
+                throw new InvalidOperationException("JWT Secret is required but not configured");
+            
+            if (jwtSettings.Secret.Length < 32)
+                throw new InvalidOperationException("JWT Secret must be at least 32 characters long");
+            
+            if (string.IsNullOrEmpty(jwtSettings.Issuer))
+                throw new InvalidOperationException("JWT Issuer is required but not configured");
+            
+            if (string.IsNullOrEmpty(jwtSettings.Audience))
+                throw new InvalidOperationException("JWT Audience is required but not configured");
+            
+            return jwtSettings;
+        }
+        catch (Exception ex) when (!(ex is FileNotFoundException || ex is InvalidOperationException))
+        {
+            throw new InvalidOperationException($"Failed to load JWT settings configuration: {ex.Message}", ex);
+        }
+    }
+    
+    private static AdminUserSettings LoadAdminConfig()
+    {
+        const string configPath = "environment/admin.json";
+        
+        if (!File.Exists(configPath))
+        {
+            throw new FileNotFoundException($"Admin settings configuration file not found at: {configPath}");
+        }
+
+        try
+        {
+            var admin = JsonTools<AdminUserSettings>.LoadFromFile(configPath);
+            
+            // Validate required settings
+            if (string.IsNullOrEmpty(admin.UserName))
+                throw new InvalidOperationException("Admin UserName is required but not configured");
+            
+            if (string.IsNullOrEmpty(admin.Email))
+                throw new InvalidOperationException("Admin Email is required but not configured");
+            
+            if (string.IsNullOrEmpty(admin.Password))
+                throw new InvalidOperationException("Admin Password is required but not configured");
+            
+            return admin;
+        }
+        catch (Exception ex) when (!(ex is FileNotFoundException || ex is InvalidOperationException))
+        {
+            throw new InvalidOperationException($"Failed to load Admin settings configuration: {ex.Message}", ex);
+        }
+    }
+    
+    public static async Task SeedSystemRolesAsync(IServiceProvider serviceProvider)
+    {
+        using var scope = serviceProvider.CreateScope();
+
+        await SeedAdminRole(scope);
+        await SeedAdminUser(scope);
+    }
+    
+    private static async Task SeedAdminRole(IServiceScope scope)
+    {
+        var roleService = scope.ServiceProvider.GetRequiredService<RoleService>();
+        var existingRole = await roleService.FindByNameAsync("Admin");
+        if (existingRole == null)
+        {
+            var adminRole = new ApplicationRole
+            {
+                Name = "Admin",
+                NormalizedName = "ADMIN",
+                ConcurrencyStamp = DateTime.UtcNow.ToString(),
+                Created = DateTime.UtcNow,
+                Modified = DateTime.UtcNow
+            };
+            await roleService.CreateRoleAsync(adminRole);
+        }
+    }
+    
+    private static async Task SeedAdminUser(IServiceScope scope)
+    {
+        var userService = scope.ServiceProvider.GetRequiredService<UserService>();
+        var adminSettings = LoadAdminConfig();
+        var existingUser = await userService.FindByNameAsync(adminSettings.UserName);
+        if (existingUser is null)
+        {
+            var user = new ApplicationUser
+            {
+                UserName = adminSettings.UserName,
+                Email = adminSettings.Email,
+                EmailConfirmed = true,
+                Created = DateTime.UtcNow,
+                Modified = DateTime.UtcNow
+            };
+            await userService.CreateUserAsync(user, adminSettings.Password);
+            await userService.AddUserToRoleAsync(user, "Admin");
+        }
+        else if (existingUser.Email != adminSettings.Email)
+        {
+            existingUser.Email = adminSettings.Email;
+            await userService.UpdateUserAsync(existingUser);
+        }
+        else if (!await userService.CheckPassword(existingUser, adminSettings.Password))
+        {
+            await userService.UpdatePassword(existingUser, adminSettings.Password);
+        }
+    }
+}

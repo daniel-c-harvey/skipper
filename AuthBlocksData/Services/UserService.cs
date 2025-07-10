@@ -72,4 +72,15 @@ public class UserService
     {
         await _userRepository.RemoveFromRoleAsync(user, roleName);
     }
+
+    public async Task<bool> CheckPassword(ApplicationUser user, string password)
+    {
+        return await _userManager.CheckPasswordAsync(user, password);
+    }
+    
+    public async Task UpdatePassword(ApplicationUser user, string password)
+    {
+        await _userManager.RemovePasswordAsync(user);
+        await _userManager.AddPasswordAsync(user, password);
+    }
 } 
