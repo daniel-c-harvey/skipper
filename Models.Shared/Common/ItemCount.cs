@@ -1,4 +1,4 @@
-﻿namespace SkipperModels.Common;
+﻿namespace Models.Shared.Common;
 
 public class ItemCount
 {

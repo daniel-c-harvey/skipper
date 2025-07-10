@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Models.Shared.Entities;
+using Models.Shared.Models;
 using SkipperData.Data;
 using SkipperModels.Entities;
 using SkipperModels.Models;

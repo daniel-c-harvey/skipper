@@ -1,4 +1,5 @@
-﻿using SkipperModels.Entities;
+﻿using Models.Shared.Models;
+using SkipperModels.Entities;
 
 namespace SkipperModels.Models;
 

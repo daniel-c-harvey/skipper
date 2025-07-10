@@ -1,12 +1,12 @@
-using Microsoft.AspNetCore.Mvc;
-using SkipperData.Managers;
 using System.Linq.Expressions;
+using Data.Shared.Managers;
+using Microsoft.AspNetCore.Mvc;
+using Models.Shared.Common;
+using Models.Shared.Entities;
+using Models.Shared.Models;
 using NetBlocks.Models;
-using SkipperModels.Common;
-using SkipperModels.Entities;
-using SkipperModels.Models;
 
-namespace SkipperAPI.Controllers
+namespace API.Shared.Controllers
 {
     [ApiController] 
     public abstract class BaseModelController<TEntity, TModel> : ControllerBase 

@@ -1,11 +1,11 @@
 ﻿using System.Linq.Expressions;
+using Data.Shared.Data.Repositories;
+using Models.Shared.Common;
+using Models.Shared.Entities;
+using Models.Shared.Models;
 using NetBlocks.Models;
-using SkipperData.Data.Repositories;
-using SkipperModels.Common;
-using SkipperModels.Entities;
-using SkipperModels.Models;
 
-namespace SkipperData.Managers;
+namespace Data.Shared.Managers;
 
 public abstract class ManagerBase<TEntity, TDto> : IManager<TEntity, TDto>
 where TEntity : class, IEntity<TEntity, TDto>

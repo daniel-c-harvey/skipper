@@ -1,4 +1,7 @@
-﻿using NetBlocks.Models;
+﻿using Models.Shared.Common;
+using Models.Shared.Entities;
+using Models.Shared.Models;
+using NetBlocks.Models;
 using SkipperModels.Common;
 using SkipperModels.Entities;
 using SkipperModels.Models;

@@ -1,10 +1,10 @@
 ﻿using System.Linq.Expressions;
+using Models.Shared.Common;
+using Models.Shared.Entities;
+using Models.Shared.Models;
 using NetBlocks.Models;
-using SkipperModels.Common;
-using SkipperModels.Entities;
-using SkipperModels.Models;
 
-namespace SkipperData.Managers;
+namespace Data.Shared.Managers;
 
 public interface IManager<TEntity, TDto>
 where TEntity : class, IEntity<TEntity, TDto>

@@ -12,6 +12,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\API.Shared\API.Shared.csproj" />
+      <ProjectReference Include="..\Models.Shared\Models.Shared.csproj" />
       <ProjectReference Include="..\SkipperData\SkipperData.csproj" />
     </ItemGroup>
 

@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace SkipperModels.Common;
+namespace Models.Shared.Common;
 
 public class PagingParameters
 {

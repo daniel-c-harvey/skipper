@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Data.Shared.Managers;
+using Microsoft.Extensions.DependencyInjection;
 using SkipperModels.Entities;
 using SkipperModels.Models;
 

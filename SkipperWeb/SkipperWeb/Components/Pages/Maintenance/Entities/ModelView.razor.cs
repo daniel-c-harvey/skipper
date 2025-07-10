@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Models.Shared.Entities;
+using Models.Shared.InputModels;
+using Models.Shared.Models;
 using MudBlazor;
 using SkipperModels.Entities;
 using SkipperModels.InputModels;

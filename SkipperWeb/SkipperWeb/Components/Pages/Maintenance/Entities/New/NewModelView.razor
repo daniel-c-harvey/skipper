@@ -3,9 +3,9 @@
 @using SkipperModels.InputModels
 @using SkipperWeb.ApiClients
 
-@typeparam TModel where TModel : class, IModel<TModel, TEntity>, new()
-@typeparam TEntity where TEntity : class, IEntity<TEntity, TModel>, new()
-@typeparam TInputModel where TInputModel : class, IInputModel<TInputModel, TModel, TEntity>, new()
+@typeparam TModel where TModel : class, Models.Shared.Models.IModel<TModel, TEntity>, new()
+@typeparam TEntity where TEntity : class, Models.Shared.Entities.IEntity<TEntity, TModel>, new()
+@typeparam TInputModel where TInputModel : class, Models.Shared.InputModels.IInputModel<TInputModel, TModel, TEntity>, new()
 @typeparam TClient where TClient : ModelControllerClient<TModel, TEntity, TClientConfig>
 @typeparam TClientConfig where TClientConfig : ModelControllerClientConfig
 

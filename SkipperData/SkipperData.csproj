@@ -22,6 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Data.Shared\Data.Shared.csproj" />
       <ProjectReference Include="..\SkipperModels\SkipperModels.csproj" />
       <ProjectReference Include="C:\lib\NetBlocks\NetBlocks.csproj" />
     </ItemGroup>

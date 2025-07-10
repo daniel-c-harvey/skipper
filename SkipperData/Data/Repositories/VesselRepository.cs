@@ -1,4 +1,6 @@
+using Data.Shared.Data.Repositories;
 using Microsoft.Extensions.Logging;
+using Models.Shared.Common;
 using SkipperModels;
 using SkipperModels.Common;
 using SkipperModels.Entities;
@@ -6,7 +8,7 @@ using SkipperModels.Models;
 
 namespace SkipperData.Data.Repositories;
 
-public class VesselRepository : Repository<VesselEntity, VesselModel>
+public class VesselRepository : Repository<SkipperContext, VesselEntity, VesselModel>
 {
     public VesselRepository(SkipperContext context, ILogger<VesselRepository> logger) : base(context, logger) { }
 

@@ -1,4 +1,6 @@
+using Data.Shared.Data.Repositories;
 using Microsoft.Extensions.Logging;
+using Models.Shared.Common;
 using SkipperModels;
 using SkipperModels.Common;
 using SkipperModels.Entities;
@@ -6,7 +8,7 @@ using SkipperModels.Models;
 
 namespace SkipperData.Data.Repositories;
 
-public class RentalAgreementRepository : Repository<RentalAgreementEntity, RentalAgreementModel>
+public class RentalAgreementRepository : Repository<SkipperContext, RentalAgreementEntity, RentalAgreementModel>
 {
     public RentalAgreementRepository(SkipperContext context, ILogger<RentalAgreementRepository> logger) : base(context, logger) { }
 

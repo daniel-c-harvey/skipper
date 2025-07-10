@@ -1,11 +1,13 @@
+using Data.Shared.Data.Repositories;
 using Microsoft.Extensions.Logging;
+using Models.Shared.Common;
 using SkipperModels.Common;
 using SkipperModels.Entities;
 using SkipperModels.Models;
 
 namespace SkipperData.Data.Repositories;
 
-public class SlipClassificationRepository : Repository<SlipClassificationEntity, SlipClassificationModel>
+public class SlipClassificationRepository : Repository<SkipperContext, SlipClassificationEntity, SlipClassificationModel>
 {
     public SlipClassificationRepository(SkipperContext context, ILogger<SlipClassificationRepository> logger) : base(context, logger) { }
 

@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SkipperModels.Entities;
-using SkipperModels.Models;
+using Models.Shared.Entities;
+using Models.Shared.Models;
 
-namespace SkipperData.Data.Configurations;
+namespace Data.Shared.Data.Configurations;
 
 public abstract class BaseEntityConfiguration<TEntity, TDto> : IEntityTypeConfiguration<TEntity> 
 where TEntity : class, IEntity<TEntity, TDto>

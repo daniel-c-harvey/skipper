@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthBlocksWeb.Client", "Aut
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenBlocks", "GenBlocks\GenBlocks.csproj", "{DD68AE9F-9C82-4477-914F-384186F34904}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models.Shared", "Models.Shared\Models.Shared.csproj", "{E1634E69-9F20-4440-90B5-A325DD27D9B1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{DD68AE9F-9C82-4477-914F-384186F34904}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD68AE9F-9C82-4477-914F-384186F34904}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD68AE9F-9C82-4477-914F-384186F34904}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1634E69-9F20-4440-90B5-A325DD27D9B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1634E69-9F20-4440-90B5-A325DD27D9B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1634E69-9F20-4440-90B5-A325DD27D9B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1634E69-9F20-4440-90B5-A325DD27D9B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

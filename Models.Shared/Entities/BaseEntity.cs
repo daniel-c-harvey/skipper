@@ -1,7 +1,6 @@
+using Models.Shared.Models;
 
-using SkipperModels.Models;
-
-namespace SkipperModels.Entities;
+namespace Models.Shared.Entities;
 
 public abstract class BaseEntity<TSelf, TModel>
 where TSelf : class, IEntity<TSelf, TModel>

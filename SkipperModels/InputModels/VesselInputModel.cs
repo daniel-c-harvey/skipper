@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Models.Shared.InputModels;
 using SkipperModels.Common;
 using SkipperModels.Entities;
 using SkipperModels.Models;

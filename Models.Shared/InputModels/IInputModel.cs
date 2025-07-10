@@ -1,7 +1,7 @@
-﻿using SkipperModels.Entities;
-using SkipperModels.Models;
+﻿using Models.Shared.Entities;
+using Models.Shared.Models;
 
-namespace SkipperModels.InputModels;
+namespace Models.Shared.InputModels;
 
 public interface IInputModel<TInput, TModel, TEntity>
 where TInput : class, IInputModel<TInput, TModel, TEntity>

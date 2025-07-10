@@ -2,6 +2,7 @@
 using SkipperModels.Entities;
 using SkipperModels.Models;
 using System.ComponentModel.DataAnnotations;
+using Models.Shared.InputModels;
 
 namespace SkipperModels.InputModels;
 

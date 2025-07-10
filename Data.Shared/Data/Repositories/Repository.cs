@@ -1,22 +1,23 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Models.Shared.Common;
+using Models.Shared.Entities;
+using Models.Shared.Models;
 using NetBlocks.Models;
-using SkipperModels.Common;
-using SkipperModels.Entities;
-using SkipperModels.Models;
 
-namespace SkipperData.Data.Repositories;
+namespace Data.Shared.Data.Repositories;
 
-public class Repository<TEntity, TDto> : IRepository<TEntity, TDto>
+public class Repository<TContext, TEntity, TDto> : IRepository<TEntity, TDto>
+where TContext : DbContext
 where TEntity : class, IEntity<TEntity, TDto>
 where TDto : class, IModel<TDto, TEntity>
 {
-    protected readonly SkipperContext _context;
+    protected readonly TContext _context;
     protected readonly DbSet<TEntity> _dbSet;
-    protected readonly ILogger<Repository<TEntity, TDto>> _logger;
+    protected readonly ILogger<Repository<TContext, TEntity, TDto>> _logger;
 
-    public Repository(SkipperContext context, ILogger<Repository<TEntity, TDto>> logger)
+    public Repository(TContext context, ILogger<Repository<TContext, TEntity, TDto>> logger)
     {
         _context = context;
         _dbSet = context.Set<TEntity>();

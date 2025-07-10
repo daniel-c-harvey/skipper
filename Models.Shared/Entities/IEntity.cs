@@ -1,6 +1,6 @@
-﻿using SkipperModels.Models;
+﻿using Models.Shared.Models;
 
-namespace SkipperModels.Entities;
+namespace Models.Shared.Entities;
 
 public interface IEntity<TSelf, TModel>
 where TSelf : class, IEntity<TSelf, TModel>
