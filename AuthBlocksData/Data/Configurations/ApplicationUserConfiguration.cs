@@ -1,17 +1,19 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using AuthBlocksModels.Entities.Identity;
+using AuthBlocksModels.Models;
+using Data.Shared.Data.Configurations;
 
 namespace AuthBlocksData.Data.Configurations;
 
-public class ApplicationUserConfiguration : IEntityTypeConfiguration<ApplicationUser>
+public class ApplicationUserConfiguration : BaseEntityConfiguration<ApplicationUser, UserModel>
 {
-    public void Configure(EntityTypeBuilder<ApplicationUser> builder)
+    public override void Configure(EntityTypeBuilder<ApplicationUser> builder)
     {
         builder.ToTable("users");
         
-        // Configure primary key
-        builder.HasKey(u => u.Id);
+        // Call base configuration first (handles IEntity properties)
+        base.Configure(builder);
         
         // Configure inherited properties from IdentityUser<long>
         builder.Property(u => u.Id)
@@ -54,29 +56,19 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
             
         builder.Property(u => u.AccessFailedCount)
             .IsRequired();
-        
-        // Configure additional custom properties
-        builder.Property(u => u.Deleted)
-            .HasDefaultValue(false)
-            .IsRequired();
-            
-        builder.Property(u => u.Created)
-            .HasDefaultValueSql("NOW()")
-            .IsRequired();
-            
-        builder.Property(u => u.Modified)
-            .HasDefaultValueSql("NOW()")
-            .IsRequired();
 
-        // Indexes
+        // Identity-specific indexes
         builder.HasIndex(u => u.NormalizedUserName)
             .HasDatabaseName("ix_users_normalizedusername")
             .IsUnique();
             
         builder.HasIndex(u => u.NormalizedEmail)
             .HasDatabaseName("ix_users_normalizedemail");
-            
-        builder.HasIndex(u => u.Deleted)
-            .HasDatabaseName("ix_users_deleted");
+    }
+
+    protected override void ConfigureEntity(EntityTypeBuilder<ApplicationUser> builder)
+    {
+        // Additional ApplicationUser-specific configuration can go here
+        // Base IEntity properties are already configured by the base class
     }
 } 

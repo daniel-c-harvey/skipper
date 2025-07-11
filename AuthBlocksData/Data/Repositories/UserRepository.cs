@@ -1,36 +1,32 @@
 using Microsoft.EntityFrameworkCore;
 using AuthBlocksModels.Entities.Identity;
+using AuthBlocksModels.Models;
+using Data.Shared.Data.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace AuthBlocksData.Data.Repositories;
 
-public class UserRepository : IUserRepository
+public class UserRepository : Repository<AuthDbContext, ApplicationUser, UserModel>, IUserRepository
 {
-    private readonly AuthDbContext _context;
-
-    public UserRepository(AuthDbContext context)
+    public UserRepository(AuthDbContext context, ILogger<UserRepository> logger) : base(context, logger)
     {
-        _context = context;
     }
 
-    public async Task<ApplicationUser?> GetByIdAsync(long id)
-    {
-        return await _context.Users.FirstOrDefaultAsync(u => u.Id == id && !u.Deleted);
-    }
-
+    // Identity-specific methods (keep these)
     public async Task<ApplicationUser?> GetByUsernameAsync(string normalizedUsername)
     {
-        return await _context.Users.FirstOrDefaultAsync(u => u.NormalizedUserName == normalizedUsername && !u.Deleted);
+        return await _context.Users.FirstOrDefaultAsync(u => u.NormalizedUserName == normalizedUsername && !u.IsDeleted);
     }
 
     public async Task<ApplicationUser?> GetByEmailAsync(string normalizedEmail)
     {
-        return await _context.Users.FirstOrDefaultAsync(u => u.NormalizedEmail == normalizedEmail && !u.Deleted);
+        return await _context.Users.FirstOrDefaultAsync(u => u.NormalizedEmail == normalizedEmail && !u.IsDeleted);
     }
 
     public async Task<IList<ApplicationUser>> GetUsersInRoleAsync(string roleName)
     {
         return await _context.Users
-            .Where(u => !u.Deleted)
+            .Where(u => !u.IsDeleted)
             .Where(u => _context.UserRoles
                 .Where(ur => !ur.Deleted)
                 .Join(_context.Roles.Where(r => !r.Deleted && r.Name == roleName),
@@ -43,17 +39,17 @@ public class UserRepository : IUserRepository
 
     public async Task<ApplicationUser> CreateAsync(ApplicationUser user)
     {
-        user.Created = DateTime.UtcNow;
-        user.Modified = DateTime.UtcNow;
+        user.CreatedAt = DateTime.UtcNow;
+        user.UpdatedAt = DateTime.UtcNow;
         
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
         return user;
     }
 
-    public async Task<ApplicationUser> UpdateAsync(ApplicationUser user)
+    public async Task<ApplicationUser> UpdateUserAsync(ApplicationUser user)
     {
-        user.Modified = DateTime.UtcNow;
+        user.UpdatedAt = DateTime.UtcNow;
         
         _context.Users.Update(user);
         await _context.SaveChangesAsync();
@@ -62,8 +58,8 @@ public class UserRepository : IUserRepository
 
     public async Task DeleteAsync(ApplicationUser user)
     {
-        user.Deleted = true;
-        user.Modified = DateTime.UtcNow;
+        user.IsDeleted = true;
+        user.UpdatedAt = DateTime.UtcNow;
         
         _context.Users.Update(user);
         await _context.SaveChangesAsync();

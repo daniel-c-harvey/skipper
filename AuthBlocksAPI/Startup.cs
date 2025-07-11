@@ -140,7 +140,7 @@ internal static class Startup
     
     private static async Task SeedAdminUser(IServiceScope scope)
     {
-        var userService = scope.ServiceProvider.GetRequiredService<UserService>();
+        var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
         var adminSettings = LoadAdminConfig();
         var existingUser = await userService.FindByNameAsync(adminSettings.UserName);
         if (existingUser is null)
@@ -150,8 +150,8 @@ internal static class Startup
                 UserName = adminSettings.UserName,
                 Email = adminSettings.Email,
                 EmailConfirmed = true,
-                Created = DateTime.UtcNow,
-                Modified = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
             await userService.CreateUserAsync(user, adminSettings.Password);
             await userService.AddUserToRoleAsync(user, "Admin");

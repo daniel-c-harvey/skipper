@@ -13,13 +13,13 @@ namespace AuthBlocksAPI.Services;
 public class JwtService : IJwtService
 {
     private readonly JwtSettings _jwtSettings;
-    private readonly UserService _userService;
+    private readonly IUserService _userService;
     private readonly TokenValidationParameters _tokenValidationParameters;
     
     // Simple in-memory refresh token store (in production, use database)
     private static readonly Dictionary<string, (long UserId, DateTime Expires)> _refreshTokens = new();
 
-    public JwtService(IOptions<JwtSettings> jwtSettings, UserService userService)
+    public JwtService(IOptions<JwtSettings> jwtSettings, IUserService userService)
     {
         _jwtSettings = jwtSettings.Value;
         _userService = userService;

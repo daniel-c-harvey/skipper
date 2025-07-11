@@ -15,12 +15,12 @@ namespace AuthBlocksAPI.Controllers;
 [Authorize]
 public class UsersController : ControllerBase
 {
-    private readonly UserService _userService;
+    private readonly IUserService _userService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<UsersController> _logger;
 
     public UsersController(
-        UserService userService,
+        IUserService userService,
         UserManager<ApplicationUser> userManager,
         ILogger<UsersController> logger)
     {
@@ -136,7 +136,7 @@ public class UsersController : ControllerBase
             // Update user properties
             user.UserName = request.UserName ?? user.UserName;
             user.Email = request.Email ?? user.Email;
-            user.Modified = DateTime.UtcNow;
+            user.UpdatedAt = DateTime.UtcNow;
 
             var updateResult = await _userService.UpdateUserAsync(user);
             if (!updateResult.Succeeded)

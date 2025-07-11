@@ -1,15 +1,19 @@
 using Microsoft.AspNetCore.Identity;
 using AuthBlocksModels.Entities.Identity;
+using AuthBlocksModels.Models;
 using AuthBlocksData.Data.Repositories;
+using Data.Shared.Managers;
+using Data.Shared.Data.Repositories;
 
 namespace AuthBlocksData.Services;
 
-public class UserService
+public class UserService : ManagerBase<ApplicationUser, UserModel>, IUserService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IUserRepository _userRepository;
 
-    public UserService(UserManager<ApplicationUser> userManager, IUserRepository userRepository)
+    public UserService(UserManager<ApplicationUser> userManager, IUserRepository userRepository) 
+        : base(userRepository)
     {
         _userManager = userManager;
         _userRepository = userRepository;
@@ -55,6 +59,11 @@ public class UserService
     public async Task SoftDeleteUserAsync(ApplicationUser user)
     {
         await _userRepository.DeleteAsync(user);
+    }
+
+    public async Task<ApplicationUser> UpdateUserWithReturnAsync(ApplicationUser user)
+    {
+        return await _userRepository.UpdateUserAsync(user);
     }
 
     // Role operations with soft delete

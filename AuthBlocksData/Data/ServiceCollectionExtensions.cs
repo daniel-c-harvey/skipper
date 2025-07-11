@@ -72,7 +72,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRoleRepository, RoleRepository>();
 
         // Add services that combine Identity managers with repositories
-        services.AddScoped<UserService>();
+        services.AddScoped<IUserService, UserService>();
         services.AddScoped<RoleService>();
 
         return services;

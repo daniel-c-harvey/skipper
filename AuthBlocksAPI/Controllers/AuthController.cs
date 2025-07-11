@@ -15,13 +15,13 @@ namespace AuthBlocksAPI.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly UserService _userService;
+    private readonly IUserService _userService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IJwtService _jwtService;
     private readonly ILogger<AuthController> _logger;
 
     public AuthController(
-        UserService userService,
+        IUserService userService,
         UserManager<ApplicationUser> userManager,
         IJwtService jwtService,
         ILogger<AuthController> logger)
@@ -104,8 +104,8 @@ public class AuthController : ControllerBase
                 UserName = request.UserName,
                 Email = request.Email,
                 EmailConfirmed = true, // For API, we'll skip email confirmation
-                Created = DateTime.UtcNow,
-                Modified = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
 
             var createResult = await _userService.CreateUserAsync(user, request.Password);
