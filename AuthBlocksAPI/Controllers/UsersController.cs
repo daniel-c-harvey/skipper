@@ -1,216 +1,147 @@
-using AuthBlocksAPI.Models;
+using System.Linq.Expressions;
+using API.Shared.Controllers;
 using AuthBlocksData.Services;
 using AuthBlocksModels.Entities.Identity;
+using AuthBlocksModels.Models;
+using AuthBlocksModels.ApiModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using AuthBlocksModels.ApiModels;
 using NetBlocks.Models;
+using Models.Shared.Common;
 
 namespace AuthBlocksAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class UsersController : ControllerBase
+public class UsersController : BaseModelController<ApplicationUser, UserModel>
 {
     private readonly IUserService _userService;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly ILogger<UsersController> _logger;
 
-    public UsersController(
-        IUserService userService,
-        UserManager<ApplicationUser> userManager,
-        ILogger<UsersController> logger)
+    public UsersController(IUserService userService) : base(userService)
     {
         _userService = userService;
-        _userManager = userManager;
-        _logger = logger;
+        
+        // Add custom sort expressions
+        AddSortExpression(nameof(UserModel.UserName), e => e.UserName ?? string.Empty);
+        AddSortExpression(nameof(UserModel.Email), e => e.Email ?? string.Empty);
+        AddSortExpression(nameof(UserModel.NormalizedUserName), e => e.NormalizedUserName ?? string.Empty);
+        AddSortExpression(nameof(UserModel.NormalizedEmail), e => e.NormalizedEmail ?? string.Empty);
+        AddSortExpression(nameof(UserModel.EmailConfirmed), e => e.EmailConfirmed);
+        AddSortExpression(nameof(UserModel.PhoneNumber), e => e.PhoneNumber ?? string.Empty);
+        AddSortExpression(nameof(UserModel.PhoneNumberConfirmed), e => e.PhoneNumberConfirmed);
+        AddSortExpression(nameof(UserModel.TwoFactorEnabled), e => e.TwoFactorEnabled);
+        AddSortExpression(nameof(UserModel.LockoutEnabled), e => e.LockoutEnabled);
+        AddSortExpression(nameof(UserModel.AccessFailedCount), e => e.AccessFailedCount);
     }
 
-    [HttpGet]
-    [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<ApiResultDto<List<UserInfo>>>> GetUsers()
+    // Simplified: List all users as UserInfo (no paging)
+    [HttpGet("list")]
+    [Authorize(Roles = SystemRoleConstants.UserAdmin)]
+    public async Task<ActionResult<ApiResultDto<List<UserInfo>>>> GetUsersList()
     {
-        try
+        var users = await _userService.GetActiveUsersInRoleAsync("Admin");
+        var regularUsers = await _userService.GetActiveUsersInRoleAsync("User");
+        var combinedUsers = users.Concat(regularUsers).Distinct().ToList();
+        var userInfos = new List<UserInfo>();
+        foreach (var user in combinedUsers)
         {
-            // For now, we'll get users by role since we don't have a GetAll method
-            // In a real implementation, you'd add pagination and filtering
-            var allUsers = await _userService.GetActiveUsersInRoleAsync("Admin");
-            var regularUsers = await _userService.GetActiveUsersInRoleAsync("User");
-            
-            var combinedUsers = allUsers.Concat(regularUsers).Distinct().ToList();
-            
-            var userInfos = new List<UserInfo>();
-            
-            foreach (var user in combinedUsers)
-            {
-                var roles = await _userService.GetActiveUserRolesAsync(user);
-                userInfos.Add(new UserInfo
-                {
-                    Id = user.Id,
-                    UserName = user.UserName ?? string.Empty,
-                    Email = user.Email ?? string.Empty,
-                    Roles = roles.ToList()
-                });
-            }
-
-            var resultSuccess = ApiResult<List<UserInfo>>.CreatePassResult(userInfos)
-                .Inform("Users retrieved successfully");
-            return Ok(new ApiResultDto<List<UserInfo>>(resultSuccess));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error retrieving users");
-            var resultError = ApiResult<List<UserInfo>>.CreateFailResult("An error occurred while retrieving users")
-                .Fail("Internal server error");
-            return StatusCode(500, new ApiResultDto<List<UserInfo>>(resultError));
-        }
-    }
-
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ApiResultDto<UserInfo>>> GetUser(long id)
-    {
-        try
-        {
-            var currentUserId = GetCurrentUserId();
-            
-            // Users can only view their own profile unless they're admin
-            if (currentUserId != id && !User.IsInRole("Admin"))
-            {
-                return Forbid();
-            }
-
-            var user = await _userService.GetActiveUserByIdAsync(id);
-            if (user == null)
-            {
-                var resultFailure = ApiResult<UserInfo>.CreateFailResult("User not found")
-                    .Fail("User does not exist");
-                return NotFound(new ApiResultDto<UserInfo>(resultFailure));
-            }
-
             var roles = await _userService.GetActiveUserRolesAsync(user);
-            var userInfo = new UserInfo
+            userInfos.Add(new UserInfo
             {
                 Id = user.Id,
                 UserName = user.UserName ?? string.Empty,
                 Email = user.Email ?? string.Empty,
                 Roles = roles.ToList()
-            };
-
-            var resultSuccess = ApiResult<UserInfo>.CreatePassResult(userInfo)
-                .Inform("User retrieved successfully");
-            return Ok(new ApiResultDto<UserInfo>(resultSuccess));
+            });
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error retrieving user {UserId}", id);
-            var resultError = ApiResult<UserInfo>.CreateFailResult("An error occurred while retrieving user")
-                .Fail("Internal server error");
-            return StatusCode(500, new ApiResultDto<UserInfo>(resultError));
-        }
+        var result = ApiResult<List<UserInfo>>.CreatePassResult(userInfos).Inform("Users retrieved successfully");
+        return Ok(new ApiResultDto<List<UserInfo>>(result));
     }
 
-    [HttpPut("{id}")]
+    // Override base Get to provide paged results with UserInfo conversion
+    [HttpGet]
+    [Authorize(Roles = SystemRoleConstants.UserAdmin)]
+    public override async Task<ActionResult<ApiResultDto<PagedResult<UserModel>>>> Get([FromQuery] PagedQuery query)
+    {
+        // For now, return base implementation but with proper authorization
+        // TODO: Convert UserModel results to UserInfo with roles if needed
+        return await base.Get(query);
+    }
+
+    // Override base Get by ID to provide proper authorization
+    [HttpGet("{id:long}")]
+    public override async Task<ActionResult<ApiResultDto<UserModel>>> Get(long id)
+    {
+        var currentUserId = GetCurrentUserId();
+        if (currentUserId != id && !User.IsInRole("Admin"))
+        {
+            return Forbid();
+        }
+        return await base.Get(id);
+    }
+
+    // Simplified: Update user by id with UpdateUserRequest
+    [HttpPut("{id:long}")]
     public async Task<ActionResult<ApiResultDto<UserInfo>>> UpdateUser(long id, [FromBody] UpdateUserRequest request)
     {
-        try
+        var currentUserId = GetCurrentUserId();
+        if (currentUserId != id && !User.IsInRole("Admin"))
         {
-            var currentUserId = GetCurrentUserId();
-            
-            // Users can only update their own profile unless they're admin
-            if (currentUserId != id && !User.IsInRole("Admin"))
-            {
-                return Forbid();
-            }
-
-            var user = await _userService.GetActiveUserByIdAsync(id);
-            if (user == null)
-            {
-                var resultFailure = ApiResult<UserInfo>.CreateFailResult("User not found")
-                    .Fail("User does not exist");
-                return NotFound(new ApiResultDto<UserInfo>(resultFailure));
-            }
-
-            // Update user properties
-            user.UserName = request.UserName ?? user.UserName;
-            user.Email = request.Email ?? user.Email;
-            user.UpdatedAt = DateTime.UtcNow;
-
-            var updateResult = await _userService.UpdateUserAsync(user);
-            if (!updateResult.Succeeded)
-            {
-                var resultFailure = ApiResult<UserInfo>.CreateFailResult("Update failed");
-                foreach (var error in updateResult.Errors)
-                {
-                    resultFailure.Fail(error.Description);
-                }
-                return BadRequest(new ApiResultDto<UserInfo>(resultFailure));
-            }
-
-            var roles = await _userService.GetActiveUserRolesAsync(user);
-            var userInfo = new UserInfo
-            {
-                Id = user.Id,
-                UserName = user.UserName ?? string.Empty,
-                Email = user.Email ?? string.Empty,
-                Roles = roles.ToList()
-            };
-
-            var resultSuccess = ApiResult<UserInfo>.CreatePassResult(userInfo)
-                .Inform("User updated successfully");
-            return Ok(new ApiResultDto<UserInfo>(resultSuccess));
+            return Forbid();
         }
-        catch (Exception ex)
+        var user = await _userService.GetActiveUserByIdAsync(id);
+        if (user == null)
         {
-            _logger.LogError(ex, "Error updating user {UserId}", id);
-            var resultError = ApiResult<UserInfo>.CreateFailResult("An error occurred while updating user")
-                .Fail("Internal server error");
-            return StatusCode(500, new ApiResultDto<UserInfo>(resultError));
+            var resultFailure = ApiResult<UserInfo>.CreateFailResult("User not found").Fail("User does not exist");
+            return NotFound(new ApiResultDto<UserInfo>(resultFailure));
         }
+        // Update user properties
+        user.UserName = request.UserName ?? user.UserName;
+        user.Email = request.Email ?? user.Email;
+        user.UpdatedAt = DateTime.UtcNow;
+        var updateResult = await _userService.UpdateUserAsync(user);
+        if (!updateResult.Succeeded)
+        {
+            var resultFailure = ApiResult<UserInfo>.CreateFailResult("Update failed");
+            foreach (var error in updateResult.Errors)
+            {
+                resultFailure.Fail(error.Description);
+            }
+            return BadRequest(new ApiResultDto<UserInfo>(resultFailure));
+        }
+        var roles = await _userService.GetActiveUserRolesAsync(user);
+        var userInfo = new UserInfo
+        {
+            Id = user.Id,
+            UserName = user.UserName ?? string.Empty,
+            Email = user.Email ?? string.Empty,
+            Roles = roles.ToList()
+        };
+        var resultSuccess = ApiResult<UserInfo>.CreatePassResult(userInfo).Inform("User updated successfully");
+        return Ok(new ApiResultDto<UserInfo>(resultSuccess));
     }
 
-    [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<ApiResultDto>> DeleteUser(long id)
+    // Override base Delete to add authorization and self-deletion prevention
+    [HttpDelete("{id:long}")]
+    [Authorize(Roles = SystemRoleConstants.UserAdmin)]
+    public override async Task<ActionResult<ApiResultDto>> Delete(long id)
     {
-        try
+        // Prevent admin from deleting themselves
+        var currentUserId = GetCurrentUserId();
+        if (currentUserId == id)
         {
-            var user = await _userService.GetActiveUserByIdAsync(id);
-            if (user == null)
-            {
-                var resultFailure = ApiResult.CreateFailResult("User not found")
-                    .Fail("User does not exist");
-                return NotFound(new ApiResultDto(resultFailure));
-            }
-
-            // Prevent admin from deleting themselves
-            var currentUserId = GetCurrentUserId();
-            if (currentUserId == id)
-            {
-                var resultFailure = ApiResult.CreateFailResult("Cannot delete your own account")
-                    .Fail("Self-deletion not allowed");
-                return BadRequest(new ApiResultDto(resultFailure));
-            }
-
-            await _userService.SoftDeleteUserAsync(user);
-
-            var resultSuccess = ApiResult.CreatePassResult()
-                .Inform("User deleted successfully");
-            return Ok(new ApiResultDto(resultSuccess));
+            var resultFailure = ApiResult.CreateFailResult("Cannot delete your own account")
+                .Fail("Self-deletion not allowed");
+            return BadRequest(new ApiResultDto(resultFailure));
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error deleting user {UserId}", id);
-            var resultError = ApiResult.CreateFailResult("An error occurred while deleting user")
-                .Fail("Internal server error");
-            return StatusCode(500, new ApiResultDto(resultError));
-        }
+        return await base.Delete(id);
     }
 
+    // Add role management endpoints
     [HttpPost("{id}/roles")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = SystemRoleConstants.UserAdmin)]
     public async Task<ActionResult<ApiResultDto>> AddUserToRole(long id, [FromBody] UserRoleRequest request)
     {
         try
@@ -231,7 +162,6 @@ public class UsersController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error adding user {UserId} to role {RoleName}", id, request.RoleName);
             var resultError = ApiResult.CreateFailResult("An error occurred while adding user to role")
                 .Fail("Internal server error");
             return StatusCode(500, new ApiResultDto(resultError));
@@ -239,7 +169,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("{id}/roles")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = SystemRoleConstants.UserAdmin)]
     public async Task<ActionResult<ApiResultDto>> RemoveUserFromRole(long id, [FromBody] UserRoleRequest request)
     {
         try
@@ -260,11 +190,89 @@ public class UsersController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error removing user {UserId} from role {RoleName}", id, request.RoleName);
             var resultError = ApiResult.CreateFailResult("An error occurred while removing user from role")
                 .Fail("Internal server error");
             return StatusCode(500, new ApiResultDto(resultError));
         }
+    }
+
+    // Client-specific endpoint: Get user as UserInfo (with roles)
+    [HttpGet("info/{id:long}")]
+    public async Task<ActionResult<ApiResultDto<UserInfo>>> GetUserInfo(long id)
+    {
+        var currentUserId = GetCurrentUserId();
+        if (currentUserId != id && !User.IsInRole("Admin"))
+        {
+            return Forbid();
+        }
+        var user = await _userService.GetActiveUserByIdAsync(id);
+        if (user == null)
+        {
+            var resultFailure = ApiResult<UserInfo>.CreateFailResult("User not found").Fail("User does not exist");
+            return NotFound(new ApiResultDto<UserInfo>(resultFailure));
+        }
+        var roles = await _userService.GetActiveUserRolesAsync(user);
+        var userInfo = new UserInfo
+        {
+            Id = user.Id,
+            UserName = user.UserName ?? string.Empty,
+            Email = user.Email ?? string.Empty,
+            Roles = roles.ToList()
+        };
+        var resultSuccess = ApiResult<UserInfo>.CreatePassResult(userInfo).Inform("User retrieved successfully");
+        return Ok(new ApiResultDto<UserInfo>(resultSuccess));
+    }
+
+    // Client-specific endpoint: Update user with UpdateUserRequest
+    [HttpPut("update/{id:long}")]
+    public async Task<ActionResult<ApiResultDto<UserInfo>>> UpdateUserInfo(long id, [FromBody] UpdateUserRequest request)
+    {
+        var currentUserId = GetCurrentUserId();
+        if (currentUserId != id && !User.IsInRole("Admin"))
+        {
+            return Forbid();
+        }
+        var user = await _userService.GetActiveUserByIdAsync(id);
+        if (user == null)
+        {
+            var resultFailure = ApiResult<UserInfo>.CreateFailResult("User not found").Fail("User does not exist");
+            return NotFound(new ApiResultDto<UserInfo>(resultFailure));
+        }
+        // Update user properties
+        user.UserName = request.UserName ?? user.UserName;
+        user.Email = request.Email ?? user.Email;
+        user.UpdatedAt = DateTime.UtcNow;
+        var updateResult = await _userService.UpdateUserAsync(user);
+        if (!updateResult.Succeeded)
+        {
+            var resultFailure = ApiResult<UserInfo>.CreateFailResult("Update failed");
+            foreach (var error in updateResult.Errors)
+            {
+                resultFailure.Fail(error.Description);
+            }
+            return BadRequest(new ApiResultDto<UserInfo>(resultFailure));
+        }
+        var roles = await _userService.GetActiveUserRolesAsync(user);
+        var userInfo = new UserInfo
+        {
+            Id = user.Id,
+            UserName = user.UserName ?? string.Empty,
+            Email = user.Email ?? string.Empty,
+            Roles = roles.ToList()
+        };
+        var resultSuccess = ApiResult<UserInfo>.CreatePassResult(userInfo).Inform("User updated successfully");
+        return Ok(new ApiResultDto<UserInfo>(resultSuccess));
+    }
+
+    protected override Expression<Func<ApplicationUser, bool>> BuildSearchPredicate(string? search)
+    {
+        if (string.IsNullOrEmpty(search))
+            return e => true;
+
+        return e => e.UserName!.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                   e.Email!.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                   e.NormalizedUserName!.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                   e.NormalizedEmail!.Contains(search, StringComparison.OrdinalIgnoreCase);
     }
 
     private long GetCurrentUserId()

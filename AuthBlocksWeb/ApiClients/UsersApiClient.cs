@@ -37,7 +37,7 @@ public class UsersApiClient : IUsersApiClient
             _httpClient.DefaultRequestHeaders.Authorization = 
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            var response = await _httpClient.GetAsync("api/users");
+            var response = await _httpClient.GetAsync("api/users/list");
             var dtoResult = await response.Content.ReadFromJsonAsync<ApiResultDto<List<UserInfo>>>(_jsonOptions);
 
             // Clear authorization header
@@ -68,7 +68,7 @@ public class UsersApiClient : IUsersApiClient
             _httpClient.DefaultRequestHeaders.Authorization = 
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            var response = await _httpClient.GetAsync($"api/users/{id}");
+            var response = await _httpClient.GetAsync($"api/users/info/{id}");
             var dtoResult = await response.Content.ReadFromJsonAsync<ApiResultDto<UserInfo>>(_jsonOptions);
 
             // Clear authorization header
@@ -99,7 +99,7 @@ public class UsersApiClient : IUsersApiClient
             _httpClient.DefaultRequestHeaders.Authorization = 
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            var response = await _httpClient.PutAsJsonAsync($"api/users/{id}", request);
+            var response = await _httpClient.PutAsJsonAsync($"api/users/update/{id}", request);
             var dtoResult = await response.Content.ReadFromJsonAsync<ApiResultDto<UserInfo>>(_jsonOptions);
 
             // Clear authorization header
