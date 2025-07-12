@@ -7,11 +7,11 @@
 @attribute [HierarchicalRoleAuthorize(SystemRoleConstants.UserAdmin)]
 @page "/useradmin/users"
 
-<ModelView T="UserInputModel"
+<ModelView @ref="_modelView"
+           T="UserInputModel"
            TModel="UserModel"
            TEntity="ApplicationUser"
-           TClient="UsersClient"
-           TClientConfig="UserClientConfig"
+           TViewModel="UsersViewModel"
            TEditModal="UserEditModal"
            ModelDisplayName="User"
            Placeholder="Search users..."
@@ -33,11 +33,17 @@
             </CellTemplate>
         </TemplateColumn>
     </Columns>
+    <DeleteAction Context="item">
+        <MudButton Color="Color.Error" Variant="Variant.Outlined" OnClick="@(() => _modelView.DeleteItem(item))">Revoke</MudButton>
+    </DeleteAction>
 </ModelView>
 
 @code {
+    private ModelView<UserInputModel, UserModel, ApplicationUser, UserEditModal, UsersViewModel> _modelView;
+
     private async Task ResetPassword(UserInputModel? item)
     {
-        
+        // todo integrate with email for secure reset
     }
+
 }

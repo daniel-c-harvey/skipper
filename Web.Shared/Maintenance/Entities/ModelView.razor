@@ -5,8 +5,7 @@
 @typeparam TModel where TModel : class, Models.Shared.Models.IModel<TModel, TEntity>, new()
 @typeparam TEntity where TEntity : class, Models.Shared.Entities.IEntity<TEntity, TModel>, new()
 @typeparam TEditModal where TEditModal : IEditModal<T>
-@typeparam TClient where TClient : Web.Shared.ApiClients.ModelControllerClient<TModel, TEntity, TClientConfig>
-@typeparam TClientConfig where TClientConfig : Web.Shared.ApiClients.ModelControllerClientConfig
+@typeparam TViewModel where TViewModel : IModelPageViewModel<TModel, TEntity>
 
 <MudText Typo="Typo.h4">@Title</MudText>
 
@@ -40,12 +39,29 @@ else
                  CurrentPage="@(Page.GetValueOrDefault(1) - 1)"
                  RowsPerPage="@(PageSize.GetValueOrDefault(10))">
         <Columns>
+            @* Data Columns *@
             @Columns
+
+            @* Action Content *@
             <TemplateColumn CellClass="align-items-end">
                 <CellTemplate>
                     <MudStack Row AlignItems="AlignItems.Center">
-                        <MudIconButton Size="@Size.Small" Color="Color.Secondary" Icon="@Icons.Material.Outlined.Edit" OnClick="async () => await EditItem(context.Item)"/>
-                        <MudIconButton Size="@Size.Small" Color="Color.Error" Icon="@Icons.Material.Outlined.Delete" OnClick="async () => await DeleteItem(context.Item)"/>
+                        @if (EditAction is null)
+                        {
+                            <MudIconButton Size="@Size.Small" Color="Color.Secondary" Icon="@Icons.Material.Outlined.Edit" OnClick="@(async () => await EditItem(context.Item))"/>
+                        }
+                        else
+                        {
+                            @EditAction(context.Item)
+                        }
+                        @if (DeleteAction is null)
+                        {
+                            <MudIconButton Size="@Size.Small" Color="Color.Error" Icon="@Icons.Material.Outlined.Delete" OnClick="@(async () => await DeleteItem(context.Item))"/>
+                        }
+                        else
+                        {
+                            @DeleteAction(context.Item)
+                        }
                     </MudStack>
                 </CellTemplate>
             </TemplateColumn>

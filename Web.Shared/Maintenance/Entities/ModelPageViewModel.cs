@@ -1,22 +1,18 @@
 ﻿using Models.Shared.Common;
 using Models.Shared.Entities;
 using Models.Shared.Models;
-using NetBlocks.Models;
-using SkipperModels.Common;
-using SkipperModels.Entities;
-using SkipperModels.Models;
 using Web.Shared.ApiClients;
 
-namespace SkipperWeb.Components.Pages.Maintenance.Entities;
+namespace Web.Shared.Maintenance.Entities;
 
-public class ModelPageViewModel<TModel, TEntity, TClient, TClientConfig> 
+public class ModelPageViewModel<TModel, TEntity, TClient, TClientConfig> : IModelPageViewModel<TModel, TEntity>
     where TModel : class, IModel<TModel, TEntity>, new()
     where TEntity : class, IEntity<TEntity, TModel>, new()
     where TClient : ModelControllerClient<TModel, TEntity, TClientConfig>
     where TClientConfig : ModelControllerClientConfig
 {
     public PagedResult<TModel>? Page { get; private set; }
-    public Result? ErrorResults { get; set; }
+    public NetBlocks.Models.Result? ErrorResults { get; set; }
 
     public string SearchTerm => _currentSearchTerm;
     
@@ -51,7 +47,7 @@ public class ModelPageViewModel<TModel, TEntity, TClient, TClientConfig>
                 });
             if (!countResult.Success || countResult.Value is null) 
             {
-                ErrorResults = Result.From(countResult);
+                ErrorResults = NetBlocks.Models.Result.From(countResult);
             }
             else
             {
@@ -86,7 +82,7 @@ public class ModelPageViewModel<TModel, TEntity, TClient, TClientConfig>
         }
         else
         {
-            ErrorResults = Result.From(result);
+            ErrorResults = NetBlocks.Models.Result.From(result);
         }
 
         return (pageNumber, pageSize);
@@ -101,17 +97,17 @@ public class ModelPageViewModel<TModel, TEntity, TClient, TClientConfig>
         _currentPageSize = 0;
     }
 
-    public async Task UpdateItem(TModel model)
+    public virtual async Task UpdateItem(TModel model)
     {
         var result = await _client.Update(model);
 
-        ErrorResults = result.Success ? null : Result.From(result);
+        ErrorResults = result.Success ? null : NetBlocks.Models.Result.From(result);
     }
-    public async Task DeleteItem(TModel model)
+    public virtual async Task DeleteItem(TModel model)
     {
         var result = await _client.Delete(model);
         
-        ErrorResults = result.Success ? null : Result.From(result);
+        ErrorResults = result.Success ? null : NetBlocks.Models.Result.From(result);
     }
     
 }

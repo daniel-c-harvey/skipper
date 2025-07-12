@@ -5,7 +5,6 @@
 @using SkipperModels.Entities
 @using SkipperModels.InputModels
 @using SkipperWeb.ApiClients
-@using SkipperWeb.Components.Pages.Maintenance.Entities
 @using Web.Shared.Maintenance.Entities
 
 @attribute [HierarchicalRoleAuthorize]
@@ -15,8 +14,7 @@
             TModel="SlipClassificationModel"
             TEntity="SlipClassificationEntity"
             TEditModal="EditSlipClassificationModal"
-            TClient="SlipClassificationClient"
-            TClientConfig="SlipClassificationClientConfig"
+            TViewModel="SlipClassificationsViewModel"
             Title="Slip Classifications"
             PageRoute="maintenance/slipclassifications"
             ModelDisplayName="Slip Classification"

@@ -1,7 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Authorization
 @using AuthBlocksWeb.HierarchicalAuthorize
 @using NetBlocks.Utilities
-@using SkipperWeb.Components.Pages.Maintenance.Entities
 @using SkipperModels.Models
 @using SkipperModels.Entities
 @using SkipperModels.InputModels
@@ -15,8 +14,7 @@
            TModel="VesselModel"
            TEntity="VesselEntity"
            TEditModal="EditVesselModal"
-           TClient="VesselClient"
-           TClientConfig="VesselClientConfig"
+           TViewModel="VesselsViewModel"
            Title="Vessels"
            ModelDisplayName="Vessel"
            PageRoute="maintenance/vessels"

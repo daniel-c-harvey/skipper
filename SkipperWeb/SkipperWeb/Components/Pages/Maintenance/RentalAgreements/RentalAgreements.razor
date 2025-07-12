@@ -4,7 +4,6 @@
 @using SkipperModels.Entities
 @using SkipperModels.InputModels
 @using SkipperWeb.ApiClients
-@using SkipperWeb.Components.Pages.Maintenance.Entities
 @using Web.Shared.Maintenance.Entities
 
 @attribute [HierarchicalRoleAuthorize]
@@ -14,8 +13,7 @@
            TModel="RentalAgreementModel"
            TEntity="RentalAgreementEntity"
            TEditModal="EditRentalAgreementModal"
-           TClient="RentalAgreementClient"
-           TClientConfig="RentalAgreementClientConfig"
+           TViewModel="RentalAgreementsViewModel"
            Title="Rental Agreements"
            PageRoute="maintenance/rentalagreements"
            ModelDisplayName="Rental Agreement"

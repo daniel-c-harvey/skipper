@@ -3,19 +3,17 @@ using Models.Shared.Entities;
 using Models.Shared.InputModels;
 using Models.Shared.Models;
 using MudBlazor;
-using SkipperWeb.Components.Pages.Maintenance.Entities;
 using Web.Shared.ApiClients;
 
 namespace Web.Shared.Maintenance.Entities;
 
 [CascadingTypeParameter(nameof(T))]
-public partial class ModelView<T, TModel, TEntity, TEditModal, TClient, TClientConfig>  : ComponentBase
+public partial class ModelView<T, TModel, TEntity, TEditModal, TViewModel>  : ComponentBase
     where T : class, IInputModel<T, TModel, TEntity>, new()
     where TModel : class, IModel<TModel, TEntity>, new()
     where TEntity : class, IEntity<TEntity, TModel>, new()
     where TEditModal : IEditModal<T>
-    where TClient : ModelControllerClient<TModel, TEntity, TClientConfig>
-    where TClientConfig : ModelControllerClientConfig
+    where TViewModel : IModelPageViewModel<TModel, TEntity>
 {
     [SupplyParameterFromQuery]
     public int? Page { get; set; }
@@ -27,7 +25,7 @@ public partial class ModelView<T, TModel, TEntity, TEditModal, TClient, TClientC
     public string? SearchTerm { get; set; }
     
     [Inject]
-    public required ModelPageViewModel<TModel, TEntity, TClient, TClientConfig> ViewModel { get; set; }
+    public required TViewModel ViewModel { get; set; }
     
     [Inject]
     public required NavigationManager Nav { get; set; }
@@ -46,6 +44,12 @@ public partial class ModelView<T, TModel, TEntity, TEditModal, TClient, TClientC
     
     [Parameter]
     public required RenderFragment Columns { get; set; }
+    
+    [Parameter]
+    public RenderFragment<T>? EditAction { get; set; }
+    
+    [Parameter]
+    public RenderFragment<T>? DeleteAction { get; set; }
 
     [Parameter]
     public string Placeholder { get; set; } = "Search...";
@@ -122,7 +126,7 @@ public partial class ModelView<T, TModel, TEntity, TEditModal, TClient, TClientC
         Nav.NavigateTo($"{PageRoute}/new");
     }
     
-    private async Task EditItem(T inputModel)
+    public async Task EditItem(T inputModel)
     {
         var parameters = new DialogParameters<TEditModal>
         {
@@ -141,7 +145,7 @@ public partial class ModelView<T, TModel, TEntity, TEditModal, TClient, TClientC
         }
     }
     
-    private async Task DeleteItem(T inputModel)
+    public async Task DeleteItem(T inputModel)
     {
         var dialog = await DialogService.ShowAsync<ConfirmDeleteModal>("Delete Item");
         var result = await dialog.Result;
