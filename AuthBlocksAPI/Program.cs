@@ -5,6 +5,7 @@ using AuthBlocksAPI.HierarchicalAuthorize;
 using AuthBlocksData.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 
@@ -26,6 +27,8 @@ internal class Program
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddOpenApi();
+
+            ConfigureProxyServices(builder);
 
             // Configure JWT Settings - Load from file and register as singleton
             logger.LogInformation("Loading JWT configuration from file...");
@@ -94,6 +97,8 @@ internal class Program
 
             var app = builder.Build();
 
+            ConfigureAppProxy(app);
+            
             // Configure the HTTP request pipeline
             if (app.Environment.IsDevelopment())
             {
@@ -139,6 +144,42 @@ internal class Program
         {
             Console.WriteLine($"Startup Error: {ex.Message}");
             Environment.Exit(1);
+        }
+    }
+    
+    private static void ConfigureProxyServices(WebApplicationBuilder builder)
+    {
+        if (builder.Environment.IsProduction())
+        {
+            // Configure forwarded headers
+            builder.Services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                // Specify which headers to process
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | 
+                                           ForwardedHeaders.XForwardedProto | 
+                                           ForwardedHeaders.XForwardedHost;
+        
+                // For production behind nginx, clear known networks/proxies
+                // ONLY if you trust your network infrastructure
+                options.KnownNetworks.Clear();
+                options.KnownProxies.Clear();
+        
+                // Limit processing to prevent abuse
+                options.ForwardLimit = 2;
+        
+                // For APIs: restrict allowed hosts for security
+                options.AllowedHosts.Add("api.example.com");
+                options.AllowedHosts.Add("*.example.com");
+            });
+        }
+    }
+    
+    private static void ConfigureAppProxy(WebApplication app)
+    {
+        if (app.Environment.IsProduction())
+        {
+            // CRITICAL: Use forwarded headers BEFORE other middleware
+            app.UseForwardedHeaders();
         }
     }
 }
