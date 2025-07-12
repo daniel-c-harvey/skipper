@@ -1,0 +1,60 @@
+﻿@using NetBlocks.Models
+@using Web.Shared.Result
+
+@typeparam T where T : class, Models.Shared.InputModels.IInputModel<T, TModel, TEntity>, new()
+@typeparam TModel where TModel : class, Models.Shared.Models.IModel<TModel, TEntity>, new()
+@typeparam TEntity where TEntity : class, Models.Shared.Entities.IEntity<TEntity, TModel>, new()
+@typeparam TEditModal where TEditModal : IEditModal<T>
+@typeparam TClient where TClient : Web.Shared.ApiClients.ModelControllerClient<TModel, TEntity, TClientConfig>
+@typeparam TClientConfig where TClientConfig : Web.Shared.ApiClients.ModelControllerClientConfig
+
+<MudText Typo="Typo.h4">@Title</MudText>
+
+<MudGrid Class="my-5">
+    <MudItem xs="12" md="8">
+        <MudTextField Adornment="Adornment.Start" 
+                      AdornmentIcon="@Icons.Material.Filled.Search" 
+                      Placeholder="@Placeholder" 
+                      Clearable="true"
+                      @bind-Value="SearchTerm"
+                      DebounceInterval="300"
+                      OnDebounceIntervalElapsed="OnSearchChanged"/>
+    </MudItem>
+    <MudItem xs="4" md="4" Class="d-flex justify-end">
+        <MudButton Color="Color.Primary" EndIcon="@Icons.Material.Outlined.AddCircleOutline" Variant="Variant.Filled" @OnClick="NewEntity">
+            New @ModelDisplayName
+        </MudButton>
+    </MudItem>
+</MudGrid>
+
+@if (ViewModel.ErrorResults != null)
+{
+    <ResultDetails TResult="Result"
+                   Result="ViewModel.ErrorResults"/>  
+}
+else
+{
+    <MudDataGrid @ref="_grid"
+                 T="T" 
+                 ServerData="LoadGridServerData"
+                 CurrentPage="@(Page.GetValueOrDefault(1) - 1)"
+                 RowsPerPage="@(PageSize.GetValueOrDefault(10))">
+        <Columns>
+            @Columns
+            <TemplateColumn CellClass="d-flex justify-end px-3">
+                <CellTemplate>
+                    <MudStack Row AlignItems="AlignItems.Center">
+                        <MudIconButton Size="@Size.Small" Color="Color.Secondary" Icon="@Icons.Material.Outlined.Edit" @OnClick="async () => await EditItem(context.Item)"/>
+                        <MudIconButton Size="@Size.Small" Color="Color.Error" Icon="@Icons.Material.Outlined.Delete" @OnClick="async () => await DeleteItem(context.Item)"/>
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="T" 
+                              PageSizeOptions="@(new[] { 5, 10, 15, 25, 50})" 
+                              RowsPerPageString="@($"{ModelDisplayName}s per page")"
+                              InfoFormat="{first_item}-{last_item} of {all_items}"/>
+        </PagerContent>
+    </MudDataGrid>
+}

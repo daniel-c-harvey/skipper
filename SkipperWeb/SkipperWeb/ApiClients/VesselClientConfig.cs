@@ -1,4 +1,6 @@
-﻿namespace SkipperWeb.ApiClients
+﻿using Web.Shared.ApiClients;
+
+namespace SkipperWeb.ApiClients
 {
     public class VesselClientConfig : ModelControllerClientConfig
     {

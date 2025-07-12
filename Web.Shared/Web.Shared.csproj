@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+
+    <ItemGroup>
+        <SupportedPlatform Include="browser" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.6" />
+        <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="9.0.6" />
+        <PackageReference Include="MudBlazor" Version="8.8.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Maintenance\Entities\ConfirmDeleteModal.razor" />
+      <AdditionalFiles Include="Maintenance\Entities\EditModelModal.razor" />
+      <AdditionalFiles Include="Maintenance\Entities\ModelView.razor" />
+      <AdditionalFiles Include="Maintenance\Entities\New\ModelSubmittedModal.razor" />
+      <AdditionalFiles Include="Maintenance\Entities\New\NewModelView.razor" />
+      <AdditionalFiles Include="Modal\Modal.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SkipperModels\SkipperModels.csproj" />
+      <ProjectReference Include="C:\lib\NetBlocks\NetBlocks.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Maintenance\" />
+    </ItemGroup>
+
+</Project>

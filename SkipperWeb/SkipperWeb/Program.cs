@@ -5,6 +5,9 @@ using SkipperModels.Entities;
 using SkipperWeb.ApiClients;
 using SkipperWeb.Components;
 using System.Text.Json;
+using AuthBlocksModels.Entities.Identity;
+using AuthBlocksModels.Models;
+using AuthBlocksWeb.ApiClients;
 using SkipperModels.Models;
 using SkipperWeb.Components.Pages.Maintenance.Entities;
 
@@ -25,6 +28,7 @@ public class Program
         builder.Services
             .AddMudServices();
 
+        // Application Services
         LoadAuthBlocksServices(builder.Services);
         LoadSkipperServices(builder.Services);
 
@@ -61,7 +65,7 @@ public class Program
             .AddInteractiveServerRenderMode()
             .AddInteractiveWebAssemblyRenderMode()
             .AddAdditionalAssemblies(typeof(Client._Imports).Assembly)
-            .AddAdditionalAssemblies(typeof(Shared._Imports).Assembly)
+            .AddAdditionalAssemblies(typeof(Web.Shared._Imports).Assembly)
             .AddAdditionalAssemblies(typeof(AuthBlocksWeb._Imports).Assembly)
             .AddAdditionalAssemblies(typeof(AuthBlocksWeb.Client._Imports).Assembly);
         
@@ -71,27 +75,38 @@ public class Program
     private static void LoadAuthBlocksServices(IServiceCollection builderServices)
     {
         ApiEndpoint userEndpoint = EndpointsTools.LoadFromFile("environment/endpoints.json", "user-api");
-        AuthBlocksWeb.Startup.ConfigureServices(builderServices, userEndpoint.ApiUrl);
+        
+        // Critical Authentication Services for the Web App
+        AuthBlocksWeb.Startup.ConfigureAuthServices(builderServices, userEndpoint.ApiUrl);
+        
+        // User Client
+        builderServices.AddSingleton(new UserClientConfig(userEndpoint.ApiUrl));
+        builderServices.AddScoped<UsersClient>();
+        builderServices.AddScoped<ModelPageViewModel<UserModel, ApplicationUser, UsersClient, UserClientConfig>>();
     }
 
     private static void LoadSkipperServices(IServiceCollection builderServices)
     {
         ApiEndpoint skipperEndpoint = EndpointsTools.LoadFromFile("environment/endpoints.json", "skipper-api");
         
+        // Vessel Client
         builderServices.AddSingleton(new VesselClientConfig(skipperEndpoint.ApiUrl));
         builderServices.AddScoped<VesselClient>();
+        builderServices.AddScoped<ModelPageViewModel<VesselModel, VesselEntity, VesselClient, VesselClientConfig>>();
+        
+        // Slip Client
         builderServices.AddSingleton(new SlipClientConfig(skipperEndpoint.ApiUrl));
         builderServices.AddScoped<SlipClient>();
+        builderServices.AddScoped<ModelPageViewModel<SlipModel, SlipEntity, SlipClient, SlipClientConfig>>();
+        
+        // Slip Classification Client
         builderServices.AddSingleton(new SlipClassificationClientConfig(skipperEndpoint.ApiUrl));
         builderServices.AddScoped<SlipClassificationClient>();
+        builderServices.AddScoped<ModelPageViewModel<SlipClassificationModel, SlipClassificationEntity, SlipClassificationClient, SlipClassificationClientConfig>>();
+
+        // Rental Agreement Client
         builderServices.AddSingleton(new RentalAgreementClientConfig(skipperEndpoint.ApiUrl));
         builderServices.AddScoped<RentalAgreementClient>();
-
-        
-        // Add ViewModels as scoped services
-        builderServices.AddScoped<ModelPageViewModel<VesselModel, VesselEntity, VesselClient, VesselClientConfig>>();
-        builderServices.AddScoped<ModelPageViewModel<SlipModel, SlipEntity, SlipClient, SlipClientConfig>>();
-        builderServices.AddScoped<ModelPageViewModel<SlipClassificationModel, SlipClassificationEntity, SlipClassificationClient, SlipClassificationClientConfig>>();
         builderServices.AddScoped<ModelPageViewModel<RentalAgreementModel, RentalAgreementEntity, RentalAgreementClient, RentalAgreementClientConfig>>();
     }
 }

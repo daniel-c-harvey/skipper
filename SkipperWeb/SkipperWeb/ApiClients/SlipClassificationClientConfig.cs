@@ -1,4 +1,5 @@
 ﻿using SkipperModels.Entities;
+using Web.Shared.ApiClients;
 
 namespace SkipperWeb.ApiClients;
 

@@ -2,6 +2,7 @@
 using SkipperModels.Entities;
 using System.Text.Json;
 using SkipperModels.Models;
+using Web.Shared.ApiClients;
 
 namespace SkipperWeb.ApiClients;
 

@@ -105,7 +105,7 @@ public partial class ChooseSlip : ComponentBase
 
         if (result is { Canceled: false, Data: SlipInputModel slip })
         {
-            var addResult = await SlipClient.Post(SlipInputModel.MakeModel(slip));
+            var addResult = await SlipClient.Update(SlipInputModel.MakeModel(slip));
             if (addResult is { Success: true, Value: SlipModel newVessel })
             {
                 // Successfully added, now make this new vessel the selected value

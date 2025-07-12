@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperWeb", "SkipperWeb\Sk
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperWeb.Client", "SkipperWeb\SkipperWeb.Client\SkipperWeb.Client.csproj", "{190FDF50-B3EE-49B9-AC91-6F7C201E6A2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperWeb.Shared", "SkipperWeb.Shared\SkipperWeb.Shared.csproj", "{740E86C3-2599-45AD-8C71-3B428D19F8C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.Shared", "Web.Shared\Web.Shared.csproj", "{740E86C3-2599-45AD-8C71-3B428D19F8C1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetBlocks", "C:\lib\NetBlocks\NetBlocks.csproj", "{0EDB3500-BE24-4810-82F3-2EB0154B1EBB}"
 EndProject

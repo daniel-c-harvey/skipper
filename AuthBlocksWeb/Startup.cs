@@ -12,7 +12,7 @@ namespace AuthBlocksWeb;
 
 public static class Startup
 {
-    public static void ConfigureServices(IServiceCollection services, string apiBaseUrl)
+    public static void ConfigureAuthServices(IServiceCollection services, string apiBaseUrl)
     {
         // Add Blazor authentication state management
         services.AddCascadingAuthenticationState();
@@ -23,7 +23,7 @@ public static class Startup
             client.BaseAddress = new Uri(apiBaseUrl);
         });
         
-        services.AddHttpClient<IUsersApiClient, UsersApiClient>(client =>
+        services.AddHttpClient<IUsersApiClient, UsersClient>(client =>
         {
             client.BaseAddress = new Uri(apiBaseUrl);
         });

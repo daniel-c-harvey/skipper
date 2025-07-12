@@ -1,62 +1,43 @@
-﻿@using Microsoft.AspNetCore.Authorization
-@using AuthBlocksWeb.HierarchicalAuthorize
-@using AuthBlocksWeb.ApiClients
-@using AuthBlocksModels.ApiModels
-@using AuthBlocksModels.SystemDefinitions
-@using NetBlocks.Models
+﻿@using AuthBlocksWeb.ApiClients
+@using AuthBlocksModels.Entities.Identity
+@using AuthBlocksModels.InputModels
+@using AuthBlocksModels.Models
+@using Web.Shared.Maintenance.Entities
 
 @attribute [HierarchicalRoleAuthorize(SystemRoleConstants.UserAdmin)]
 @page "/useradmin/users"
 
-<h3>Users</h3>
-
-@if (_users == null)
-{
-    <p>Loading users...</p>
-}
-else if (!_users.Any())
-{
-    <p>No users found.</p>
-}
-else
-{
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Roles</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var user in _users)
-                {
-                    <tr>
-                        <td>@user.Id</td>
-                        <td>@user.UserName</td>
-                        <td>@user.Email</td>
-                        <td>@string.Join(", ", user.Roles)</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-}
+<ModelView T="UserInputModel"
+           TModel="UserModel"
+           TEntity="ApplicationUser"
+           TClient="UsersClient"
+           TClientConfig="UserClientConfig"
+           TEditModal="UserEditModal"
+           ModelDisplayName="User"
+           Placeholder="Search users..."
+           PageRoute="useradmin/users"
+           Title="Users">
+    <Columns>
+        <PropertyColumn Property="x => x.UserName" Title="Name"/>
+        <PropertyColumn Property="x => x.Email" Title="Email"/>
+        <PropertyColumn Property="x => x.PhoneNumber" Title="Phone #"/>
+        <PropertyColumn Property="x => x.AccessFailedCount" Title="Access Fails"/>
+        <PropertyColumn Property="x => x.TwoFactorEnabled" Title="Two Factor"/>
+        <TemplateColumn>
+            <CellTemplate Context="cell">
+                <MudButton Variant="Variant.Text"
+                           Color="Color.Tertiary"
+                           OnClick="@(() => ResetPassword(cell.Item))">
+                    Reset Password
+                </MudButton>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+</ModelView>
 
 @code {
-    [Inject]
-    private IUsersApiClient UsersApiClient { get; set; } = default!;
-
-    private List<UserInfo>? _users;
-
-    protected override async Task OnInitializedAsync()
+    private async Task ResetPassword(UserInputModel? item)
     {
-        var result = await UsersApiClient.GetUsersAsync();
-        if (result.Success && result.Value != null)
-        {
-            _users = result.Value;
-        }
+        
     }
 }

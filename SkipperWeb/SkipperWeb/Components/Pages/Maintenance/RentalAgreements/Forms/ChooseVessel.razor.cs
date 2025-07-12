@@ -105,7 +105,7 @@ public partial class ChooseVessel : ComponentBase
 
         if (result is { Canceled: false, Data: VesselInputModel vessel })
         {
-            var addResult = await VesselClient.Post(VesselInputModel.MakeModel(vessel));
+            var addResult = await VesselClient.Update(VesselInputModel.MakeModel(vessel));
             if (addResult is { Success: true, Value: VesselModel newVessel })
             {
                 // Successfully added, now make this new vessel the selected value

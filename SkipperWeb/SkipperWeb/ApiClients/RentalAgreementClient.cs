@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using SkipperModels.Entities;
 using SkipperModels.Models;
+using Web.Shared.ApiClients;
 
 namespace SkipperWeb.ApiClients;
 

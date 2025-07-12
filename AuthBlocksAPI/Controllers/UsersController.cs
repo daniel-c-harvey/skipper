@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using API.Shared.Controllers;
+using AuthBlocksAPI.HierarchicalAuthorize;
 using AuthBlocksData.Services;
 using AuthBlocksModels.Entities.Identity;
 using AuthBlocksModels.Models;
@@ -7,6 +8,7 @@ using AuthBlocksModels.ApiModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using AuthBlocksModels.SystemDefinitions;
 using NetBlocks.Models;
 using Models.Shared.Common;
 
@@ -35,38 +37,9 @@ public class UsersController : BaseModelController<ApplicationUser, UserModel>
         AddSortExpression(nameof(UserModel.LockoutEnabled), e => e.LockoutEnabled);
         AddSortExpression(nameof(UserModel.AccessFailedCount), e => e.AccessFailedCount);
     }
-
-    // Simplified: List all users as UserInfo (no paging)
-    [HttpGet("list")]
-    [Authorize(Roles = SystemRoleConstants.UserAdmin)]
-    public async Task<ActionResult<ApiResultDto<List<UserInfo>>>> GetUsersList()
+    [HierarchicalRoleAuthorize(SystemRoleConstants.UserAdmin)]
+    public override async Task<ActionResult<ApiResultDto<PagedResult<UserModel>>>> Get(PagedQuery query)
     {
-        var users = await _userService.GetActiveUsersInRoleAsync("Admin");
-        var regularUsers = await _userService.GetActiveUsersInRoleAsync("User");
-        var combinedUsers = users.Concat(regularUsers).Distinct().ToList();
-        var userInfos = new List<UserInfo>();
-        foreach (var user in combinedUsers)
-        {
-            var roles = await _userService.GetActiveUserRolesAsync(user);
-            userInfos.Add(new UserInfo
-            {
-                Id = user.Id,
-                UserName = user.UserName ?? string.Empty,
-                Email = user.Email ?? string.Empty,
-                Roles = roles.ToList()
-            });
-        }
-        var result = ApiResult<List<UserInfo>>.CreatePassResult(userInfos).Inform("Users retrieved successfully");
-        return Ok(new ApiResultDto<List<UserInfo>>(result));
-    }
-
-    // Override base Get to provide paged results with UserInfo conversion
-    [HttpGet]
-    [Authorize(Roles = SystemRoleConstants.UserAdmin)]
-    public override async Task<ActionResult<ApiResultDto<PagedResult<UserModel>>>> Get([FromQuery] PagedQuery query)
-    {
-        // For now, return base implementation but with proper authorization
-        // TODO: Convert UserModel results to UserInfo with roles if needed
         return await base.Get(query);
     }
 
@@ -75,7 +48,7 @@ public class UsersController : BaseModelController<ApplicationUser, UserModel>
     public override async Task<ActionResult<ApiResultDto<UserModel>>> Get(long id)
     {
         var currentUserId = GetCurrentUserId();
-        if (currentUserId != id && !User.IsInRole("Admin"))
+        if (currentUserId != id && !User.IsInRole(SystemRole.UserAdmin))
         {
             return Forbid();
         }
@@ -87,7 +60,7 @@ public class UsersController : BaseModelController<ApplicationUser, UserModel>
     public async Task<ActionResult<ApiResultDto<UserInfo>>> UpdateUser(long id, [FromBody] UpdateUserRequest request)
     {
         var currentUserId = GetCurrentUserId();
-        if (currentUserId != id && !User.IsInRole("Admin"))
+        if (currentUserId != id && !User.IsInRole(SystemRoleConstants.UserAdmin))
         {
             return Forbid();
         }
@@ -125,7 +98,7 @@ public class UsersController : BaseModelController<ApplicationUser, UserModel>
 
     // Override base Delete to add authorization and self-deletion prevention
     [HttpDelete("{id:long}")]
-    [Authorize(Roles = SystemRoleConstants.UserAdmin)]
+    [HierarchicalRoleAuthorize(Roles = SystemRoleConstants.UserAdmin)]
     public override async Task<ActionResult<ApiResultDto>> Delete(long id)
     {
         // Prevent admin from deleting themselves
@@ -220,47 +193,6 @@ public class UsersController : BaseModelController<ApplicationUser, UserModel>
             Roles = roles.ToList()
         };
         var resultSuccess = ApiResult<UserInfo>.CreatePassResult(userInfo).Inform("User retrieved successfully");
-        return Ok(new ApiResultDto<UserInfo>(resultSuccess));
-    }
-
-    // Client-specific endpoint: Update user with UpdateUserRequest
-    [HttpPut("update/{id:long}")]
-    public async Task<ActionResult<ApiResultDto<UserInfo>>> UpdateUserInfo(long id, [FromBody] UpdateUserRequest request)
-    {
-        var currentUserId = GetCurrentUserId();
-        if (currentUserId != id && !User.IsInRole("Admin"))
-        {
-            return Forbid();
-        }
-        var user = await _userService.GetActiveUserByIdAsync(id);
-        if (user == null)
-        {
-            var resultFailure = ApiResult<UserInfo>.CreateFailResult("User not found").Fail("User does not exist");
-            return NotFound(new ApiResultDto<UserInfo>(resultFailure));
-        }
-        // Update user properties
-        user.UserName = request.UserName ?? user.UserName;
-        user.Email = request.Email ?? user.Email;
-        user.UpdatedAt = DateTime.UtcNow;
-        var updateResult = await _userService.UpdateUserAsync(user);
-        if (!updateResult.Succeeded)
-        {
-            var resultFailure = ApiResult<UserInfo>.CreateFailResult("Update failed");
-            foreach (var error in updateResult.Errors)
-            {
-                resultFailure.Fail(error.Description);
-            }
-            return BadRequest(new ApiResultDto<UserInfo>(resultFailure));
-        }
-        var roles = await _userService.GetActiveUserRolesAsync(user);
-        var userInfo = new UserInfo
-        {
-            Id = user.Id,
-            UserName = user.UserName ?? string.Empty,
-            Email = user.Email ?? string.Empty,
-            Roles = roles.ToList()
-        };
-        var resultSuccess = ApiResult<UserInfo>.CreatePassResult(userInfo).Inform("User updated successfully");
         return Ok(new ApiResultDto<UserInfo>(resultSuccess));
     }
 

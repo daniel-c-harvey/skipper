@@ -24,6 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Web.Shared\Web.Shared.csproj" />
       <ProjectReference Include="C:\lib\NetBlocks\NetBlocks.csproj" />
       <ProjectReference Include="..\AuthBlocksWeb.Client\AuthBlocksWeb.Client.csproj" />
       <ProjectReference Include="..\AuthBlocksModels\AuthBlocksModels.csproj" />

@@ -1,9 +1,12 @@
 using System.Text;
 using AuthBlocksAPI.Models;
 using AuthBlocksAPI.Services;
+using AuthBlocksAPI.HierarchicalAuthorize;
 using AuthBlocksData.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
 
 namespace AuthBlocksAPI;
 
@@ -22,6 +25,7 @@ internal class Program
             // Add services to the container
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddOpenApi();
 
             // Configure JWT Settings - Load from file and register as singleton
             logger.LogInformation("Loading JWT configuration from file...");
@@ -84,12 +88,18 @@ internal class Program
 
             builder.Services.AddAuthorization();
 
+            // Add Hierarchical Role Authorization services
+            builder.Services.AddScoped<IHierarchicalRoleService, HierarchicalRoleService>();
+            builder.Services.AddScoped<IAuthorizationHandler, HierarchicalRolesAuthorizationHandler>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline
             if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.MapOpenApi();
+                app.MapScalarApiReference();
             }
 
             app.UseHttpsRedirection();
