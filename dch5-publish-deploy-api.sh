@@ -14,7 +14,7 @@ tar -czf skipper-api.tar.gz -C SkipperAPI/publish .
 
 # Deploy
 REMOTE="skipper@dch5.snailbird.net"
-APPROOT="/skipper/api"
+APPROOT="/skipper/api/skipper"
 
 ssh $REMOTE "rm -rf $APPROOT/bin/*"
 scp skipper-api.tar.gz $REMOTE:$APPROOT/skipper-api.tar.gz
