@@ -1,4 +1,5 @@
-﻿using AuthBlocksAPI.Common;
+﻿using System.Globalization;
+using AuthBlocksAPI.Common;
 using AuthBlocksAPI.Models;
 using AuthBlocksData.Services;
 using AuthBlocksModels.Entities.Identity;
@@ -123,13 +124,15 @@ internal static class Startup
             var existingRole = await roleService.FindByNameAsync(systemRole.Name);
             if (existingRole == null)
             {
-                var existingParentRole = await roleService.FindByNameAsync(systemRole.ParentRole?.Name);
+                var existingParentRole = (systemRole.ParentRole is not null) 
+                                            ? await roleService.FindByNameAsync(systemRole.ParentRole.Name) 
+                                            : null;
                 var role = new ApplicationRole
                 {
                     Name = systemRole.Name,
                     NormalizedName = systemRole.Name.ToUpperInvariant(),
                     ParentRoleId = existingParentRole?.Id,
-                    ConcurrencyStamp = DateTime.UtcNow.ToString(),
+                    ConcurrencyStamp = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
                     Created = DateTime.UtcNow,
                     Modified = DateTime.UtcNow
                 };
