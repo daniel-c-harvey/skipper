@@ -19,8 +19,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperWeb.Client", "Skippe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperModels", "SkipperModels\SkipperModels.csproj", "{3B8B445B-82BF-4348-94BF-1DC0C24D10F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperWeb.Shared", "SkipperWeb.Shared\SkipperWeb.Shared.csproj", "{D36AFAD0-89F7-4FCB-9908-7C0BB40E85E8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthBlocksModels", "AuthBlocksModels\AuthBlocksModels.csproj", "{2CBE206E-AE77-4CC2-BBE9-7F681C4888E3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthBlocksData", "AuthBlocksData\AuthBlocksData.csproj", "{908BA468-9054-49E1-9A59-5A155510FBCF}"
@@ -40,6 +38,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.Shared", "API.Shared\API.Shared.csproj", "{320B7B61-E424-4DED-96C0-8CF9A8FD3300}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data.Shared", "Data.Shared\Data.Shared.csproj", "{57434676-DE0F-499D-9472-531C6119EABE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.Shared", "Web.Shared\Web.Shared.csproj", "{A0E3BECB-92A8-4033-B333-010C931A430D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,10 +79,6 @@ Global
 		{3B8B445B-82BF-4348-94BF-1DC0C24D10F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B8B445B-82BF-4348-94BF-1DC0C24D10F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B8B445B-82BF-4348-94BF-1DC0C24D10F8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D36AFAD0-89F7-4FCB-9908-7C0BB40E85E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D36AFAD0-89F7-4FCB-9908-7C0BB40E85E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D36AFAD0-89F7-4FCB-9908-7C0BB40E85E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D36AFAD0-89F7-4FCB-9908-7C0BB40E85E8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2CBE206E-AE77-4CC2-BBE9-7F681C4888E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2CBE206E-AE77-4CC2-BBE9-7F681C4888E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CBE206E-AE77-4CC2-BBE9-7F681C4888E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -123,6 +119,10 @@ Global
 		{57434676-DE0F-499D-9472-531C6119EABE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57434676-DE0F-499D-9472-531C6119EABE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57434676-DE0F-499D-9472-531C6119EABE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0E3BECB-92A8-4033-B333-010C931A430D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0E3BECB-92A8-4033-B333-010C931A430D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0E3BECB-92A8-4033-B333-010C931A430D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0E3BECB-92A8-4033-B333-010C931A430D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -8,8 +8,8 @@ namespace SkipperDataAgent;
 
 public static class GenerateVessels
 {
-    private static readonly string[] NamePrefixes = 
-    {
+    private static readonly string[] NamePrefixes =
+    [
         "Sea", "Ocean", "Wave", "Wind", "Storm", "Thunder", "Lightning", "Coral", "Pearl", "Crystal", 
         "Golden", "Silver", "Blue", "Deep", "Royal", "Majestic", "Swift", "Mighty", "Bold", "Brave", 
         "Wild", "Free", "Grand", "Noble", "Proud", "Strong", "Fast", "True", "Pure", "Bright", 
@@ -43,7 +43,7 @@ public static class GenerateVessels
         "Naiad", "Oceanid", "Nereid", "Triton", "Poseidon", "Neptune", "Amphitrite", "Thetis", "Galatea", "Calypso",
         "Circe", "Scylla", "Charybdis", "Harpy", "Gorgon", "Medusa", "Stheno", "Euryale", "Hydra", "Cerberus",
         "Chimera", "Minotaur", "Cyclops", "Polyphemus", "Aeolus", "Zephyr", "Boreas", "Notus", "Eurus", "Aquilo"
-    };
+    ];
 
     private static readonly string[] NameSuffixes = 
     {

@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models.Shared", "Models.Sha
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data.Shared", "Data.Shared\Data.Shared.csproj", "{7582A711-E024-4C55-8BB1-ED5078A0AE82}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperDataAgent", "SkipperDataAgent\SkipperDataAgent.csproj", "{95EE3BF6-C8BC-43BF-9319-3BC5C877D1A4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,5 +80,9 @@ Global
 		{7582A711-E024-4C55-8BB1-ED5078A0AE82}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7582A711-E024-4C55-8BB1-ED5078A0AE82}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7582A711-E024-4C55-8BB1-ED5078A0AE82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95EE3BF6-C8BC-43BF-9319-3BC5C877D1A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95EE3BF6-C8BC-43BF-9319-3BC5C877D1A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95EE3BF6-C8BC-43BF-9319-3BC5C877D1A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95EE3BF6-C8BC-43BF-9319-3BC5C877D1A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
