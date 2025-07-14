@@ -1,59 +1,21 @@
 using Microsoft.EntityFrameworkCore;
 using AuthBlocksModels.Entities.Identity;
+using AuthBlocksModels.Models;
+using Data.Shared.Data.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace AuthBlocksData.Data.Repositories;
 
-public class RoleRepository : IRoleRepository
+public class RoleRepository : Repository<AuthDbContext, ApplicationRole, RoleModel>, IRoleRepository
 {
-    private readonly AuthDbContext _context;
-
-    public RoleRepository(AuthDbContext context)
-    {
-        _context = context;
-    }
-
-    public async Task<ApplicationRole?> GetByIdAsync(long id)
-    {
-        return await _context.Roles
-            .Include(r => r.ParentRole)
-            .Include(r => r.ChildRoles)
-            .FirstOrDefaultAsync(r => r.Id == id && !r.Deleted);
-    }
+    public RoleRepository(AuthDbContext context, ILogger<Repository<AuthDbContext, ApplicationRole, RoleModel>> logger) : base(context, logger) { }
 
     public async Task<ApplicationRole?> GetByNameAsync(string normalizedName)
     {
         return await _context.Roles
             .Include(r => r.ParentRole)
             .Include(r => r.ChildRoles)
-            .FirstOrDefaultAsync(r => r.NormalizedName == normalizedName && !r.Deleted);
-    }
-
-    public async Task<ApplicationRole> CreateAsync(ApplicationRole role)
-    {
-        role.Created = DateTime.UtcNow;
-        role.Modified = DateTime.UtcNow;
-        
-        _context.Roles.Add(role);
-        await _context.SaveChangesAsync();
-        return role;
-    }
-
-    public async Task<ApplicationRole> UpdateAsync(ApplicationRole role)
-    {
-        role.Modified = DateTime.UtcNow;
-        
-        _context.Roles.Update(role);
-        await _context.SaveChangesAsync();
-        return role;
-    }
-
-    public async Task DeleteAsync(ApplicationRole role)
-    {
-        role.Deleted = true;
-        role.Modified = DateTime.UtcNow;
-        
-        _context.Roles.Update(role);
-        await _context.SaveChangesAsync();
+            .FirstOrDefaultAsync(r => r.NormalizedName == normalizedName && !r.IsDeleted);
     }
     
     // Simple hierarchy methods
@@ -61,7 +23,7 @@ public class RoleRepository : IRoleRepository
     {
         return await _context.Roles
             .Include(r => r.ChildRoles)
-            .Where(r => r.ParentRoleId == null && !r.Deleted)
+            .Where(r => r.ParentRoleId == null && !r.IsDeleted)
             .ToListAsync();
     }
     
@@ -69,7 +31,7 @@ public class RoleRepository : IRoleRepository
     {
         return await _context.Roles
             .Include(r => r.ChildRoles)
-            .Where(r => r.ParentRoleId == parentRoleId && !r.Deleted)
+            .Where(r => r.ParentRoleId == parentRoleId && !r.IsDeleted)
             .ToListAsync();
     }
     
@@ -78,7 +40,7 @@ public class RoleRepository : IRoleRepository
         var ancestors = new List<ApplicationRole>();
         var currentRole = await _context.Roles
             .Include(r => r.ParentRole)
-            .FirstOrDefaultAsync(r => r.Id == roleId && !r.Deleted);
+            .FirstOrDefaultAsync(r => r.Id == roleId && !r.IsDeleted);
             
         while (currentRole?.ParentRole != null)
         {
@@ -87,14 +49,5 @@ public class RoleRepository : IRoleRepository
         }
         
         return ancestors;
-    }
-    
-    public async Task<IEnumerable<ApplicationRole>> GetAllAsync()
-    {
-        return await _context.Roles
-            .Include(r => r.ParentRole)
-            .Include(r => r.ChildRoles)
-            .Where(r => !r.Deleted)
-            .ToListAsync();
     }
 } 

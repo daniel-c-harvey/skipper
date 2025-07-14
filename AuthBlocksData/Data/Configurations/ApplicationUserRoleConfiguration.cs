@@ -12,27 +12,20 @@ public class ApplicationUserRoleConfiguration : IEntityTypeConfiguration<Applica
         
         // Configure primary key (custom - we're using Id instead of composite key)
         builder.HasKey(ur => ur.Id);
-        
-        // Configure inherited properties from IdentityUserRole<long>
-        builder.Property(ur => ur.UserId)
-            .IsRequired();
-            
-        builder.Property(ur => ur.RoleId)
-            .IsRequired();
             
         // Configure additional custom properties
         builder.Property(ur => ur.Id)
             .ValueGeneratedOnAdd();
             
-        builder.Property(ur => ur.Deleted)
+        builder.Property(ur => ur.IsDeleted)
             .HasDefaultValue(false)
             .IsRequired();
             
-        builder.Property(ur => ur.Created)
+        builder.Property(ur => ur.CreatedAt)
             .HasDefaultValueSql("NOW()")
             .IsRequired();
             
-        builder.Property(ur => ur.Modified)
+        builder.Property(ur => ur.UpdatedAt)
             .HasDefaultValueSql("NOW()")
             .IsRequired();
 
@@ -47,17 +40,17 @@ public class ApplicationUserRoleConfiguration : IEntityTypeConfiguration<Applica
             .HasDatabaseName("ix_user_roles_userid_roleid")
             .IsUnique();
             
-        builder.HasIndex(ur => ur.Deleted)
+        builder.HasIndex(ur => ur.IsDeleted)
             .HasDatabaseName("ix_user_roles_deleted");
 
         // Foreign keys
-        builder.HasOne<ApplicationUser>()
+        builder.HasOne<ApplicationUser>(ur => ur.User)
             .WithMany()
             .HasForeignKey(ur => ur.UserId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
             
-        builder.HasOne<ApplicationRole>()
+        builder.HasOne<ApplicationRole>(ur => ur.Role)
             .WithMany()
             .HasForeignKey(ur => ur.RoleId)
             .IsRequired()

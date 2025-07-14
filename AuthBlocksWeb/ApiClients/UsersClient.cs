@@ -12,11 +12,11 @@ using Web.Shared.ApiClients;
 
 namespace AuthBlocksWeb.ApiClients;
 
-public class UsersClient : ModelControllerClient<UserModel, ApplicationUser, UserClientConfig>, IUsersApiClient
+public class UsersClient : ModelControllerClient<UserModel, ApplicationUser, UsersClientConfig>, IUsersApiClient
 {
     private readonly ITokenService _tokenService;
 
-    public UsersClient(UserClientConfig config, IOptions<JsonSerializerOptions> options, ITokenService tokenService) : base(config, options)
+    public UsersClient(UsersClientConfig config, IOptions<JsonSerializerOptions> options, ITokenService tokenService) : base(config, options)
     {
         _tokenService = tokenService;
     }
@@ -73,115 +73,49 @@ public class UsersClient : ModelControllerClient<UserModel, ApplicationUser, Use
         ClearAuthorizationHeader();
         return result;
     }
-
-    /* IUserApiClient additions */
-    public async Task<ApiResult<List<UserInfo>>> GetUserInfoAsync()
-    {
-        try
-        {
-            if (await AddAuthorizationHeader() is {Success: false} error) return ApiResult<List<UserInfo>>.From(error);
-
-            var response = await http.GetAsync("api/users/list");
-            var dtoResult = await response.Content.ReadFromJsonAsync<ApiResultDto<List<UserInfo>>>(Options);
-
-            ClearAuthorizationHeader();
-
-            if (dtoResult == null) return ApiResult<List<UserInfo>>.CreateFailResult("Failed to parse response");
-            var result = dtoResult.From();
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ApiResult<List<UserInfo>>.CreateFailResult(ex.Message);
-        }
-    }
-
-    public async Task<ApiResult<UserInfo>> GetUserAsync(long id)
-    {
-        try
-        {
-            if (await AddAuthorizationHeader() is {Success: false} error) return ApiResult<UserInfo>.From(error);
-
-            var response = await http.GetAsync($"api/users/info/{id}");
-            var dtoResult = await response.Content.ReadFromJsonAsync<ApiResultDto<UserInfo>>(Options);
-
-            ClearAuthorizationHeader();
-
-            if (dtoResult == null) return ApiResult<UserInfo>.CreateFailResult("Failed to parse response");
-            var result = dtoResult.From();
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ApiResult<UserInfo>.CreateFailResult(ex.Message);
-        }
-    }
-
-    public async Task<ApiResult> DeleteUserAsync(long id)
-    {
-        try
-        {
-            if (await AddAuthorizationHeader() is {Success: false} error) return ApiResult.From(error);
-
-            var response = await http.DeleteAsync($"api/users/{id}");
-            var dtoResult = await response.Content.ReadFromJsonAsync<ApiResultDto>(Options);
-
-            ClearAuthorizationHeader();
-
-            if (dtoResult == null) return ApiResult.CreateFailResult("Failed to parse response");
-            var result = dtoResult.From();
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ApiResult.CreateFailResult(ex.Message);
-        }
-    }
-
-    public async Task<ApiResult> AddUserToRoleAsync(long userId, string role)
-    {
-        try
-        {
-            if (await AddAuthorizationHeader() is {Success: false} error) return ApiResult.From(error);
-
-            var response = await http.PostAsJsonAsync($"api/users/{userId}/roles", new UserRoleRequest { RoleName = role });
-            var dtoResult = await response.Content.ReadFromJsonAsync<ApiResultDto>(Options);
-
-            ClearAuthorizationHeader();
-
-            if (dtoResult == null) return ApiResult.CreateFailResult("Failed to parse response");
-            var result = dtoResult.From();
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ApiResult.CreateFailResult(ex.Message);
-        }
-    }
-
-    public async Task<ApiResult> RemoveUserFromRoleAsync(long userId, string role)
-    {
-        try
-        {
-            if (await AddAuthorizationHeader() is {Success: false} error) return ApiResult.From(error);
-
-            var response = await http.DeleteAsync($"api/users/{userId}/roles");
-            var dtoResult = await response.Content.ReadFromJsonAsync<ApiResultDto>(Options);
-
-            ClearAuthorizationHeader();
-
-            if (dtoResult == null) return ApiResult.CreateFailResult("Failed to parse response");
-            var result = dtoResult.From();
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ApiResult.CreateFailResult(ex.Message);
-        }
-    }
+    
+    /* TODO MOVE TO USERROLESCLIENT */
+    // public async Task<ApiResult> AddUserToRoleAsync(long userId, string role)
+    // {
+    //     try
+    //     {
+    //         if (await AddAuthorizationHeader() is {Success: false} error) return ApiResult.From(error);
+    //
+    //         var response = await http.PostAsJsonAsync($"api/users/{userId}/roles", new UserRoleRequest { RoleName = role });
+    //         var dtoResult = await response.Content.ReadFromJsonAsync<ApiResultDto>(Options);
+    //
+    //         ClearAuthorizationHeader();
+    //
+    //         if (dtoResult == null) return ApiResult.CreateFailResult("Failed to parse response");
+    //         var result = dtoResult.From();
+    //
+    //         return result;
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         return ApiResult.CreateFailResult(ex.Message);
+    //     }
+    // }
+    //
+    // public async Task<ApiResult> RemoveUserFromRoleAsync(long userId, string role)
+    // {
+    //     try
+    //     {
+    //         if (await AddAuthorizationHeader() is {Success: false} error) return ApiResult.From(error);
+    //
+    //         var response = await http.DeleteAsync($"api/users/{userId}/roles");
+    //         var dtoResult = await response.Content.ReadFromJsonAsync<ApiResultDto>(Options);
+    //
+    //         ClearAuthorizationHeader();
+    //
+    //         if (dtoResult == null) return ApiResult.CreateFailResult("Failed to parse response");
+    //         var result = dtoResult.From();
+    //
+    //         return result;
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         return ApiResult.CreateFailResult(ex.Message);
+    //     }
+    // }
 } 

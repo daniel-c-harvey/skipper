@@ -4,30 +4,58 @@ using AuthBlocksModels.Models;
 using AuthBlocksData.Data.Repositories;
 using Data.Shared.Managers;
 using Data.Shared.Data.Repositories;
+using NetBlocks.Models;
 
 namespace AuthBlocksData.Services;
 
-public class UserService : ManagerBase<ApplicationUser, UserModel>, IUserService
+public class UserService : ManagerBase<ApplicationUser, UserModel, IUserRepository>, IUserService
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IUserRepository _userRepository;
 
     public UserService(UserManager<ApplicationUser> userManager, IUserRepository userRepository) 
         : base(userRepository)
     {
         _userManager = userManager;
-        _userRepository = userRepository;
     }
 
-    // Standard Identity operations - use UserManager
-    public async Task<IdentityResult> CreateUserAsync(ApplicationUser user, string password)
+    public override async Task<Result> Add(ApplicationUser entity)
     {
-        return await _userManager.CreateAsync(user, password);
+        try 
+        {
+            var identityResult = await _userManager.CreateAsync(entity);
+            if (identityResult.Succeeded)
+            {
+                return Result.CreatePassResult();
+            }
+            else
+            {
+                return Result.CreateFailResult(identityResult.Errors.Select(error => error.Description).ToArray());
+            }
+        }
+        catch (Exception ex)
+        {
+            return Result.CreateFailResult(ex.Message);
+        }
     }
-
-    public async Task<IdentityResult> UpdateUserAsync(ApplicationUser user)
+    
+    public async Task<Result> Add(ApplicationUser entity, string password)
     {
-        return await _userManager.UpdateAsync(user);
+        try 
+        {
+            var identityResult = await _userManager.CreateAsync(entity, password);
+            if (identityResult.Succeeded)
+            {
+                return Result.CreatePassResult();
+            }
+            else
+            {
+                return Result.CreateFailResult(identityResult.Errors.Select(error => error.Description).ToArray());
+            }
+        }
+        catch (Exception ex)
+        {
+            return Result.CreateFailResult(ex.Message);
+        }
     }
 
     public async Task<ApplicationUser?> FindByEmailAsync(string email)
@@ -38,48 +66,6 @@ public class UserService : ManagerBase<ApplicationUser, UserModel>, IUserService
     public async Task<ApplicationUser?> FindByNameAsync(string userName)
     {
         return await _userManager.FindByNameAsync(userName);
-    }
-
-    // Custom operations with soft delete - use Repository
-    public async Task<ApplicationUser?> GetActiveUserByIdAsync(long id)
-    {
-        return await _userRepository.GetByIdAsync(id);
-    }
-
-    public async Task<ApplicationUser?> GetActiveUserByEmailAsync(string normalizedEmail)
-    {
-        return await _userRepository.GetByEmailAsync(normalizedEmail);
-    }
-
-    public async Task<IList<ApplicationUser>> GetActiveUsersInRoleAsync(string roleName)
-    {
-        return await _userRepository.GetUsersInRoleAsync(roleName);
-    }
-
-    public async Task SoftDeleteUserAsync(ApplicationUser user)
-    {
-        await _userRepository.DeleteAsync(user);
-    }
-
-    public async Task<ApplicationUser> UpdateUserWithReturnAsync(ApplicationUser user)
-    {
-        return await _userRepository.UpdateUserAsync(user);
-    }
-
-    // Role operations with soft delete
-    public async Task<IList<string>> GetActiveUserRolesAsync(ApplicationUser user)
-    {
-        return await _userRepository.GetRolesAsync(user);
-    }
-
-    public async Task AddUserToRoleAsync(ApplicationUser user, string roleName)
-    {
-        await _userRepository.AddToRoleAsync(user, roleName);
-    }
-
-    public async Task RemoveUserFromRoleAsync(ApplicationUser user, string roleName)
-    {
-        await _userRepository.RemoveFromRoleAsync(user, roleName);
     }
 
     public async Task<bool> CheckPassword(ApplicationUser user, string password)

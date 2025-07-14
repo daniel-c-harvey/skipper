@@ -8,15 +8,13 @@ using NetBlocks.Models;
 
 namespace AuthBlocksWeb.ApiClients;
 
-public class AuthApiClient : IAuthApiClient
+public class AuthApiClient : ApiClient<AuthClientConfig>, IAuthApiClient
 {
-    private readonly HttpClient _httpClient;
     private readonly ITokenService _tokenService;
     private readonly JsonSerializerOptions _jsonOptions;
 
-    public AuthApiClient(HttpClient httpClient, ITokenService tokenService)
+    public AuthApiClient(AuthClientConfig config, ITokenService tokenService) : base(config)
     {
-        _httpClient = httpClient;
         _tokenService = tokenService;
         _jsonOptions = new JsonSerializerOptions
         {
@@ -29,7 +27,7 @@ public class AuthApiClient : IAuthApiClient
     {
         try
         {
-            var response = await _httpClient.PostAsJsonAsync("api/auth/login", request);
+            var response = await http.PostAsJsonAsync($"api/{config.ControllerName}/login", request);
             var dtoResult = await response.Content.ReadFromJsonAsync<ApiResultDto<AuthResponse>>(_jsonOptions);
             
             if (dtoResult == null) return ApiResult<AuthResponse>.CreateFailResult("Failed to parse response");
@@ -53,7 +51,7 @@ public class AuthApiClient : IAuthApiClient
     {
         try
         {
-            var response = await _httpClient.PostAsJsonAsync("api/auth/register", request);
+            var response = await http.PostAsJsonAsync($"api/{config.ControllerName}/register", request);
             var dtoResult = await response.Content.ReadFromJsonAsync<ApiResultDto<AuthResponse>>(_jsonOptions);
 
             if (dtoResult == null) return ApiResult<AuthResponse>.CreateFailResult("Failed to parse response");
@@ -77,7 +75,7 @@ public class AuthApiClient : IAuthApiClient
     {
         try
         {
-            var response = await _httpClient.PostAsJsonAsync("api/auth/refresh", request);
+            var response = await http.PostAsJsonAsync($"api/{config.ControllerName}/refresh", request);
             var dtoResult = await response.Content.ReadFromJsonAsync<ApiResultDto<AuthResponse>>(_jsonOptions);
 
             if (dtoResult == null) return ApiResult<AuthResponse>.CreateFailResult("Failed to parse response");
@@ -105,11 +103,11 @@ public class AuthApiClient : IAuthApiClient
             var token = await _tokenService.GetAccessTokenAsync();
             if (!string.IsNullOrEmpty(token))
             {
-                _httpClient.DefaultRequestHeaders.Authorization = 
+                http.DefaultRequestHeaders.Authorization = 
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
 
-            var response = await _httpClient.PostAsJsonAsync("api/auth/logout", request);
+            var response = await http.PostAsJsonAsync($"api/{config.ControllerName}/logout", request);
             var dtoResult = await response.Content.ReadFromJsonAsync<ApiResultDto>(_jsonOptions);
 
             if (dtoResult == null) return ApiResult.CreateFailResult("Failed to parse response");
@@ -122,7 +120,7 @@ public class AuthApiClient : IAuthApiClient
             }
 
             // Clear authorization header
-            _httpClient.DefaultRequestHeaders.Authorization = null;
+            http.DefaultRequestHeaders.Authorization = null;
 
             return result;
         }
@@ -143,14 +141,14 @@ public class AuthApiClient : IAuthApiClient
                 return ApiResult<UserInfo>.CreateFailResult("No access token available");
             }
 
-            _httpClient.DefaultRequestHeaders.Authorization = 
+            http.DefaultRequestHeaders.Authorization = 
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            var response = await _httpClient.GetAsync("api/auth/me");
+            var response = await http.GetAsync($"api/{config.ControllerName}/me");
             var dtoResult = await response.Content.ReadFromJsonAsync<ApiResultDto<UserInfo>>(_jsonOptions);
 
             // Clear authorization header
-            _httpClient.DefaultRequestHeaders.Authorization = null;
+            http.DefaultRequestHeaders.Authorization = null;
 
             if (dtoResult == null) return ApiResult<UserInfo>.CreateFailResult("Failed to parse response");
             var result = dtoResult.From();
@@ -173,19 +171,19 @@ public class AuthApiClient : IAuthApiClient
             {
                 return ApiResult<List<RoleInfo>>.CreateFailResult("No access token available");
             }
-
-            _httpClient.DefaultRequestHeaders.Authorization = 
+    
+            http.DefaultRequestHeaders.Authorization = 
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-            var response = await _httpClient.GetAsync("api/roles");
+    
+            var response = await http.GetAsync($"api/{config.ControllerName}/roles");
             var dtoResult = await response.Content.ReadFromJsonAsync<ApiResultDto<List<RoleInfo>>>(_jsonOptions);
-
+    
             // Clear authorization header
-            _httpClient.DefaultRequestHeaders.Authorization = null;
-
+            http.DefaultRequestHeaders.Authorization = null;
+    
             if (dtoResult == null) return ApiResult<List<RoleInfo>>.CreateFailResult("Failed to parse response");
             var result = dtoResult.From();
-
+    
             return result;
         }
         catch (Exception ex)

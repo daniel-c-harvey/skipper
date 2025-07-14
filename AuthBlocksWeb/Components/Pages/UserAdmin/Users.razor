@@ -34,7 +34,13 @@
         </TemplateColumn>
     </Columns>
     <DeleteAction Context="item">
-        <MudButton Color="Color.Error" Variant="Variant.Outlined" OnClick="@(() => _modelView.DeleteItem(item))">Revoke</MudButton>
+        <MudButton OnClick="@(() => _modelView.DeleteItem(item))"
+                   Color="Color.Error"
+                   Variant="Variant.Outlined"
+                   Disabled="@DeleteDisabled(item)"
+                   StartIcon="@Icons.Material.Filled.Delete">
+            Revoke
+        </MudButton>
     </DeleteAction>
 </ModelView>
 
@@ -46,4 +52,8 @@
         // todo integrate with email for secure reset
     }
 
+    private bool DeleteDisabled(UserInputModel user)
+    {
+        return _modelView.ViewModel.CanDelete(user);
+    }
 }

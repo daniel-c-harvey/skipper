@@ -10,9 +10,9 @@ using SkipperModels.Models;
 namespace SkipperAPI.Controllers;
 
 [Route("api/[controller]")]
-public class SlipClassificationController : BaseModelController<SlipClassificationEntity, SlipClassificationModel>
+public class SlipClassificationController : BaseModelController<SlipClassificationEntity, SlipClassificationModel, SlipClassificationManager>
 {
-    public SlipClassificationController(IManager<SlipClassificationEntity, SlipClassificationModel> manager) : base(manager)
+    public SlipClassificationController(SlipClassificationManager manager) : base(manager)
     {
         AddSortExpression(nameof(SlipClassificationEntity.Name), sc => sc.Name);
         AddSortExpression(nameof(SlipClassificationEntity.Description), sc => sc.Description);

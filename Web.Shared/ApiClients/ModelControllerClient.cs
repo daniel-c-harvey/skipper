@@ -20,6 +20,38 @@ where TEntity : class, IEntity<TEntity, TModel>, new()
         Options = options.Value;
     }
 
+    public async Task<ApiResult<PagedResult<TModel>>> GetById(long id)
+    {
+        try
+        {
+            var dtoResult = await http.GetFromJsonAsync<ApiResultDto<PagedResult<TModel>>>($"api/{config.ControllerName}/{id}", Options)
+                ?? throw new HttpRequestException("Failed to deserialize response");
+            
+            return dtoResult.From();
+        }
+        catch (Exception e)
+        {
+            return ApiResult<PagedResult<TModel>>.CreateFailResult(e.Message);
+        }
+    }
+
+    public async Task<ApiResult<IEnumerable<TModel>>> GetAll()
+    {
+        try
+        {
+            var uri = $"api/{config.ControllerName}/all";
+            var result = await http.GetFromJsonAsync<ApiResultDto<IEnumerable<TModel>>>(uri, Options)
+                         ?? throw new HttpRequestException("Failed to deserialize response");
+
+            return result.From();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
     public virtual async Task<ApiResult<PagedResult<TModel>>> GetByPage(PagedQuery query)
     {
         try

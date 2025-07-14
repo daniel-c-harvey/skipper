@@ -121,11 +121,6 @@ public class Program
         
         // Critical Authentication Services for the Web App
         AuthBlocksWeb.Startup.ConfigureAuthServices(builderServices, userEndpoint.ApiUrl);
-        
-        // User Client
-        builderServices.AddSingleton(new UserClientConfig(userEndpoint.ApiUrl));
-        builderServices.AddScoped<UsersClient>();
-        builderServices.AddScoped<UsersViewModel>();
     }
 
     private static void LoadSkipperServices(IServiceCollection builderServices)

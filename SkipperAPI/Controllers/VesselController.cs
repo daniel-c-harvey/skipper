@@ -10,9 +10,9 @@ using SkipperModels.Models;
 namespace SkipperAPI.Controllers
 {
     [Route("api/[controller]")]
-    public class VesselController : BaseModelController<VesselEntity, VesselModel>
+    public class VesselController : BaseModelController<VesselEntity, VesselModel, VesselManager>
     {
-        public VesselController(IManager<VesselEntity, VesselModel> manager) : base(manager)
+        public VesselController(VesselManager manager) : base(manager)
         {
             AddSortExpression(nameof(VesselEntity.Name), v => v.Name);
             AddSortExpression(nameof(VesselEntity.RegistrationNumber), v => v.RegistrationNumber);

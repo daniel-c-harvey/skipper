@@ -11,9 +11,11 @@ where TEntity : class, IEntity<TEntity, TDto>
 where TDto : class, IModel<TDto, TEntity>
 {
     Task<ResultContainer<bool>> Exists(TEntity entity);
+    Task<ResultContainer<TEntity>> GetById(long id);
+    Task<ResultContainer<IEnumerable<TEntity>>> Get(Expression<Func<TEntity, bool>>? predicate = null);
+    Task<ResultContainer<int>> GetPageCount(Expression<Func<TEntity, bool>> predicate,  PagingParameters<TEntity> pagingParameters);
+    Task<ResultContainer<PagedResult<TEntity>>> GetPage(Expression<Func<TEntity, bool>> predicate, PagingParameters<TEntity> pagingParameters);
     Task<Result> Add(TEntity entity);
     Task<Result> Update(TEntity entity);
     Task<Result> Delete(long id);
-    Task<ResultContainer<int>> GetPageCount(Expression<Func<TEntity, bool>> predicate,  PagingParameters<TEntity> pagingParameters);
-    Task<ResultContainer<PagedResult<TEntity>>> GetPage(Expression<Func<TEntity, bool>> predicate, PagingParameters<TEntity> pagingParameters);
 }

@@ -116,7 +116,7 @@ internal static class Startup
     
     private static async Task SeedSystemRoles(IServiceScope scope)
     {
-        var roleService = scope.ServiceProvider.GetRequiredService<RoleService>();
+        var roleService = scope.ServiceProvider.GetRequiredService<IRoleService>();
         
         // Create roles in hierarchical order (parents first)
         foreach (var systemRole in SystemRole.GetAll().OrderBy(r => r.ParentRole?.Id ?? 0))
@@ -133,10 +133,10 @@ internal static class Startup
                     NormalizedName = systemRole.Name.ToUpperInvariant(),
                     ParentRoleId = existingParentRole?.Id,
                     ConcurrencyStamp = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
-                    Created = DateTime.UtcNow,
-                    Modified = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
                 };
-                await roleService.CreateRoleAsync(role);
+                await roleService.Add(role);
             }
         }
     }
@@ -144,6 +144,7 @@ internal static class Startup
     private static async Task SeedAdminUser(IServiceScope scope)
     {
         var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
+        var userRoleService = scope.ServiceProvider.GetRequiredService<IUserRoleService>();
         var adminSettings = LoadAdminConfig();
         var existingUser = await userService.FindByNameAsync(adminSettings.UserName);
         if (existingUser is null)
@@ -156,13 +157,13 @@ internal static class Startup
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
-            await userService.CreateUserAsync(user, adminSettings.Password);
-            await userService.AddUserToRoleAsync(user, "Admin");
+            await userService.Add(user, adminSettings.Password);
+            await userRoleService.AddUserToRoleAsync(user, SystemRoleConstants.Admin);
         }
         else if (existingUser.Email != adminSettings.Email)
         {
             existingUser.Email = adminSettings.Email;
-            await userService.UpdateUserAsync(existingUser);
+            await userService.Update(existingUser);
         }
         else if (!await userService.CheckPassword(existingUser, adminSettings.Password))
         {

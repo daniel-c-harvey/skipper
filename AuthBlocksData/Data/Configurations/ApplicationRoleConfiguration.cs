@@ -31,15 +31,15 @@ public class ApplicationRoleConfiguration : IEntityTypeConfiguration<Application
             .IsRequired(false);
         
         // Configure additional custom properties
-        builder.Property(r => r.Deleted)
+        builder.Property(r => r.IsDeleted)
             .HasDefaultValue(false)
             .IsRequired();
             
-        builder.Property(r => r.Created)
+        builder.Property(r => r.CreatedAt)
             .HasDefaultValueSql("NOW()")
             .IsRequired();
             
-        builder.Property(r => r.Modified)
+        builder.Property(r => r.UpdatedAt)
             .HasDefaultValueSql("NOW()")
             .IsRequired();
 
@@ -54,7 +54,7 @@ public class ApplicationRoleConfiguration : IEntityTypeConfiguration<Application
             .HasDatabaseName("ix_roles_normalizedname")
             .IsUnique();
             
-        builder.HasIndex(r => r.Deleted)
+        builder.HasIndex(r => r.IsDeleted)
             .HasDatabaseName("ix_roles_deleted");
             
         builder.HasIndex(r => r.ParentRoleId)

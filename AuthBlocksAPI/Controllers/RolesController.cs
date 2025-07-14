@@ -1,290 +1,80 @@
-using AuthBlocksAPI.Models;
+using System.Linq.Expressions;
+using API.Shared.Controllers;
+using AuthBlocksAPI.HierarchicalAuthorize;
 using AuthBlocksData.Services;
 using AuthBlocksModels.Entities.Identity;
-using AuthBlocksModels.ApiModels;
+using AuthBlocksModels.Models;
+using AuthBlocksModels.SystemDefinitions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using NetBlocks.Models;
-using AuthBlocksModels.SystemDefinitions;
+using Models.Shared.Common;
 
 namespace AuthBlocksAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class RolesController : ControllerBase
+public class RolesController : BaseModelController<ApplicationRole, RoleModel, IRoleService>
 {
-    private readonly RoleService _roleService;
-    private readonly ILogger<RolesController> _logger;
-
-    public RolesController(RoleService roleService, ILogger<RolesController> logger)
+    public RolesController(IRoleService roleService) : base(roleService)
     {
-        _roleService = roleService;
-        _logger = logger;
+        // Add custom sort expressions
+        AddSortExpression(nameof(RoleModel.Name), e => e.Name ?? string.Empty);
+        AddSortExpression(nameof(RoleModel.NormalizedName), e => e.NormalizedName ?? string.Empty);
+        AddSortExpression(nameof(RoleModel.ParentRoleId), e => e.ParentRoleId ?? 0);
     }
 
-    [HttpGet]
-    public async Task<ActionResult<ApiResultDto<List<RoleInfo>>>> GetRoles()
+    [HierarchicalRoleAuthorize(SystemRoleConstants.UserAdmin)]
+    public override async Task<ActionResult<ApiResultDto<PagedResult<RoleModel>>>> Get(PagedQuery query)
     {
-        try
-        {
-            var roles = await _roleService.GetAllRolesAsync();
-            
-            var roleInfos = roles.Select(r => new RoleInfo
-            {
-                Id = r.Id,
-                Name = r.Name ?? string.Empty,
-                NormalizedName = r.NormalizedName ?? string.Empty,
-                ParentRoleId = r.ParentRoleId,
-                ParentRoleName = r.ParentRole?.Name ?? string.Empty,
-                Created = r.Created,
-                Modified = r.Modified
-            }).ToList();
-
-            var resultSuccess = ApiResult<List<RoleInfo>>.CreatePassResult(roleInfos)
-                .Inform("Roles retrieved successfully");
-            return Ok(new ApiResultDto<List<RoleInfo>>(resultSuccess));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error retrieving roles");
-            var resultError = ApiResult<List<RoleInfo>>.CreateFailResult("An error occurred while retrieving roles")
-                .Fail("Internal server error");
-            return StatusCode(500, new ApiResultDto<List<RoleInfo>>(resultError));
-        }
+        return await base.Get(query);
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ApiResultDto<RoleInfo>>> GetRole(long id)
+    [HttpGet("{id:long}")]
+    [HierarchicalRoleAuthorize(SystemRoleConstants.UserAdmin)]
+    public override async Task<ActionResult<ApiResultDto<RoleModel>>> Get(long id)
     {
-        try
-        {
-            var role = await _roleService.GetActiveRoleByIdAsync(id);
-            if (role == null)
-            {
-                var resultFailure = ApiResult<RoleInfo>.CreateFailResult("Role not found")
-                    .Fail("Role does not exist");
-                return NotFound(new ApiResultDto<RoleInfo>(resultFailure));
-            }
-
-            var roleInfo = new RoleInfo
-            {
-                Id = role.Id,
-                Name = role.Name ?? string.Empty,
-                NormalizedName = role.NormalizedName ?? string.Empty,
-                Created = role.Created,
-                Modified = role.Modified
-            };
-
-            var resultSuccess = ApiResult<RoleInfo>.CreatePassResult(roleInfo)
-                .Inform("Role retrieved successfully");
-            return Ok(new ApiResultDto<RoleInfo>(resultSuccess));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error retrieving role {RoleId}", id);
-            var resultError = ApiResult<RoleInfo>.CreateFailResult("An error occurred while retrieving role")
-                .Fail("Internal server error");
-            return StatusCode(500, new ApiResultDto<RoleInfo>(resultError));
-        }
+        return await base.Get(id);
     }
 
     [HttpPost]
-    [Authorize(Roles = SystemRoleConstants.UserAdmin)]
-    public async Task<ActionResult<ApiResultDto<RoleInfo>>> CreateRole([FromBody] CreateRoleRequest request)
+    [HierarchicalRoleAuthorize(SystemRoleConstants.UserAdmin)]
+    public override async Task<ActionResult<ApiResultDto<RoleModel>>> Post([FromBody] RoleModel model)
     {
-        try
-        {
-            // Check if role already exists
-            var existingRole = await _roleService.FindByNameAsync(request.Name);
-            if (existingRole != null)
-            {
-                var resultFailure = ApiResult<RoleInfo>.CreateFailResult("Role creation failed")
-                    .Fail("Role with this name already exists");
-                return BadRequest(new ApiResultDto<RoleInfo>(resultFailure));
-            }
-
-            // Validate parent role if specified
-            ApplicationRole? parentRole = null;
-            if (request.ParentRoleId.HasValue)
-            {
-                parentRole = await _roleService.GetActiveRoleByIdAsync(request.ParentRoleId.Value);
-                if (parentRole == null)
-                {
-                    var resultFailure = ApiResult<RoleInfo>.CreateFailResult("Role creation failed")
-                        .Fail("Parent role not found");
-                    return BadRequest(new ApiResultDto<RoleInfo>(resultFailure));
-                }
-            }
-
-            var role = new ApplicationRole
-            {
-                Name = request.Name,
-                NormalizedName = request.Name.ToUpperInvariant(),
-                ParentRoleId = parentRole?.Id,
-                Created = DateTime.UtcNow,
-                Modified = DateTime.UtcNow,
-                ConcurrencyStamp = Guid.NewGuid().ToString()
-            };
-
-            var result = await _roleService.CreateRoleAsync(role);
-            if (!result.Succeeded)
-            {
-                var resultFailure = ApiResult<RoleInfo>.CreateFailResult("Role creation failed");
-                foreach (var error in result.Errors)
-                {
-                    resultFailure.Fail(error.Description);
-                }
-                return BadRequest(new ApiResultDto<RoleInfo>(resultFailure));
-            }
-
-            var roleInfo = new RoleInfo
-            {
-                Id = role.Id,
-                Name = role.Name ?? string.Empty,
-                NormalizedName = role.NormalizedName ?? string.Empty,
-                ParentRoleId = role.ParentRoleId,
-                ParentRoleName = parentRole?.Name ?? string.Empty,
-                Created = role.Created,
-                Modified = role.Modified
-            };
-
-            var resultSuccess = ApiResult<RoleInfo>.CreatePassResult(roleInfo)
-                .Inform("Role created successfully");
-            return CreatedAtAction(nameof(GetRole), new { id = role.Id }, new ApiResultDto<RoleInfo>(resultSuccess));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error creating role {RoleName}", request.Name);
-            var resultError = ApiResult<RoleInfo>.CreateFailResult("An error occurred while creating role")
-                .Fail("Internal server error");
-            return StatusCode(500, new ApiResultDto<RoleInfo>(resultError));
-        }
+        return await base.Post(model);
     }
 
-    [HttpPut("{id}")]
-    [Authorize(Roles = SystemRoleConstants.UserAdmin)]
-    public async Task<ActionResult<ApiResultDto<RoleInfo>>> UpdateRole(long id, [FromBody] UpdateRoleRequest request)
+    [HttpDelete("{id:long}")]
+    [HierarchicalRoleAuthorize(SystemRoleConstants.UserAdmin)]
+    public override async Task<ActionResult<ApiResultDto>> Delete(long id)
     {
-        try
+        // Prevent deletion of system roles
+        var rolesResult = await Manager.Get();
+        if (rolesResult is { Success: false } or { Value: null })
         {
-            var role = await _roleService.GetActiveRoleByIdAsync(id);
-            if (role == null)
-            {
-                var resultFailure = ApiResult<RoleInfo>.CreateFailResult("Role not found")
-                    .Fail("Role does not exist");
-                return NotFound(new ApiResultDto<RoleInfo>(resultFailure));
-            }
-
-            // Check if new name conflicts with existing role
-            if (!string.IsNullOrEmpty(request.Name) && request.Name != role.Name)
-            {
-                var existingRole = await _roleService.FindByNameAsync(request.Name);
-                if (existingRole != null && existingRole.Id != id)
-                {
-                    var resultFailure = ApiResult<RoleInfo>.CreateFailResult("Role update failed")
-                        .Fail("Role with this name already exists");
-                    return BadRequest(new ApiResultDto<RoleInfo>(resultFailure));
-                }
-
-                role.Name = request.Name;
-                role.NormalizedName = request.Name.ToUpperInvariant();
-            }
-
-            // Validate and update parent role if specified
-            if (request.ParentRoleId.HasValue && request.ParentRoleId != role.ParentRoleId)
-            {
-                // Prevent circular references
-                if (request.ParentRoleId == id)
-                {
-                    var resultFailure = ApiResult<RoleInfo>.CreateFailResult("Role update failed")
-                        .Fail("Role cannot be its own parent");
-                    return BadRequest(new ApiResultDto<RoleInfo>(resultFailure));
-                }
-
-                var parentRole = await _roleService.GetActiveRoleByIdAsync(request.ParentRoleId.Value);
-                if (parentRole == null)
-                {
-                    var resultFailure = ApiResult<RoleInfo>.CreateFailResult("Role update failed")
-                        .Fail("Parent role not found");
-                    return BadRequest(new ApiResultDto<RoleInfo>(resultFailure));
-                }
-
-                role.ParentRoleId = parentRole.Id;
-            }
-
-            role.Modified = DateTime.UtcNow;
-
-            var result = await _roleService.UpdateRoleAsync(role);
-            if (!result.Succeeded)
-            {
-                var resultFailure = ApiResult<RoleInfo>.CreateFailResult("Role update failed");
-                foreach (var error in result.Errors)
-                {
-                    resultFailure.Fail(error.Description);
-                }
-                return BadRequest(new ApiResultDto<RoleInfo>(resultFailure));
-            }
-
-            var roleInfo = new RoleInfo
-            {
-                Id = role.Id,
-                Name = role.Name ?? string.Empty,
-                NormalizedName = role.NormalizedName ?? string.Empty,
-                ParentRoleId = role.ParentRoleId,
-                ParentRoleName = role.ParentRole?.Name ?? string.Empty,
-                Created = role.Created,
-                Modified = role.Modified
-            };
-
-            var resultSuccess = ApiResult<RoleInfo>.CreatePassResult(roleInfo)
-                .Inform("Role updated successfully");
-            return Ok(new ApiResultDto<RoleInfo>(resultSuccess));
+            return StatusCode(500, new ApiResultDto(ApiResult.From(rolesResult)));
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error updating role {RoleId}", id);
-            var resultError = ApiResult<RoleInfo>.CreateFailResult("An error occurred while updating role")
-                .Fail("Internal server error");
-            return StatusCode(500, new ApiResultDto<RoleInfo>(resultError));
+        var roles = rolesResult.Value!;
+        
+        if (SystemRole.GetAll()
+            .Join(roles, sr => sr.Name, r => r.Name, (_ , r) => r.Id)
+            .Contains(id))
+        { 
+            var resultFailure = ApiResult.CreateFailResult("Cannot delete system role")
+                .Fail("Admin role cannot be deleted");
+            return BadRequest(new ApiResultDto(resultFailure));
         }
+
+        return await base.Delete(id);
     }
 
-    [HttpDelete("{id}")]
-    [Authorize(Roles = SystemRoleConstants.UserAdmin)]
-    public async Task<ActionResult<ApiResultDto>> DeleteRole(long id)
+    protected override Expression<Func<ApplicationRole, bool>> BuildSearchPredicate(string? search)
     {
-        try
-        {
-            var role = await _roleService.GetActiveRoleByIdAsync(id);
-            if (role == null)
-            {
-                var resultFailure = ApiResult.CreateFailResult("Role not found")
-                    .Fail("Role does not exist");
-                return NotFound(new ApiResultDto(resultFailure));
-            }
+        if (string.IsNullOrEmpty(search))
+            return e => true;
 
-            // Prevent deletion of system roles
-            if (role.Name == "Admin")
-            {
-                var resultFailure = ApiResult.CreateFailResult("Cannot delete system role")
-                    .Fail("Admin role cannot be deleted");
-                return BadRequest(new ApiResultDto(resultFailure));
-            }
-
-            await _roleService.SoftDeleteRoleAsync(role);
-
-            var resultSuccess = ApiResult.CreatePassResult()
-                .Inform("Role deleted successfully");
-            return Ok(new ApiResultDto(resultSuccess));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error deleting role {RoleId}", id);
-            var resultError = ApiResult.CreateFailResult("An error occurred while deleting role")
-                .Fail("Internal server error");
-            return StatusCode(500, new ApiResultDto(resultError));
-        }
+        return e => e.Name!.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                   e.NormalizedName!.Contains(search, StringComparison.OrdinalIgnoreCase);
     }
 } 

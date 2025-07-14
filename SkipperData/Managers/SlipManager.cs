@@ -6,7 +6,7 @@ using SkipperModels.Models;
 
 namespace SkipperData.Managers;
 
-public class SlipManager : ManagerBase<SlipEntity, SlipModel>
+public class SlipManager : ManagerBase<SlipEntity, SlipModel, SlipRepository>
 {
-    public SlipManager(IRepository<SlipEntity, SlipModel> repository) : base(repository) { }
+    public SlipManager(SlipRepository repository) : base(repository) { }
 }

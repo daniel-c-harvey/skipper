@@ -10,11 +10,10 @@ public static class RepositoryRegistration
 {
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        // services.AddScoped(typeof(IRepository<,>), typeof(Repository<,,>));
-        services.AddScoped<IRepository<SlipEntity, SlipModel>, SlipRepository>();
-        services.AddScoped<IRepository<VesselEntity, VesselModel>, VesselRepository>();
-        services.AddScoped<IRepository<SlipClassificationEntity, SlipClassificationModel>, SlipClassificationRepository>();
-        services.AddScoped<IRepository<RentalAgreementEntity, RentalAgreementModel>, RentalAgreementRepository>();
+        services.AddScoped<SlipRepository>();
+        services.AddScoped<VesselRepository>();
+        services.AddScoped<SlipClassificationRepository>();
+        services.AddScoped<RentalAgreementRepository>();
         
         return services;
     }

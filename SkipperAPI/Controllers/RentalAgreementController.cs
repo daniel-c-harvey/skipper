@@ -10,9 +10,9 @@ using SkipperModels.Models;
 namespace SkipperAPI.Controllers;
 
 [Route("api/[controller]")]
-public class RentalAgreementController : BaseModelController<RentalAgreementEntity, RentalAgreementModel>
+public class RentalAgreementController : BaseModelController<RentalAgreementEntity, RentalAgreementModel, RentalAgreementManager>
 {
-    public RentalAgreementController(IManager<RentalAgreementEntity, RentalAgreementModel> manager) : base(manager)
+    public RentalAgreementController(RentalAgreementManager manager) : base(manager)
     {
         AddSortExpression(nameof(RentalAgreementEntity.SlipEntity.SlipNumber), e => e.SlipEntity.SlipNumber);
         AddSortExpression(nameof(RentalAgreementEntity.VesselEntity.RegistrationNumber), e => e.VesselEntity.RegistrationNumber);

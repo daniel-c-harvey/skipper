@@ -6,14 +6,14 @@ namespace AuthBlocksAPI.HierarchicalAuthorize;
 
 public class HierarchicalRoleService : IHierarchicalRoleService
 {
-    private readonly RoleService _roleService;
+    private readonly IRoleService _roleService;
     private readonly ILogger<HierarchicalRoleService> _logger;
     private readonly Dictionary<string, bool> _roleInheritanceCache = new();
     private readonly object _cacheLock = new();
     private DateTime _lastCacheRefresh = DateTime.MinValue;
     private readonly TimeSpan _cacheExpiry = TimeSpan.FromMinutes(5); // Cache for 5 minutes
 
-    public HierarchicalRoleService(RoleService roleService, ILogger<HierarchicalRoleService> logger)
+    public HierarchicalRoleService(IRoleService roleService, ILogger<HierarchicalRoleService> logger)
     {
         _roleService = roleService;
         _logger = logger;
@@ -73,7 +73,13 @@ public class HierarchicalRoleService : IHierarchicalRoleService
             }
 
             // Get all roles from the database to check hierarchy
-            var roles = await _roleService.GetAllRolesAsync();
+            var rolesResult = await _roleService.Get();
+            
+            if (rolesResult is { Success: false } or { Value: null })
+            {
+                _logger.LogDebug("Roles could not be loaded");
+            }
+            var roles = rolesResult.Value!;
             var rolesList = roles.ToList();
             
             // Find the user's role

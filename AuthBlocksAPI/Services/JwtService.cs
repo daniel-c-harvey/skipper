@@ -14,15 +14,17 @@ public class JwtService : IJwtService
 {
     private readonly JwtSettings _jwtSettings;
     private readonly IUserService _userService;
+    private readonly IUserRoleService _userRoleService;
     private readonly TokenValidationParameters _tokenValidationParameters;
     
     // Simple in-memory refresh token store (in production, use database)
     private static readonly Dictionary<string, (long UserId, DateTime Expires)> _refreshTokens = new();
 
-    public JwtService(IOptions<JwtSettings> jwtSettings, IUserService userService)
+    public JwtService(IOptions<JwtSettings> jwtSettings, IUserService userService, IUserRoleService userRoleService)
     {
         _jwtSettings = jwtSettings.Value;
         _userService = userService;
+        _userRoleService = userRoleService;
         
         _tokenValidationParameters = new TokenValidationParameters
         {
@@ -39,8 +41,12 @@ public class JwtService : IJwtService
 
     public async Task<string> GenerateTokenAsync(ApplicationUser user)
     {
-        var userRoles = await _userService.GetActiveUserRolesAsync(user);
+        var roleResult = await _userRoleService.GetByUser(user);
+        if (roleResult is { Success: false } or { Value: null })
+            throw new Exception("Could not determine roles for user");
         
+        var roles = roleResult.Value!;
+        ;
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -51,7 +57,7 @@ public class JwtService : IJwtService
         };
 
         // Add role claims
-        claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role.Name!)));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

@@ -1,0 +1,19 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Models.Shared.Common;
+using Models.Shared.Entities;
+using Models.Shared.Models;
+using NetBlocks.Models;
+
+namespace API.Shared.Controllers;
+
+public interface IBaseModelController<TEntity, TModel> 
+where TEntity : class, IEntity<TEntity, TModel>, new() 
+where TModel : class, IModel<TModel, TEntity>, new()
+{
+    Task<ActionResult<ApiResultDto<TModel>>> Get(long id);
+    Task<ActionResult<ApiResultDto<IEnumerable<TModel>>>> GetAll();
+    Task<ActionResult<ApiResultDto<PagedResult<TModel>>>> Get([FromQuery] PagedQuery query);
+    Task<ActionResult<ApiResultDto<ItemCount>>> GetCount([FromQuery] PagedQuery query);
+    Task<ActionResult<ApiResultDto<TModel>>> Post([FromBody] TModel model);
+    Task<ActionResult<ApiResultDto>> Delete(long id);
+}

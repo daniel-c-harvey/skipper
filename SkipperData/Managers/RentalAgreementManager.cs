@@ -6,7 +6,7 @@ using SkipperModels.Models;
 
 namespace SkipperData.Managers;
 
-public class RentalAgreementManager : ManagerBase<RentalAgreementEntity, RentalAgreementModel>
+public class RentalAgreementManager : ManagerBase<RentalAgreementEntity, RentalAgreementModel, RentalAgreementRepository>
 {
-    public RentalAgreementManager(IRepository<RentalAgreementEntity, RentalAgreementModel> repository) : base(repository) { }
+    public RentalAgreementManager(RentalAgreementRepository repository) : base(repository) { }
 }

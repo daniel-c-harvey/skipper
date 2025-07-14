@@ -1,15 +1,13 @@
 using AuthBlocksModels.Entities.Identity;
+using AuthBlocksModels.Models;
+using Data.Shared.Data.Repositories;
 
 namespace AuthBlocksData.Data.Repositories;
 
-public interface IRoleRepository
+public interface IRoleRepository : IRepository<ApplicationRole, RoleModel>
 {
-    Task<ApplicationRole?> GetByIdAsync(long id);
     Task<ApplicationRole?> GetByNameAsync(string normalizedName);
-    Task<ApplicationRole> CreateAsync(ApplicationRole role);
-    Task<ApplicationRole> UpdateAsync(ApplicationRole role);
-    Task DeleteAsync(ApplicationRole role);
-    
+
     // Simple hierarchy methods
     Task<IEnumerable<ApplicationRole>> GetRootRolesAsync();
     Task<IEnumerable<ApplicationRole>> GetChildRolesAsync(long parentRoleId);

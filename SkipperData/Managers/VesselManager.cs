@@ -6,7 +6,7 @@ using SkipperModels.Models;
 
 namespace SkipperData.Managers;
 
-public class VesselManager : ManagerBase<VesselEntity, VesselModel>
+public class VesselManager : ManagerBase<VesselEntity, VesselModel, VesselRepository>
 {
-    public VesselManager(IRepository<VesselEntity, VesselModel> vesselRepository) : base(vesselRepository) { }
+    public VesselManager(VesselRepository vesselRepository) : base(vesselRepository) { }
 }

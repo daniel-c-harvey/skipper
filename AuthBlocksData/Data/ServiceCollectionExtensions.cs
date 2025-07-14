@@ -70,10 +70,12 @@ public static class ServiceCollectionExtensions
         // Add repositories for custom business logic
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 
         // Add services that combine Identity managers with repositories
         services.AddScoped<IUserService, UserService>();
-        services.AddScoped<RoleService>();
+        services.AddScoped<IRoleService, RoleService>();
+        services.AddScoped<IUserRoleService, UserRoleService>();
 
         return services;
     }

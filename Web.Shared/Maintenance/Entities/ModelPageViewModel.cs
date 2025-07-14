@@ -16,7 +16,7 @@ public class ModelPageViewModel<TModel, TEntity, TClient, TClientConfig> : IMode
 
     public string SearchTerm => _currentSearchTerm;
     
-    private readonly TClient _client;
+    protected readonly TClient Client;
     private int _currentPage = 0;
     private int _currentPageSize = 0;
     private string _currentSearchTerm = string.Empty;
@@ -24,7 +24,7 @@ public class ModelPageViewModel<TModel, TEntity, TClient, TClientConfig> : IMode
 
     public ModelPageViewModel(TClient client)
     {
-        _client = client;
+        Client = client;
     }
 
     public async Task<(int, int)> SetPage(int pageNumber, int pageSize, string searchTerm, bool refresh = false)
@@ -39,7 +39,7 @@ public class ModelPageViewModel<TModel, TEntity, TClient, TClientConfig> : IMode
         int pageCount = 1;
         if (Page is null || _cachedPageCount is null)
         {
-            var countResult = await _client.GetPageCount(
+            var countResult = await Client.GetPageCount(
                 new PagedQuery 
                 { 
                     PageSize = pageSize, 
@@ -65,7 +65,7 @@ public class ModelPageViewModel<TModel, TEntity, TClient, TClientConfig> : IMode
             pageNumber = 1;
         }
 
-        var result = await _client.GetByPage(
+        var result = await Client.GetByPage(
             new PagedQuery 
             { 
                 Page = pageNumber, 
@@ -99,13 +99,13 @@ public class ModelPageViewModel<TModel, TEntity, TClient, TClientConfig> : IMode
 
     public virtual async Task UpdateItem(TModel model)
     {
-        var result = await _client.Update(model);
+        var result = await Client.Update(model);
 
         ErrorResults = result.Success ? null : NetBlocks.Models.Result.From(result);
     }
     public virtual async Task DeleteItem(TModel model)
     {
-        var result = await _client.Delete(model);
+        var result = await Client.Delete(model);
         
         ErrorResults = result.Success ? null : NetBlocks.Models.Result.From(result);
     }

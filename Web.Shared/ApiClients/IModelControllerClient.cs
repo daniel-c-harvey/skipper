@@ -9,6 +9,8 @@ public interface IModelControllerClient<TModel, TEntity>
     where TModel : class, IModel<TModel, TEntity>, new()
     where TEntity : class, IEntity<TEntity, TModel>, new()
 {
+    Task<ApiResult<PagedResult<TModel>>> GetById(long id);
+    Task<ApiResult<IEnumerable<TModel>>> GetAll();
     Task<ApiResult<PagedResult<TModel>>> GetByPage(PagedQuery query);
     Task<ApiResult<ItemCount>> GetPageCount(PagedQuery query);
     Task<ApiResult<TModel>> Update(TModel model);

@@ -1,4 +1,3 @@
-using AuthBlocksAPI.Models;
 using AuthBlocksAPI.Services;
 using AuthBlocksData.Services;
 using AuthBlocksModels.Entities.Identity;
@@ -6,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using AuthBlocksAPI.HierarchicalAuthorize;
 using AuthBlocksModels.ApiModels;
 using NetBlocks.Models;
 
@@ -16,17 +16,23 @@ namespace AuthBlocksAPI.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IRoleService _roleService;
+    private readonly IUserRoleService _userRoleService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IJwtService _jwtService;
     private readonly ILogger<AuthController> _logger;
 
     public AuthController(
         IUserService userService,
+        IRoleService roleService,
+        IUserRoleService userRoleService,
         UserManager<ApplicationUser> userManager,
         IJwtService jwtService,
         ILogger<AuthController> logger)
     {
         _userService = userService;
+        _roleService = roleService;
+        _userRoleService = userRoleService;
         _userManager = userManager;
         _jwtService = jwtService;
         _logger = logger;
@@ -40,16 +46,14 @@ public class AuthController : ControllerBase
             var user = await _userService.FindByEmailAsync(request.Email);
             if (user == null)
             {
-                var emailresult = ApiResult<AuthResponse>.CreateFailResult("Invalid email or password")
-                    .Fail("User not found");
-                return BadRequest(new ApiResultDto<AuthResponse>(emailresult));
+                var emailResult = ApiResult<AuthResponse>.CreateFailResult("Invalid email or password");
+                return BadRequest(new ApiResultDto<AuthResponse>(emailResult));
             }
 
             var passwordValid = await _userManager.CheckPasswordAsync(user, request.Password);
             if (!passwordValid)
             {
-                var passwordResult = ApiResult<AuthResponse>.CreateFailResult("Invalid email or password")
-                    .Fail("Invalid password");
+                var passwordResult = ApiResult<AuthResponse>.CreateFailResult("Invalid email or password");
                 return BadRequest(new ApiResultDto<AuthResponse>(passwordResult));
             }
 
@@ -57,8 +61,15 @@ public class AuthController : ControllerBase
             var refreshToken = await _jwtService.GenerateRefreshTokenAsync();
             await _jwtService.SaveRefreshTokenAsync(refreshToken, user.Id);
 
-            var userRoles = await _userService.GetActiveUserRolesAsync(user);
+            var rolesResult = await _userRoleService.GetByUser(user);
+            if (rolesResult is null or { Success: false } or { Value: null })
+            {
+                var resultFailure = ApiResult<AuthResponse>.CreateFailResult("Login failed")
+                    .Fail("User roles could not be determined");
+                return BadRequest(new ApiResultDto<AuthResponse>(resultFailure));
+            }
 
+            var roles = rolesResult.Value!;
             var response = new AuthResponse
             {
                 AccessToken = accessToken,
@@ -69,7 +80,7 @@ public class AuthController : ControllerBase
                     Id = user.Id,
                     UserName = user.UserName ?? string.Empty,
                     Email = user.Email ?? string.Empty,
-                    Roles = userRoles.ToList()
+                    Roles = roles.Select(r => r.Name!).ToList()
                 }
             };
 
@@ -108,15 +119,11 @@ public class AuthController : ControllerBase
                 UpdatedAt = DateTime.UtcNow
             };
 
-            var createResult = await _userService.CreateUserAsync(user, request.Password);
-            if (!createResult.Succeeded)
+            var createResult = await _userService.Add(user, request.Password);
+            if (!createResult.Success)
             {
-                var resultFailure = ApiResult<AuthResponse>.CreateFailResult("Registration failed");
-                foreach (var error in createResult.Errors)
-                {
-                    resultFailure.Fail(error.Description);
-                }
-                return BadRequest(new ApiResultDto<AuthResponse>(resultFailure));
+                var resultFailure = ApiResult<AuthResponse>.From(createResult);
+                return StatusCode(500, new ApiResultDto<AuthResponse>(resultFailure));
             }
 
             var accessToken = await _jwtService.GenerateTokenAsync(user);
@@ -144,8 +151,7 @@ public class AuthController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during registration for user {Email}", request.Email);
-            var resultError = ApiResult<AuthResponse>.CreateFailResult("An error occurred during registration")
-                .Fail("Internal server error");
+            var resultError = ApiResult<AuthResponse>.CreateFailResult("An error occurred during registration");
             return StatusCode(500, new ApiResultDto<AuthResponse>(resultError));
         }
     }
@@ -179,13 +185,19 @@ public class AuthController : ControllerBase
                 return BadRequest(new ApiResultDto<AuthResponse>(resultFailure));
             }
 
-            var user = await _userService.GetActiveUserByIdAsync(userId);
-            if (user == null)
+            var userResult = await _userService.GetById(userId);
+            switch (userResult)
             {
-                var resultFailure = ApiResult<AuthResponse>.CreateFailResult("User not found")
-                    .Fail("User does not exist");
-                return BadRequest(new ApiResultDto<AuthResponse>(resultFailure));
+                case {Success: false}:
+                {
+                    return StatusCode(500, new ApiResultDto<AuthResponse>(ApiResult<AuthResponse>.From(userResult)));
+                }
+                case {Value: null}:
+                    var resultFailure = ApiResult<AuthResponse>.CreateFailResult("User not found");
+                    return StatusCode(500, new ApiResultDto<AuthResponse>(resultFailure));
             }
+
+            var user = userResult.Value!;
 
             // Revoke old refresh token and generate new tokens
             await _jwtService.RevokeRefreshTokenAsync(request.RefreshToken);
@@ -194,8 +206,15 @@ public class AuthController : ControllerBase
             var newRefreshToken = await _jwtService.GenerateRefreshTokenAsync();
             await _jwtService.SaveRefreshTokenAsync(newRefreshToken, user.Id);
 
-            var userRoles = await _userService.GetActiveUserRolesAsync(user);
-
+            var rolesResult = await _userRoleService.GetByUser(user);
+            if (rolesResult is null or { Success: false } or { Value: null })
+            {
+                var resultFailure = ApiResult<AuthResponse>.CreateFailResult("Refresh failed")
+                    .Fail("User roles could not be determined");
+                return BadRequest(new ApiResultDto<AuthResponse>(resultFailure));
+            }
+            
+            var roles = rolesResult.Value!;
             var response = new AuthResponse
             {
                 AccessToken = newAccessToken,
@@ -206,7 +225,7 @@ public class AuthController : ControllerBase
                     Id = user.Id,
                     UserName = user.UserName ?? string.Empty,
                     Email = user.Email ?? string.Empty,
-                    Roles = userRoles.ToList()
+                    Roles = roles.Select(r => r.Name!).ToList()
                 }
             };
 
@@ -257,22 +276,31 @@ public class AuthController : ControllerBase
                 return BadRequest(new ApiResultDto<UserInfo>(resultFailure));
             }
 
-            var user = await _userService.GetActiveUserByIdAsync(userId);
-            if (user == null)
+            var userResult = await _userService.GetById(userId);
+            if (userResult is {Success: false} or {Value: null})
             {
                 var resultFailure = ApiResult<UserInfo>.CreateFailResult("User not found")
                     .Fail("User does not exist");
                 return NotFound(new ApiResultDto<UserInfo>(resultFailure));
             }
-
-            var userRoles = await _userService.GetActiveUserRolesAsync(user);
+            
+            var user = userResult.Value!;
+            var rolesResult = await _userRoleService.GetByUser(user);
+            if (rolesResult is { Success: false } or { Value: null })
+            {
+                var resultFailure = ApiResult<AuthResponse>.CreateFailResult("Refresh failed")
+                    .Fail("User roles could not be determined");
+                return BadRequest(new ApiResultDto<AuthResponse>(resultFailure));
+            }
+            
+            var roles = rolesResult.Value!;
 
             var userInfo = new UserInfo
             {
                 Id = user.Id,
                 UserName = user.UserName ?? string.Empty,
                 Email = user.Email ?? string.Empty,
-                Roles = userRoles.ToList()
+                Roles = roles.Select(r => r.Name!).ToList()
             };
 
             var resultSuccess = ApiResult<UserInfo>.CreatePassResult(userInfo)
@@ -285,6 +313,43 @@ public class AuthController : ControllerBase
             var resultError = ApiResult<UserInfo>.CreateFailResult("An error occurred while retrieving user info")
                 .Fail("Internal server error");
             return StatusCode(500, new ApiResultDto<UserInfo>(resultError));
+        }
+    }
+    [HttpGet("roles")]
+    [HierarchicalRoleAuthorize(SystemRoleConstants.UserAdmin)]
+    public async Task<ActionResult<ApiResultDto<List<RoleInfo>>>> GetRoles()
+    {
+        try
+        {
+            var rolesResult = await _roleService.Get();
+
+            if (rolesResult is { Success: false } or { Value: null })
+            {
+                return StatusCode(500, new ApiResultDto<List<RoleInfo>>(ApiResult<List<RoleInfo>>.From(rolesResult)));
+            }
+            var roles = rolesResult.Value!;
+            
+            var roleInfos = roles.Select(r => new RoleInfo
+            {
+                Id = r.Id,
+                Name = r.Name ?? string.Empty,
+                NormalizedName = r.NormalizedName ?? string.Empty,
+                ParentRoleId = r.ParentRoleId,
+                ParentRoleName = r.ParentRole?.Name ?? string.Empty,
+                Created = r.CreatedAt,
+                Modified = r.UpdatedAt
+            }).ToList();
+
+            var resultSuccess = ApiResult<List<RoleInfo>>.CreatePassResult(roleInfos)
+                .Inform("Roles retrieved successfully");
+            return Ok(new ApiResultDto<List<RoleInfo>>(resultSuccess));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving roles");
+            var resultError = ApiResult<List<RoleInfo>>.CreateFailResult("An error occurred while retrieving roles")
+                .Fail("Internal server error");
+            return StatusCode(500, new ApiResultDto<List<RoleInfo>>(resultError));
         }
     }
 } 

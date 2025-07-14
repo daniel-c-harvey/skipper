@@ -11,7 +11,7 @@
     public required RentalAgreementInputModel Context { get; set; }
 }
 
-<MudGrid AlignItems="Center" Spacing="2" Class="mb-3">
+<MudGrid Spacing="2" Class="mb-3">
     <!-- Action Buttons Row -->
     <MudItem xs="12" Class="d-flex align-center gap-3 mb-2">
         <MudButton StartIcon="@Icons.Material.Outlined.AddCircle" 
@@ -101,7 +101,7 @@
                                        Color="Color.Primary" 
                                        Variant="Variant.Outlined"
                                        Size="Size.Medium"
-                                       OnClick="LoadMoreSlips" />
+                                       OnClick="@LoadMoreSlips" />
                     </MudTooltip>
                 }
                 
@@ -158,7 +158,7 @@
                 <MudButton Variant="Variant.Outlined" 
                            Color="Color.Primary" 
                            StartIcon="@Icons.Material.Outlined.Add"
-                           OnClick="LoadMoreSlips">
+                           OnClick="@LoadMoreSlips">
                     Load More Slips (@(_slips.Count()))
                 </MudButton>
             }

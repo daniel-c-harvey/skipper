@@ -9,14 +9,15 @@ using NetBlocks.Models;
 namespace API.Shared.Controllers
 {
     [ApiController] 
-    public abstract class BaseModelController<TEntity, TModel> : ControllerBase 
+    public abstract class BaseModelController<TEntity, TModel, TManager> : ControllerBase, IBaseModelController<TEntity, TModel> 
     where TEntity : class, IEntity<TEntity, TModel>, new()
     where TModel : class, IModel<TModel, TEntity>, new()
+    where TManager : IManager<TEntity, TModel>
     {
-        protected readonly IManager<TEntity, TModel> Manager;
+        protected readonly TManager Manager;
         private readonly Dictionary<string, Expression<Func<TEntity, object>>> _sortExpressions;
 
-        protected BaseModelController(IManager<TEntity, TModel> manager)
+        protected BaseModelController(TManager manager)
         {
             Manager = manager;
             _sortExpressions = new Dictionary<string, Expression<Func<TEntity, object>>>(StringComparer.OrdinalIgnoreCase);
@@ -25,6 +26,21 @@ namespace API.Shared.Controllers
             _sortExpressions[nameof(IEntity<TEntity, TModel>.Id)] = e => e.Id;
             _sortExpressions[nameof(IEntity<TEntity, TModel>.CreatedAt)] = e => e.CreatedAt;
             _sortExpressions[nameof(IEntity<TEntity, TModel>.UpdatedAt)] = e => e.UpdatedAt;
+        }
+        
+        [HttpGet("all")]
+        public async Task<ActionResult<ApiResultDto<IEnumerable<TModel>>>> GetAll()
+        {
+            var queryResult = await Manager.Get();
+            
+            var result = ApiResult<IEnumerable<TModel>>.From(queryResult);
+            if (queryResult.Value is IEnumerable<TEntity> items)
+            {
+                result.Value = items.Select(TEntity.CreateModel);
+            }
+            var dto = new ApiResultDto<IEnumerable<TModel>>(result);
+            
+            return !result.Success ? StatusCode(500, dto) : Ok(dto);
         }
 
         /// <summary>
