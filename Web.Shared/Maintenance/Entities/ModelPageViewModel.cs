@@ -1,15 +1,13 @@
 ﻿using Models.Shared.Common;
-using Models.Shared.Entities;
 using Models.Shared.Models;
 using Web.Shared.ApiClients;
 
 namespace Web.Shared.Maintenance.Entities;
 
-public class ModelPageViewModel<TModel, TEntity, TClient, TClientConfig> : IModelPageViewModel<TModel, TEntity>
-    where TModel : class, IModel<TModel, TEntity>, new()
-    where TEntity : class, IEntity<TEntity, TModel>, new()
-    where TClient : ModelControllerClient<TModel, TEntity, TClientConfig>
-    where TClientConfig : ModelControllerClientConfig
+public class ModelPageViewModel<TModel, TClient, TClientConfig> : IModelPageViewModel<TModel>
+    where TModel : class, IModel, new()
+    where TClient : ModelClient<TModel, TClientConfig>
+    where TClientConfig : ModelClientConfig
 {
     public PagedResult<TModel>? Page { get; private set; }
     public NetBlocks.Models.Result? ErrorResults { get; set; }

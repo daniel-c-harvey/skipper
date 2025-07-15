@@ -1,9 +1,8 @@
-﻿using NetBlocks.Models;
-using Web.Shared.ApiClients;
+﻿using Web.Shared.ApiClients;
 
 namespace AuthBlocksWeb.ApiClients;
 
-public class AuthClientConfig : ModelControllerClientConfig
+public class AuthClientConfig : ModelClientConfig
 {
     public AuthClientConfig(string baseURL, int port) : base(baseURL, port, "auth")
     {

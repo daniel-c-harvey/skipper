@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Models.Shared.Entities;
+using Models.Shared.Converters;
 using Models.Shared.InputModels;
 using Models.Shared.Models;
 using MudBlazor;
@@ -9,12 +9,12 @@ using Web.Shared.ApiClients;
 
 namespace Web.Shared.Maintenance.Entities.New;
 
-public partial class NewModelView<TModel, TEntity, TInputModel, TClient, TClientConfig> : ComponentBase
-where TModel : class, IModel<TModel, TEntity>, new()
-where TEntity : class, IEntity<TEntity, TModel>, new()
-where TInputModel : class, IInputModel<TInputModel, TModel, TEntity>, new()
-where TClient : ModelControllerClient<TModel, TEntity, TClientConfig>
-where TClientConfig : ModelControllerClientConfig
+public partial class NewModelView<TModel, TInputModel, TClient, TClientConfig, TConverter> : ComponentBase
+where TModel : class, IModel, new()
+where TInputModel : class, IInputModel, new()
+where TClient : ModelClient<TModel, TClientConfig>
+where TClientConfig : ModelClientConfig
+where TConverter : IModelToInputConverter<TModel, TInputModel>
 {
     [SupplyParameterFromForm]
     public TInputModel Input { get; set; } = new();
@@ -41,7 +41,7 @@ where TClientConfig : ModelControllerClientConfig
     {
         Task<NetBlocks.Models.Result> resultTask = Task.Run(async () =>
         {
-            TModel newVessel = TInputModel.MakeModel(Input);
+            TModel newVessel = TConverter.Convert(Input);
 
             ApiResult<TModel> addResult = await Client.Update(newVessel);
             return addResult.Success ? NetBlocks.Models.Result.CreatePassResult() : NetBlocks.Models.Result.From(addResult);

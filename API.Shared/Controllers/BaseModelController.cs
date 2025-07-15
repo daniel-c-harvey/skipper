@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Data.Shared.Managers;
 using Microsoft.AspNetCore.Mvc;
 using Models.Shared.Common;
+using Models.Shared.Converters;
 using Models.Shared.Entities;
 using Models.Shared.Models;
 using NetBlocks.Models;
@@ -9,10 +10,11 @@ using NetBlocks.Models;
 namespace API.Shared.Controllers
 {
     [ApiController] 
-    public abstract class BaseModelController<TEntity, TModel, TManager> : ControllerBase, IBaseModelController<TEntity, TModel> 
-    where TEntity : class, IEntity<TEntity, TModel>, new()
-    where TModel : class, IModel<TModel, TEntity>, new()
-    where TManager : IManager<TEntity, TModel>
+    public abstract class BaseModelController<TEntity, TModel, TManager, TConverter> : ControllerBase, IBaseModelController<TEntity, TModel> 
+    where TEntity : class, IEntity, new()
+    where TModel : class, IModel, new()
+    where TManager : IManager<TEntity>
+    where TConverter : IEntityToModelConverter<TEntity, TModel>
     {
         protected readonly TManager Manager;
         private readonly Dictionary<string, Expression<Func<TEntity, object>>> _sortExpressions;
@@ -23,9 +25,9 @@ namespace API.Shared.Controllers
             _sortExpressions = new Dictionary<string, Expression<Func<TEntity, object>>>(StringComparer.OrdinalIgnoreCase);
             
             // Initialize base sort expressions using nameof()
-            _sortExpressions[nameof(IEntity<TEntity, TModel>.Id)] = e => e.Id;
-            _sortExpressions[nameof(IEntity<TEntity, TModel>.CreatedAt)] = e => e.CreatedAt;
-            _sortExpressions[nameof(IEntity<TEntity, TModel>.UpdatedAt)] = e => e.UpdatedAt;
+            _sortExpressions[nameof(IEntity.Id)] = e => e.Id;
+            _sortExpressions[nameof(IEntity.CreatedAt)] = e => e.CreatedAt;
+            _sortExpressions[nameof(IEntity.UpdatedAt)] = e => e.UpdatedAt;
         }
         
         [HttpGet("all")]
@@ -36,7 +38,7 @@ namespace API.Shared.Controllers
             var result = ApiResult<IEnumerable<TModel>>.From(queryResult);
             if (queryResult.Value is IEnumerable<TEntity> items)
             {
-                result.Value = items.Select(TEntity.CreateModel);
+                result.Value = items.Select(TConverter.Convert);
             }
             var dto = new ApiResultDto<IEnumerable<TModel>>(result);
             
@@ -63,7 +65,7 @@ namespace API.Shared.Controllers
             var result = ApiResult<PagedResult<TModel>>.From(pageResult);
             if (pageResult.Value != null)
             {
-                result.Value = PagedResult<TModel>.From(pageResult.Value, pageResult.Value.Items?.Select(TEntity.CreateModel) ?? []);
+                result.Value = PagedResult<TModel>.From(pageResult.Value, pageResult.Value.Items?.Select(TConverter.Convert) ?? []);
             }
             ApiResultDto<PagedResult<TModel>> dto = new(result);
             
@@ -80,7 +82,7 @@ namespace API.Shared.Controllers
             
             ApiResult<TModel> result = ApiResult<TModel>.From(pageResult);
             var val = pageResult?.Value?.Items.FirstOrDefault();
-            if (val != null) result.Value = TEntity.CreateModel(val);
+            if (val != null) result.Value = TConverter.Convert(val);
             
             ApiResultDto<TModel> dto = new(result);
             
@@ -118,7 +120,7 @@ namespace API.Shared.Controllers
         [HttpPost]
         public virtual async Task<ActionResult<ApiResultDto<TModel>>> Post([FromBody] TModel model)
         {
-            var entity = TModel.CreateEntity(model);
+            var entity = TConverter.Convert(model);
             var existsResult = await Manager.Exists(entity); 
             if (existsResult is not { Success: true }) { return StatusCode(500, ApiResult<TModel>.From(existsResult)); }
 

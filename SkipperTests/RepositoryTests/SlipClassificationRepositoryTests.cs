@@ -1,12 +1,11 @@
 using Microsoft.Extensions.Logging;
 using SkipperData.Data.Repositories;
 using SkipperModels.Entities;
-using SkipperModels.Models;
 
 namespace SkipperTests.RepositoryTests;
 
 [TestFixture]
-public class SlipClassificationRepositoryTests : RepositoryTestBase<SlipClassificationEntity, SlipClassificationModel>
+public class SlipClassificationRepositoryTests : RepositoryTestBase<SlipClassificationEntity>
 {
     private SlipClassificationRepository _repository;
     protected ILogger<SlipClassificationRepository> Logger;

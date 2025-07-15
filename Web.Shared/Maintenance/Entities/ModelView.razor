@@ -1,11 +1,14 @@
 ﻿@using NetBlocks.Models
+@using Models.Shared.Models
+@using Models.Shared.InputModels
+@using Models.Shared.Converters
 @using Web.Shared.Result
 
-@typeparam T where T : class, Models.Shared.InputModels.IInputModel<T, TModel, TEntity>, new()
-@typeparam TModel where TModel : class, Models.Shared.Models.IModel<TModel, TEntity>, new()
-@typeparam TEntity where TEntity : class, Models.Shared.Entities.IEntity<TEntity, TModel>, new()
+@typeparam T where T : class, IInputModel, new()
+@typeparam TModel where TModel : class, IModel, new()
 @typeparam TEditModal where TEditModal : IEditModal<T>
-@typeparam TViewModel where TViewModel : IModelPageViewModel<TModel, TEntity>
+@typeparam TViewModel where TViewModel : IModelPageViewModel<TModel>
+@typeparam TConverter where TConverter : IModelToInputConverter<TModel, T>
 
 <MudText Typo="Typo.h4">@Title</MudText>
 
@@ -20,7 +23,7 @@
                       OnDebounceIntervalElapsed="OnSearchChanged"/>
     </MudItem>
     <MudItem xs="4" md="4" Class="d-flex justify-end">
-        <MudButton Color="Color.Primary" EndIcon="@Icons.Material.Outlined.AddCircleOutline" Variant="Variant.Filled" OnClick="NewEntity">
+        <MudButton Color="Color.Primary" EndIcon="@Icons.Material.Outlined.AddCircleOutline" Variant="Variant.Filled" OnClick="@NewEntity">
             New @ModelDisplayName
         </MudButton>
     </MudItem>

@@ -4,10 +4,10 @@ using AuthBlocksAPI.HierarchicalAuthorize;
 using AuthBlocksData.Services;
 using AuthBlocksModels.Entities.Identity;
 using AuthBlocksModels.Models;
-using AuthBlocksModels.ApiModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using AuthBlocksModels.Converters;
 using AuthBlocksModels.SystemDefinitions;
 using NetBlocks.Models;
 using Models.Shared.Common;
@@ -17,7 +17,7 @@ namespace AuthBlocksAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class UsersController : BaseModelController<ApplicationUser, UserModel, IUserService>
+public class UsersController : BaseModelController<ApplicationUser, UserModel, IUserService, UserEntityToModelConverter>
 {
 
     public UsersController(IUserService userService) : base(userService)
@@ -42,7 +42,7 @@ public class UsersController : BaseModelController<ApplicationUser, UserModel, I
     }
 
     // Override base Get by ID to provide proper authorization
-    [HierarchicalRoleAuthorize(SystemRoleConstants.UserAdmin)]
+    [HierarchicalRoleAuthorize]
     public override async Task<ActionResult<ApiResultDto<UserModel>>> Get(long id)
     {
         var currentUserId = GetCurrentUserId();
@@ -53,7 +53,7 @@ public class UsersController : BaseModelController<ApplicationUser, UserModel, I
         return await base.Get(id);
     }
     
-    [HierarchicalRoleAuthorize(SystemRoleConstants.UserAdmin)]
+    [HierarchicalRoleAuthorize]
     public override async Task<ActionResult<ApiResultDto<UserModel>>> Post(UserModel model)
     {
         // Add logic to allow users to update their own basic info

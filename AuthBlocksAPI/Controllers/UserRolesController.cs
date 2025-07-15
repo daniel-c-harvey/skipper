@@ -1,12 +1,10 @@
 ﻿using API.Shared.Controllers;
-using AuthBlocksData.Data.Repositories;
 using AuthBlocksData.Services;
 using AuthBlocksModels.ApiModels;
+using AuthBlocksModels.Converters;
 using AuthBlocksModels.Entities.Identity;
 using AuthBlocksModels.Models;
-using Data.Shared.Managers;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NetBlocks.Models;
 
@@ -15,7 +13,7 @@ namespace AuthBlocksAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class UserRolesController : BaseModelController<ApplicationUserRole, UserRoleModel, IUserRoleService>
+public class UserRolesController : BaseModelController<ApplicationUserRole, UserRoleModel, IUserRoleService, UserRoleEntityToModelConverter>
 {
     private IUserService _userService;
     

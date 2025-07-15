@@ -1,12 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Models.Shared.InputModels;
 using SkipperModels.Common;
-using SkipperModels.Entities;
-using SkipperModels.Models;
-
 namespace SkipperModels.InputModels;
 
-public class VesselInputModel : IInputModel<VesselInputModel, VesselModel, VesselEntity>, IEquatable<VesselInputModel>
+public class VesselInputModel : IInputModel, IEquatable<VesselInputModel>
 {
     public long Id { get; set; }
     
@@ -36,36 +33,6 @@ public class VesselInputModel : IInputModel<VesselInputModel, VesselModel, Vesse
     
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
-
-    public static VesselModel MakeModel(VesselInputModel input)
-    {
-        return new VesselModel()
-        {
-            Id = input.Id,
-            RegistrationNumber = input.RegistrationNumber,
-            Name = input.Name,
-            Length = input.Length,
-            Beam = input.Beam,
-            VesselType = input.VesselType,
-            CreatedAt = input.CreatedAt,
-            UpdatedAt = input.UpdatedAt
-        };
-    }
-
-    public static VesselInputModel From(VesselModel model)
-    {
-        return new VesselInputModel()
-        {
-            Id = model.Id,
-            RegistrationNumber = model.RegistrationNumber,
-            Name = model.Name,
-            Length = model.Length,
-            Beam = model.Beam,
-            VesselType = model.VesselType,
-            CreatedAt = model.CreatedAt,
-            UpdatedAt = model.UpdatedAt
-        };
-    }
 
     public bool Equals(VesselInputModel? other)
     {

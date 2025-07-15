@@ -2,12 +2,11 @@ using Microsoft.Extensions.Logging;
 using SkipperData.Data.Repositories;
 using SkipperModels;
 using SkipperModels.Entities;
-using SkipperModels.Models;
 
 namespace SkipperTests.RepositoryTests;
 
 [TestFixture]
-public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreementEntity, RentalAgreementModel>
+public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreementEntity>
 {
     private RentalAgreementRepository _repository;
     protected ILogger<RentalAgreementRepository> Logger;

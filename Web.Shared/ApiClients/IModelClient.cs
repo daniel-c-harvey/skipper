@@ -1,13 +1,11 @@
 ﻿using Models.Shared.Common;
-using Models.Shared.Entities;
 using Models.Shared.Models;
 using NetBlocks.Models;
 
 namespace Web.Shared.ApiClients;
 
-public interface IModelControllerClient<TModel, TEntity>
-    where TModel : class, IModel<TModel, TEntity>, new()
-    where TEntity : class, IEntity<TEntity, TModel>, new()
+public interface IModelClient<TModel>
+    where TModel : class, IModel, new()
 {
     Task<ApiResult<PagedResult<TModel>>> GetById(long id);
     Task<ApiResult<IEnumerable<TModel>>> GetAll();

@@ -2,7 +2,7 @@
 using Models.Shared.Common;
 using MudBlazor;
 using NetBlocks.Models;
-using SkipperModels.Common;
+using SkipperModels.Converters;
 using SkipperModels.InputModels;
 using SkipperModels.Models;
 using SkipperWeb.ApiClients;
@@ -55,7 +55,7 @@ public partial class ChooseSlip : ComponentBase
             return;
         }
 
-        var newSlips = slipResults.Value.Items.Select(SlipInputModel.From);
+        var newSlips = slipResults.Value.Items.Select(SlipModelToInputConverter.Convert);
         
         // If it's the first page or a new search, replace the vessels
         if (_currentSlipsPage == 1)
@@ -105,7 +105,7 @@ public partial class ChooseSlip : ComponentBase
 
         if (result is { Canceled: false, Data: SlipInputModel slip })
         {
-            var addResult = await SlipClient.Update(SlipInputModel.MakeModel(slip));
+            var addResult = await SlipClient.Update(SlipModelToInputConverter.Convert(slip));
             if (addResult is { Success: true, Value: SlipModel newVessel })
             {
                 // Successfully added, now make this new vessel the selected value

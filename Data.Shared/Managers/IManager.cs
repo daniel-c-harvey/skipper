@@ -1,14 +1,12 @@
 ﻿using System.Linq.Expressions;
 using Models.Shared.Common;
 using Models.Shared.Entities;
-using Models.Shared.Models;
 using NetBlocks.Models;
 
 namespace Data.Shared.Managers;
 
-public interface IManager<TEntity, TDto>
-where TEntity : class, IEntity<TEntity, TDto>
-where TDto : class, IModel<TDto, TEntity>
+public interface IManager<TEntity>
+where TEntity : class, IEntity
 {
     Task<ResultContainer<bool>> Exists(TEntity entity);
     Task<ResultContainer<TEntity>> GetById(long id);

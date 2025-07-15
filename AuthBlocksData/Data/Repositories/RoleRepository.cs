@@ -1,14 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using AuthBlocksModels.Entities.Identity;
-using AuthBlocksModels.Models;
 using Data.Shared.Data.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace AuthBlocksData.Data.Repositories;
 
-public class RoleRepository : Repository<AuthDbContext, ApplicationRole, RoleModel>, IRoleRepository
+public class RoleRepository : Repository<AuthDbContext, ApplicationRole>, IRoleRepository
 {
-    public RoleRepository(AuthDbContext context, ILogger<Repository<AuthDbContext, ApplicationRole, RoleModel>> logger) : base(context, logger) { }
+    public RoleRepository(AuthDbContext context, ILogger<Repository<AuthDbContext, ApplicationRole>> logger) : base(context, logger) { }
 
     public async Task<ApplicationRole?> GetByNameAsync(string normalizedName)
     {

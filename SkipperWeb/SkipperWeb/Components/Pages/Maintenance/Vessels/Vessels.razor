@@ -1,10 +1,7 @@
-﻿@using Microsoft.AspNetCore.Authorization
-@using AuthBlocksWeb.HierarchicalAuthorize
-@using NetBlocks.Utilities
+﻿@using NetBlocks.Utilities
+@using SkipperModels.Converters
 @using SkipperModels.Models
-@using SkipperModels.Entities
 @using SkipperModels.InputModels
-@using SkipperWeb.ApiClients
 @using Web.Shared.Maintenance.Entities
 
 @attribute [HierarchicalRoleAuthorize]
@@ -12,9 +9,9 @@
 
 <ModelView T="VesselInputModel"
            TModel="VesselModel"
-           TEntity="VesselEntity"
            TEditModal="EditVesselModal"
            TViewModel="VesselsViewModel"
+           TConverter="VesselModelToInputConverter"
            Title="Vessels"
            ModelDisplayName="Vessel"
            PageRoute="maintenance/vessels"

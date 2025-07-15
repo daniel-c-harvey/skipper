@@ -1,12 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using AuthBlocksModels.Entities.Identity;
-using AuthBlocksModels.Models;
 using Data.Shared.Data.Configurations;
 
 namespace AuthBlocksData.Data.Configurations;
 
-public class ApplicationUserConfiguration : BaseEntityConfiguration<ApplicationUser, UserModel>
+public class ApplicationUserConfiguration : BaseEntityConfiguration<ApplicationUser>
 {
     public override void Configure(EntityTypeBuilder<ApplicationUser> builder)
     {

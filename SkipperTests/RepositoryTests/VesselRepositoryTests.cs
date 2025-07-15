@@ -2,12 +2,11 @@ using Microsoft.Extensions.Logging;
 using SkipperData.Data.Repositories;
 using SkipperModels;
 using SkipperModels.Entities;
-using SkipperModels.Models;
 
 namespace SkipperTests.RepositoryTests;
 
 [TestFixture]
-public class VesselRepositoryTests : RepositoryTestBase<VesselEntity, VesselModel>
+public class VesselRepositoryTests : RepositoryTestBase<VesselEntity>
 {
     private VesselRepository _repository;
     protected ILogger<VesselRepository> Logger;

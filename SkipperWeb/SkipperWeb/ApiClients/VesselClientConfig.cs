@@ -2,7 +2,7 @@
 
 namespace SkipperWeb.ApiClients
 {
-    public class VesselClientConfig : ModelControllerClientConfig
+    public class VesselClientConfig : ModelClientConfig
     {
         public VesselClientConfig(string baseURL) : base(baseURL, "vessel") { }
     }

@@ -1,14 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using AuthBlocksModels.Entities.Identity;
-using AuthBlocksModels.Models;
 using AuthBlocksData.Data.Repositories;
 using Data.Shared.Managers;
-using Data.Shared.Data.Repositories;
 using NetBlocks.Models;
 
 namespace AuthBlocksData.Services;
 
-public class UserService : ManagerBase<ApplicationUser, UserModel, IUserRepository>, IUserService
+public class UserService : ManagerBase<ApplicationUser, IUserRepository>, IUserService
 {
     private readonly UserManager<ApplicationUser> _userManager;
 

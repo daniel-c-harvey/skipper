@@ -1,5 +1,5 @@
-﻿@using SkipperModels.Models
-@using SkipperModels.Entities
+﻿@using SkipperModels.Converters
+@using SkipperModels.Models
 @using SkipperModels.InputModels
 @using SkipperWeb.ApiClients
 @using Web.Shared.Maintenance.Entities.New
@@ -9,9 +9,9 @@
 
 <NewModelView TInputModel="SlipInputModel"
               TModel="SlipModel"
-              TEntity="SlipEntity"
               TClient="SlipClient"
               TClientConfig="SlipClientConfig"
+              TConverter="SlipModelToInputConverter"
               ModelDisplayName="Slip"
               PageRoute="maintenance/slips">
     <EditSlipForm Slip="context"/>

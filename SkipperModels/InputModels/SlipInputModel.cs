@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Models.Shared.InputModels;
-using SkipperModels.Entities;
-using SkipperModels.Models;
 
 namespace SkipperModels.InputModels;
 
-public class SlipInputModel : IInputModel<SlipInputModel, SlipModel, SlipEntity>, IEquatable<SlipInputModel>
+public class SlipInputModel : IInputModel, IEquatable<SlipInputModel>
 {
     public long Id { get; set; }
     
@@ -27,35 +25,7 @@ public class SlipInputModel : IInputModel<SlipInputModel, SlipModel, SlipEntity>
     
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
-    public static SlipModel MakeModel(SlipInputModel input)
-    {
-        return new SlipModel()
-        {
-            Id = input.Id,
-            SlipClassification = SlipClassificationInputModel.MakeModel(input.SlipClassification),
-            SlipNumber = input.SlipNumber,
-            LocationCode = input.LocationCode,
-            Status = input.Status.SlipStatus,
-            CreatedAt = input.CreatedAt,
-            UpdatedAt = input.UpdatedAt
-        };
-    }
-
-    public static SlipInputModel From(SlipModel model)
-    {
-        return new SlipInputModel()
-        {
-            Id = model.Id,
-            SlipNumber = model.SlipNumber,
-            SlipClassification = SlipClassificationInputModel.From(model.SlipClassification),
-            LocationCode = model.LocationCode,
-            Status = SlipStatusEnumeration.GetById((int)model.Status)!,
-            CreatedAt = model.CreatedAt,
-            UpdatedAt = model.UpdatedAt
-            
-        };
-    }
-
+    
     public bool Equals(SlipInputModel? other)
     {
         if (other is null) return false;

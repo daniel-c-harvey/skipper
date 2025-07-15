@@ -1,14 +1,12 @@
 using System.Linq.Expressions;
 using Models.Shared.Common;
 using Models.Shared.Entities;
-using Models.Shared.Models;
 using NetBlocks.Models;
 
 namespace Data.Shared.Data.Repositories;
 
-public interface IRepository<TEntity, TDto> 
-where TEntity : class, IEntity<TEntity, TDto>
-where TDto : class, IModel<TDto, TEntity>
+public interface IRepository<TEntity> 
+where TEntity : class, IEntity
 {
     // Basic CRUD
     Task<TEntity?> GetByIdAsync(long id);

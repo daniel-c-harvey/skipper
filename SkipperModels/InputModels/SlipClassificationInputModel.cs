@@ -1,5 +1,4 @@
 ﻿using SkipperModels.Common;
-using SkipperModels.Entities;
 using SkipperModels.Models;
 using System.ComponentModel.DataAnnotations;
 using Models.Shared.InputModels;
@@ -7,7 +6,7 @@ using Models.Shared.InputModels;
 namespace SkipperModels.InputModels;
 
 public class SlipClassificationInputModel 
-: IInputModel<SlipClassificationInputModel, SlipClassificationModel, SlipClassificationEntity>,
+: IInputModel,
   IEquatable<SlipClassificationInputModel>
 {
     public long Id { get; set; }
@@ -28,20 +27,7 @@ public class SlipClassificationInputModel
     
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
-    public static SlipClassificationModel MakeModel(SlipClassificationInputModel input)
-    {
-        return new SlipClassificationModel()
-        {
-            Id = input.Id,
-            Name = input.Name,
-            Description = input.Description,
-            BasePrice = (int)Math.Round(input.BasePrice * 100, 0), // convert from dollars for front end to cents for data transfer.
-            MaxLength = input.MaxLength,
-            MaxBeam = input.MaxBeam,
-            CreatedAt = input.CreatedAt,
-            UpdatedAt = input.UpdatedAt
-        };
-    }
+    
 
     public static SlipClassificationInputModel From(SlipClassificationModel model)
     {

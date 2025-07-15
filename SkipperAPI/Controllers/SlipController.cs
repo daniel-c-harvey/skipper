@@ -2,15 +2,15 @@ using Microsoft.AspNetCore.Mvc;
 using SkipperData.Managers;
 using System.Linq.Expressions;
 using API.Shared.Controllers;
-using Data.Shared.Managers;
 using Microsoft.EntityFrameworkCore;
+using SkipperModels.Converters;
 using SkipperModels.Entities;
 using SkipperModels.Models;
 
 namespace SkipperAPI.Controllers
 {
     [Route("api/[controller]")]
-    public class SlipController : BaseModelController<SlipEntity, SlipModel, SlipManager>
+    public class SlipController : BaseModelController<SlipEntity, SlipModel, SlipManager, SlipEntityToModelConverter>
     {
         public SlipController(SlipManager manager) : base(manager)
         {

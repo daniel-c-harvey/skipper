@@ -1,14 +1,9 @@
-﻿using System.Linq.Expressions;
-using AuthBlocksModels.Entities.Identity;
-using AuthBlocksModels.Models;
+﻿using AuthBlocksModels.Entities.Identity;
 using Data.Shared.Managers;
-using Microsoft.AspNetCore.Identity;
-using Models.Shared.Common;
-using NetBlocks.Models;
 
 namespace AuthBlocksData.Services;
 
-public interface IRoleService : IManager<ApplicationRole, RoleModel>
+public interface IRoleService : IManager<ApplicationRole>
 {
     Task<ApplicationRole?> FindByNameAsync(string roleName);
     Task<IEnumerable<ApplicationRole>> GetRootRolesAsync();

@@ -2,15 +2,15 @@ using Microsoft.AspNetCore.Mvc;
 using SkipperData.Managers;
 using System.Linq.Expressions;
 using API.Shared.Controllers;
-using Data.Shared.Managers;
 using Microsoft.EntityFrameworkCore;
+using SkipperModels.Converters;
 using SkipperModels.Entities;
 using SkipperModels.Models;
 
 namespace SkipperAPI.Controllers
 {
     [Route("api/[controller]")]
-    public class VesselController : BaseModelController<VesselEntity, VesselModel, VesselManager>
+    public class VesselController : BaseModelController<VesselEntity, VesselModel, VesselManager, VesselEntityToModelConverter>
     {
         public VesselController(VesselManager manager) : base(manager)
         {

@@ -3,19 +3,17 @@ using System.Text.Json;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Models.Shared.Common;
-using Models.Shared.Entities;
 using Models.Shared.Models;
 using NetBlocks.Models;
 
 namespace Web.Shared.ApiClients;
 
-public abstract class ModelControllerClient<TModel, TEntity, TConfig> : ApiClient<TConfig>, IModelControllerClient<TModel, TEntity> 
-    where TConfig : ModelControllerClientConfig
-where TModel : class, IModel<TModel, TEntity>, new()
-where TEntity : class, IEntity<TEntity, TModel>, new()
+public abstract class ModelClient<TModel, TConfig> : ApiClient<TConfig>, IModelClient<TModel> 
+where TModel : class, IModel, new()
+where TConfig : ModelClientConfig
 {
     protected readonly JsonSerializerOptions Options;
-    protected ModelControllerClient(TConfig config, IOptions<JsonSerializerOptions> options) : base(config) 
+    protected ModelClient(TConfig config, IOptions<JsonSerializerOptions> options) : base(config) 
     {
         Options = options.Value;
     }

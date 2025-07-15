@@ -2,11 +2,10 @@ using Data.Shared.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SkipperModels.Entities;
-using SkipperModels.Models;
 
 namespace SkipperData.Data.Configurations;
 
-public class SlipConfiguration : BaseEntityConfiguration<SlipEntity, SlipModel>
+public class SlipConfiguration : BaseEntityConfiguration<SlipEntity>
 {
     protected override void ConfigureEntity(EntityTypeBuilder<SlipEntity> builder)
     {

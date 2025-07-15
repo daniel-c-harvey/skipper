@@ -1,12 +1,10 @@
-using Microsoft.AspNetCore.Identity;
 using AuthBlocksModels.Entities.Identity;
-using AuthBlocksModels.Models;
 using Data.Shared.Managers;
 using NetBlocks.Models;
 
 namespace AuthBlocksData.Services;
 
-public interface IUserService : IManager<ApplicationUser, UserModel>
+public interface IUserService : IManager<ApplicationUser>
 {
     public Task<Result> Add(ApplicationUser entity, string password);
     

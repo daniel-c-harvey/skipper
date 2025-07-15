@@ -1,7 +1,6 @@
-﻿@using SkipperModels.Models
-@using SkipperModels.Entities
+﻿@using SkipperModels.Converters
+@using SkipperModels.Models
 @using SkipperModels.InputModels
-@using SkipperWeb.ApiClients
 @using Web.Shared.UI
 @using Web.Shared.Maintenance.Entities
 
@@ -10,9 +9,9 @@
 
 <ModelView T="SlipInputModel"
            TModel="SlipModel"
-           TEntity="SlipEntity"
            TEditModal="EditSlipModal"
            TViewModel="SlipsViewModel"
+           TConverter="SlipModelToInputConverter"
            Title="Slips"
            ModelDisplayName="Slip"
            PageRoute="maintenance/slips"

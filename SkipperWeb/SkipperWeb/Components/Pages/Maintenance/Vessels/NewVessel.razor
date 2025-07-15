@@ -1,5 +1,5 @@
-﻿@using SkipperModels.Models
-@using SkipperModels.Entities
+﻿@using SkipperModels.Converters
+@using SkipperModels.Models
 @using SkipperModels.InputModels
 @using SkipperWeb.ApiClients
 @using Web.Shared.Maintenance.Entities.New
@@ -9,9 +9,9 @@
 
 <NewModelView TInputModel="VesselInputModel"
               TModel="VesselModel"
-              TEntity="VesselEntity"
               TClient="VesselClient"
               TClientConfig="VesselClientConfig"
+              TConverter="VesselModelToInputConverter"
               ModelDisplayName="Vessel"
               PageRoute="maintenance/vessels">
     <EditVesselForm Vessel="context"/>

@@ -2,28 +2,26 @@
 using Data.Shared.Data.Repositories;
 using Models.Shared.Common;
 using Models.Shared.Entities;
-using Models.Shared.Models;
 using NetBlocks.Models;
 
 namespace Data.Shared.Managers;
 
-public abstract class ManagerBase<TEntity, TDto, TRepository> : IManager<TEntity, TDto>
-where TEntity : class, IEntity<TEntity, TDto>
-where TDto : class, IModel<TDto, TEntity>
-where TRepository : IRepository<TEntity, TDto>
+public abstract class ManagerBase<TEntity, TRepository> : IManager<TEntity>
+where TEntity : class, IEntity
+where TRepository : IRepository<TEntity>
 {
-    protected TRepository _repository;
+    protected TRepository Repository;
 
     protected ManagerBase(TRepository repository)
     {
-        _repository = repository;
+        Repository = repository;
     }
 
     public virtual async Task<ResultContainer<bool>> Exists(TEntity entity)
     {
         try
         {
-            var exists = await _repository.ExistsAsync(entity.Id);
+            var exists = await Repository.ExistsAsync(entity.Id);
             return ResultContainer<bool>.CreatePassResult(exists);
         }
         catch (Exception ex)
@@ -36,7 +34,7 @@ where TRepository : IRepository<TEntity, TDto>
     {
         try
         {
-            return ResultContainer<TEntity>.CreatePassResult(await _repository.GetByIdAsync(id));
+            return ResultContainer<TEntity>.CreatePassResult(await Repository.GetByIdAsync(id));
         }
         catch (Exception e)
         {
@@ -50,9 +48,9 @@ where TRepository : IRepository<TEntity, TDto>
         {
             if (predicate is null)
             {
-                return ResultContainer<IEnumerable<TEntity>>.CreatePassResult(await _repository.GetAllAsync());
+                return ResultContainer<IEnumerable<TEntity>>.CreatePassResult(await Repository.GetAllAsync());
             }
-            return ResultContainer<IEnumerable<TEntity>>.CreatePassResult(await _repository.FindAsync(predicate));
+            return ResultContainer<IEnumerable<TEntity>>.CreatePassResult(await Repository.FindAsync(predicate));
         }
         catch (Exception e)
         {
@@ -67,7 +65,7 @@ where TRepository : IRepository<TEntity, TDto>
         {
             return ResultContainer<int>.CreatePassResult
             (
-                await _repository.GetPageCountAsync(predicate, pagingParameters)
+                await Repository.GetPageCountAsync(predicate, pagingParameters)
             );
         }
         catch (Exception e)
@@ -82,7 +80,7 @@ where TRepository : IRepository<TEntity, TDto>
         {
             return ResultContainer<PagedResult<TEntity>>.CreatePassResult
             (
-                await _repository.GetPagedAsync(predicate, pagingParameters)    
+                await Repository.GetPagedAsync(predicate, pagingParameters)    
             );
         }
         catch (Exception e)
@@ -95,8 +93,8 @@ where TRepository : IRepository<TEntity, TDto>
     {
         try
         {
-            await _repository.AddAsync(entity);
-            return await _repository.SaveChangesAsync();
+            await Repository.AddAsync(entity);
+            return await Repository.SaveChangesAsync();
         }
         catch (Exception ex)
         {
@@ -108,8 +106,8 @@ where TRepository : IRepository<TEntity, TDto>
     {
         try
         {
-            await _repository.UpdateAsync(entity);
-            return await _repository.SaveChangesAsync();
+            await Repository.UpdateAsync(entity);
+            return await Repository.SaveChangesAsync();
         }
         catch (Exception ex)
         {
@@ -121,8 +119,8 @@ where TRepository : IRepository<TEntity, TDto>
     {
         try
         {
-            await _repository.DeleteAsync(id);
-            return await _repository.SaveChangesAsync();
+            await Repository.DeleteAsync(id);
+            return await Repository.SaveChangesAsync();
         }
         catch (Exception ex)
         {

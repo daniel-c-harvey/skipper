@@ -6,7 +6,7 @@ using Web.Shared.ApiClients;
 
 namespace SkipperWeb.ApiClients;
 
-public class RentalAgreementClient : ModelControllerClient<RentalAgreementModel, RentalAgreementEntity, RentalAgreementClientConfig>
+public class RentalAgreementClient : ModelClient<RentalAgreementModel, RentalAgreementClientConfig>
 {
     public RentalAgreementClient(RentalAgreementClientConfig config, IOptions<JsonSerializerOptions> options) : base(config, options) { }
 }

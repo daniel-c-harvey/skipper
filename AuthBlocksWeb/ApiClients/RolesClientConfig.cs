@@ -2,7 +2,7 @@
 
 namespace AuthBlocksWeb.ApiClients;
 
-public class RolesClientConfig : ModelControllerClientConfig
+public class RolesClientConfig : ModelClientConfig
 {
     public RolesClientConfig(string baseURL, int port) : base(baseURL, port, "roles")
     {

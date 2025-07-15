@@ -1,19 +1,19 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Models.Shared.Converters;
 using Models.Shared.Entities;
 using Models.Shared.InputModels;
 using Models.Shared.Models;
 using MudBlazor;
-using Web.Shared.ApiClients;
 
 namespace Web.Shared.Maintenance.Entities;
 
 [CascadingTypeParameter(nameof(T))]
-public partial class ModelView<T, TModel, TEntity, TEditModal, TViewModel>  : ComponentBase
-    where T : class, IInputModel<T, TModel, TEntity>, new()
-    where TModel : class, IModel<TModel, TEntity>, new()
-    where TEntity : class, IEntity<TEntity, TModel>, new()
+public partial class ModelView<T, TModel, TEditModal, TViewModel, TConverter>  : ComponentBase
+    where T : class, IInputModel, new()
+    where TModel : class, IModel, new()
     where TEditModal : IEditModal<T>
-    where TViewModel : IModelPageViewModel<TModel, TEntity>
+    where TViewModel : IModelPageViewModel<TModel>
+    where TConverter : IModelToInputConverter<TModel, T>
 {
     [SupplyParameterFromQuery]
     public int? Page { get; set; }
@@ -84,7 +84,7 @@ public partial class ModelView<T, TModel, TEntity, TEditModal, TViewModel>  : Co
 
         return new GridData<T>()
         {
-            Items = ViewModel.Page?.Items.Select(T.From) ?? Enumerable.Empty<T>(),
+            Items = ViewModel.Page?.Items.Select(TConverter.Convert) ?? Enumerable.Empty<T>(),
             TotalItems = ViewModel.Page?.TotalCount ?? 0
         };
     }
@@ -137,7 +137,7 @@ public partial class ModelView<T, TModel, TEntity, TEditModal, TViewModel>  : Co
         var result = await dialog.Result;
         if (result is { Canceled: false, Data: T model })
         {
-            await ViewModel.UpdateItem(T.MakeModel(model));
+            await ViewModel.UpdateItem(TConverter.Convert(model));
             // Refresh data
             _forceReload = true;
             await (_grid?.ReloadServerData() ?? Task.CompletedTask);
@@ -151,7 +151,7 @@ public partial class ModelView<T, TModel, TEntity, TEditModal, TViewModel>  : Co
         var result = await dialog.Result;
         if (result is { Canceled: false, Data: bool confirm })
         {
-            await ViewModel.DeleteItem(T.MakeModel(inputModel));
+            await ViewModel.DeleteItem(TConverter.Convert(inputModel));
             // Refresh data
             _forceReload = true;
             await (_grid?.ReloadServerData() ?? Task.CompletedTask);

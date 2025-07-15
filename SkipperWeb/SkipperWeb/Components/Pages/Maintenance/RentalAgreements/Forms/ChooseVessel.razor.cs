@@ -2,7 +2,7 @@
 using Models.Shared.Common;
 using MudBlazor;
 using NetBlocks.Models;
-using SkipperModels.Common;
+using SkipperModels.Converters;
 using SkipperModels.InputModels;
 using SkipperModels.Models;
 using SkipperWeb.ApiClients;
@@ -55,7 +55,7 @@ public partial class ChooseVessel : ComponentBase
             return;
         }
 
-        var newVessels = vesselResults.Value.Items.Select(VesselInputModel.From);
+        var newVessels = vesselResults.Value.Items.Select(VesselModelToInputConverter.Convert);
         
         // If it's the first page or a new search, replace the vessels
         if (_currentVesselPage == 1)
@@ -105,7 +105,7 @@ public partial class ChooseVessel : ComponentBase
 
         if (result is { Canceled: false, Data: VesselInputModel vessel })
         {
-            var addResult = await VesselClient.Update(VesselInputModel.MakeModel(vessel));
+            var addResult = await VesselClient.Update(VesselModelToInputConverter.Convert(vessel));
             if (addResult is { Success: true, Value: VesselModel newVessel })
             {
                 // Successfully added, now make this new vessel the selected value

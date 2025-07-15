@@ -2,7 +2,7 @@
 
 namespace SkipperWeb.ApiClients;
 
-public class SlipClientConfig : ModelControllerClientConfig
+public class SlipClientConfig : ModelClientConfig
 {
     public SlipClientConfig(string baseURL) : base(baseURL, "slip") { }
 }

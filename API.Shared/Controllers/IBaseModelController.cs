@@ -7,8 +7,8 @@ using NetBlocks.Models;
 namespace API.Shared.Controllers;
 
 public interface IBaseModelController<TEntity, TModel> 
-where TEntity : class, IEntity<TEntity, TModel>, new() 
-where TModel : class, IModel<TModel, TEntity>, new()
+where TEntity : class, IEntity, new() 
+where TModel : class, IModel, new()
 {
     Task<ActionResult<ApiResultDto<TModel>>> Get(long id);
     Task<ActionResult<ApiResultDto<IEnumerable<TModel>>>> GetAll();

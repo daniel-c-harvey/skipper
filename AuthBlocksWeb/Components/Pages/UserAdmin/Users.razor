@@ -1,5 +1,4 @@
-﻿@using AuthBlocksWeb.ApiClients
-@using AuthBlocksModels.Entities.Identity
+﻿@using AuthBlocksModels.Converters
 @using AuthBlocksModels.InputModels
 @using AuthBlocksModels.Models
 @using Web.Shared.Maintenance.Entities
@@ -10,9 +9,9 @@
 <ModelView @ref="_modelView"
            T="UserInputModel"
            TModel="UserModel"
-           TEntity="ApplicationUser"
            TViewModel="UsersViewModel"
            TEditModal="UserEditModal"
+           TConverter="UserModelToInputConverter"
            ModelDisplayName="User"
            Placeholder="Search users..."
            PageRoute="useradmin/users"
@@ -45,7 +44,7 @@
 </ModelView>
 
 @code {
-    private ModelView<UserInputModel, UserModel, ApplicationUser, UserEditModal, UsersViewModel> _modelView;
+    private ModelView<UserInputModel, UserModel, UserEditModal, UsersViewModel, UserModelToInputConverter> _modelView;
 
     private async Task ResetPassword(UserInputModel? item)
     {
@@ -54,6 +53,6 @@
 
     private bool DeleteDisabled(UserInputModel user)
     {
-        return _modelView.ViewModel.CanDelete(user);
+        return true;
     }
 }

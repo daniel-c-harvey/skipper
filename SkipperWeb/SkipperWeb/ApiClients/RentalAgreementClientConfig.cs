@@ -2,7 +2,7 @@
 
 namespace SkipperWeb.ApiClients;
 
-public class RentalAgreementClientConfig : ModelControllerClientConfig
+public class RentalAgreementClientConfig : ModelClientConfig
 {
     public RentalAgreementClientConfig(string baseURL, int port) : base(baseURL, port, "rentalagreement") { }
     

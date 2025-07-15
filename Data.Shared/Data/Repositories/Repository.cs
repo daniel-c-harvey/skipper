@@ -3,21 +3,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Models.Shared.Common;
 using Models.Shared.Entities;
-using Models.Shared.Models;
 using NetBlocks.Models;
 
 namespace Data.Shared.Data.Repositories;
 
-public class Repository<TContext, TEntity, TDto> : IRepository<TEntity, TDto>
+public class Repository<TContext, TEntity> : IRepository<TEntity>
 where TContext : DbContext
-where TEntity : class, IEntity<TEntity, TDto>
-where TDto : class, IModel<TDto, TEntity>
+where TEntity : class, IEntity
 {
     protected readonly TContext _context;
     protected readonly DbSet<TEntity> _dbSet;
-    protected readonly ILogger<Repository<TContext, TEntity, TDto>> _logger;
+    protected readonly ILogger<Repository<TContext, TEntity>> _logger;
 
-    public Repository(TContext context, ILogger<Repository<TContext, TEntity, TDto>> logger)
+    public Repository(TContext context, ILogger<Repository<TContext, TEntity>> logger)
     {
         _context = context;
         _dbSet = context.Set<TEntity>();

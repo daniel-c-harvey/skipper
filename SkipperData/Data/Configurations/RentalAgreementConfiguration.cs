@@ -2,11 +2,10 @@ using Data.Shared.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SkipperModels.Entities;
-using SkipperModels.Models;
 
 namespace SkipperData.Data.Configurations;
 
-public class RentalAgreementConfiguration : BaseEntityConfiguration<RentalAgreementEntity, RentalAgreementModel>
+public class RentalAgreementConfiguration : BaseEntityConfiguration<RentalAgreementEntity>
 {
     protected override void ConfigureEntity(EntityTypeBuilder<RentalAgreementEntity> builder)
     {

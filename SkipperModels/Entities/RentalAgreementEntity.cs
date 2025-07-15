@@ -1,9 +1,8 @@
 using Models.Shared.Entities;
-using SkipperModels.Models;
 
 namespace SkipperModels.Entities;
 
-public class RentalAgreementEntity : BaseEntity<RentalAgreementEntity, RentalAgreementModel>, IEntity<RentalAgreementEntity, RentalAgreementModel>
+public class RentalAgreementEntity : BaseEntity, IEntity
 {
     public long SlipId { get; set; }
     public virtual SlipEntity SlipEntity { get; set; }
@@ -14,20 +13,4 @@ public class RentalAgreementEntity : BaseEntity<RentalAgreementEntity, RentalAgr
     public int PriceRate { get; set; }
     public PriceUnit PriceUnit { get; set; }
     public RentalStatus Status { get; set; }
-    public static RentalAgreementModel CreateModel(RentalAgreementEntity entity)
-    {
-        return new RentalAgreementModel()
-        {
-            Id = entity.Id,
-            Slip = SlipEntity.CreateModel(entity.SlipEntity),
-            Vessel = VesselEntity.CreateModel(entity.VesselEntity),
-            StartDate = entity.StartDate,
-            EndDate = entity.EndDate,
-            PriceRate = entity.PriceRate / 100M,
-            PriceUnit = entity.PriceUnit,
-            Status = entity.Status,
-            CreatedAt = entity.CreatedAt,
-            UpdatedAt = entity.UpdatedAt,
-        };
-    }
 }

@@ -1,18 +1,14 @@
-using System.Net.Http.Json;
 using System.Text.Json;
-using AuthBlocksModels.ApiModels;
-using AuthBlocksModels.Entities.Identity;
 using AuthBlocksModels.Models;
 using AuthBlocksWeb.Services;
 using Microsoft.Extensions.Options;
 using Models.Shared.Common;
-using Models.Shared.Models;
 using NetBlocks.Models;
 using Web.Shared.ApiClients;
 
 namespace AuthBlocksWeb.ApiClients;
 
-public class RoleClient : ModelControllerClient<RoleModel, ApplicationRole, RolesClientConfig>, IRoleApiClient
+public class RoleClient : ModelClient<RoleModel, RolesClientConfig>, IRoleApiClient
 {
     private readonly ITokenService _tokenService;
 

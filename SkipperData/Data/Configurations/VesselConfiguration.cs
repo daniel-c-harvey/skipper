@@ -2,11 +2,10 @@ using Data.Shared.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SkipperModels.Entities;
-using SkipperModels.Models;
 
 namespace SkipperData.Data.Configurations;
 
-public class VesselConfiguration : BaseEntityConfiguration<VesselEntity, VesselModel>
+public class VesselConfiguration : BaseEntityConfiguration<VesselEntity>
 {
     protected override void ConfigureEntity(EntityTypeBuilder<VesselEntity> builder)
     {

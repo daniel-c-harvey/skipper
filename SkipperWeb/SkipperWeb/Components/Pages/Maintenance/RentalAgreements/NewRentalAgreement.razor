@@ -1,7 +1,5 @@
-﻿@using Microsoft.AspNetCore.Authorization
-@using AuthBlocksWeb.HierarchicalAuthorize
+﻿@using SkipperModels.Converters
 @using SkipperModels.Models
-@using SkipperModels.Entities
 @using SkipperModels.InputModels
 @using SkipperWeb.ApiClients
 @using SkipperWeb.Components.Pages.Maintenance.RentalAgreements.Forms
@@ -12,9 +10,9 @@
 
 <NewModelView TInputModel="RentalAgreementInputModel"
               TModel="RentalAgreementModel"
-              TEntity="RentalAgreementEntity"
               TClient="RentalAgreementClient"
               TClientConfig="RentalAgreementClientConfig"
+              TConverter="RentalAgreementModelToInputConverter"
               ModelDisplayName="Rental Agreement"
               PageRoute="/maintenance/rentalagreements">
     <EditRentalAgreementForm Model="context" />

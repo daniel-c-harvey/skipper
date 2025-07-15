@@ -1,5 +1,4 @@
-﻿@using Microsoft.AspNetCore.Authorization
-@using AuthBlocksWeb.HierarchicalAuthorize
+﻿@using SkipperModels.Converters
 @using SkipperModels.Models
 @using SkipperModels.Entities
 @using SkipperModels.InputModels
@@ -11,9 +10,9 @@
 
 <NewModelView TInputModel="SlipClassificationInputModel"
               TModel="SlipClassificationModel"
-              TEntity="SlipClassificationEntity"
               TClient="SlipClassificationClient"
               TClientConfig="SlipClassificationClientConfig"
+              TConverter="SlipClassificationModelToInputConverter"
               ModelDisplayName="Slip Classification"
               PageRoute="maintenance/slipclassifications">
     <EditSlipClassificationForm Model="context" />

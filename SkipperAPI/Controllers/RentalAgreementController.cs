@@ -1,16 +1,16 @@
 ﻿using System.Linq.Expressions;
 using API.Shared.Controllers;
-using Data.Shared.Managers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SkipperData.Managers;
+using SkipperModels.Converters;
 using SkipperModels.Entities;
 using SkipperModels.Models;
 
 namespace SkipperAPI.Controllers;
 
 [Route("api/[controller]")]
-public class RentalAgreementController : BaseModelController<RentalAgreementEntity, RentalAgreementModel, RentalAgreementManager>
+public class RentalAgreementController : BaseModelController<RentalAgreementEntity, RentalAgreementModel, RentalAgreementManager, RentalAgreementEntityToModelConverter>
 {
     public RentalAgreementController(RentalAgreementManager manager) : base(manager)
     {

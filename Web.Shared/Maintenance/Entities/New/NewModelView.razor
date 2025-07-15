@@ -3,11 +3,11 @@
 @using SkipperModels.InputModels
 @using Microsoft.AspNetCore.Components.Forms
 
-@typeparam TModel where TModel : class, Models.Shared.Models.IModel<TModel, TEntity>, new()
-@typeparam TEntity where TEntity : class, Models.Shared.Entities.IEntity<TEntity, TModel>, new()
-@typeparam TInputModel where TInputModel : class, Models.Shared.InputModels.IInputModel<TInputModel, TModel, TEntity>, new()
-@typeparam TClient where TClient : Web.Shared.ApiClients.ModelControllerClient<TModel, TEntity, TClientConfig>
-@typeparam TClientConfig where TClientConfig : Web.Shared.ApiClients.ModelControllerClientConfig
+@typeparam TModel where TModel : class, Models.Shared.Models.IModel, new()
+@typeparam TInputModel where TInputModel : class, Models.Shared.InputModels.IInputModel, new()
+@typeparam TClient where TClient : Web.Shared.ApiClients.ModelClient<TModel, TClientConfig>
+@typeparam TClientConfig where TClientConfig : Web.Shared.ApiClients.ModelClientConfig
+@typeparam TConverter where TConverter : Models.Shared.Converters.IModelToInputConverter<TModel, TInputModel>
 
 <MudContainer Class="pa-5">
     <EditForm Model="Input" method="post" OnValidSubmit="Post" FormName="new-entry">

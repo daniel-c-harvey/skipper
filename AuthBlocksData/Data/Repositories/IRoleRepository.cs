@@ -1,10 +1,9 @@
 using AuthBlocksModels.Entities.Identity;
-using AuthBlocksModels.Models;
 using Data.Shared.Data.Repositories;
 
 namespace AuthBlocksData.Data.Repositories;
 
-public interface IRoleRepository : IRepository<ApplicationRole, RoleModel>
+public interface IRoleRepository : IRepository<ApplicationRole>
 {
     Task<ApplicationRole?> GetByNameAsync(string normalizedName);
 

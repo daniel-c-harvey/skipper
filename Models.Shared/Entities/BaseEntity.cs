@@ -1,10 +1,7 @@
-using Models.Shared.Models;
 
 namespace Models.Shared.Entities;
 
-public abstract class BaseEntity<TSelf, TModel>
-where TSelf : class, IEntity<TSelf, TModel>
-where TModel : class, IModel<TModel, TSelf>, new()
+public abstract class BaseEntity
 {
     public long Id { get; set; }
     public DateTime CreatedAt { get; set; }

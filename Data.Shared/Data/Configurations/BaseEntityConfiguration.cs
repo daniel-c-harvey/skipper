@@ -1,13 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Models.Shared.Entities;
-using Models.Shared.Models;
 
 namespace Data.Shared.Data.Configurations;
 
-public abstract class BaseEntityConfiguration<TEntity, TDto> : IEntityTypeConfiguration<TEntity> 
-where TEntity : class, IEntity<TEntity, TDto>
-where TDto : class, IModel<TDto, TEntity>
+public abstract class BaseEntityConfiguration<TEntity> : IEntityTypeConfiguration<TEntity> 
+where TEntity : class, IEntity
 {
     public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {

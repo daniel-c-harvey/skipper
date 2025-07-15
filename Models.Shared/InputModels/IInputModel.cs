@@ -1,17 +1,10 @@
-﻿using Models.Shared.Entities;
-using Models.Shared.Models;
-
+﻿
 namespace Models.Shared.InputModels;
 
-public interface IInputModel<TInput, TModel, TEntity>
-where TInput : class, IInputModel<TInput, TModel, TEntity>
-where TModel : class, IModel<TModel, TEntity>
-where TEntity : class, IEntity<TEntity, TModel>
+public interface IInputModel
 
 {
     public long Id { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
-    static abstract TModel MakeModel(TInput input);
-    static abstract TInput From(TModel model);
 }

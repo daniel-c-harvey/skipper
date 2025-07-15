@@ -1,14 +1,13 @@
 ﻿using AuthBlocksModels.Entities.Identity;
-using AuthBlocksModels.Models;
 using Data.Shared.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AuthBlocksData.Data.Repositories;
 
-public class UserRoleRepository : Repository<AuthDbContext, ApplicationUserRole, UserRoleModel>, IUserRoleRepository
+public class UserRoleRepository : Repository<AuthDbContext, ApplicationUserRole>, IUserRoleRepository
 {
-    public UserRoleRepository(AuthDbContext context, ILogger<Repository<AuthDbContext, ApplicationUserRole, UserRoleModel>> logger) : base(context, logger)
+    public UserRoleRepository(AuthDbContext context, ILogger<Repository<AuthDbContext, ApplicationUserRole>> logger) : base(context, logger)
     {
     }
 

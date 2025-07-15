@@ -1,7 +1,9 @@
 using System.Linq.Expressions;
+using System.Security.Claims;
 using API.Shared.Controllers;
 using AuthBlocksAPI.HierarchicalAuthorize;
 using AuthBlocksData.Services;
+using AuthBlocksModels.Converters;
 using AuthBlocksModels.Entities.Identity;
 using AuthBlocksModels.Models;
 using AuthBlocksModels.SystemDefinitions;
@@ -15,7 +17,7 @@ namespace AuthBlocksAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class RolesController : BaseModelController<ApplicationRole, RoleModel, IRoleService>
+public class RolesController : BaseModelController<ApplicationRole, RoleModel, IRoleService, RoleEntityToModelConverter>
 {
     public RolesController(IRoleService roleService) : base(roleService)
     {
@@ -28,7 +30,9 @@ public class RolesController : BaseModelController<ApplicationRole, RoleModel, I
     [HierarchicalRoleAuthorize(SystemRoleConstants.UserAdmin)]
     public override async Task<ActionResult<ApiResultDto<PagedResult<RoleModel>>>> Get(PagedQuery query)
     {
-        return await base.Get(query);
+        var pageResult = await base.Get(query);
+        
+        return pageResult; 
     }
 
     [HttpGet("{id:long}")]
@@ -77,4 +81,10 @@ public class RolesController : BaseModelController<ApplicationRole, RoleModel, I
         return e => e.Name!.Contains(search, StringComparison.OrdinalIgnoreCase) ||
                    e.NormalizedName!.Contains(search, StringComparison.OrdinalIgnoreCase);
     }
+    
+    private long GetCurrentUserId()
+     {
+         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+         return long.TryParse(userIdClaim?.Value, out var userId) ? userId : 0;
+     }
 } 
