@@ -1,5 +1,6 @@
 using AuthBlocksData.Services;
 using AuthBlocksModels.Entities.Identity;
+using AuthBlocksModels.Models;
 using Microsoft.Extensions.Logging;
 
 namespace AuthBlocksAPI.HierarchicalAuthorize;
@@ -114,10 +115,10 @@ public class HierarchicalRoleService : IHierarchicalRoleService
         }
     }
 
-    private bool HasChildRole(ApplicationRole userRole, string targetRoleName, List<ApplicationRole> roles)
+    private bool HasChildRole(RoleModel userRole, string targetRoleName, List<RoleModel> roles)
     {
         // Check if the user's role has the target role as a direct child
-        var directChildren = roles.Where(r => r.ParentRoleId == userRole.Id).ToList();
+        var directChildren = roles.Where(r => r.ParentRole?.Id == userRole.Id).ToList();
         
         foreach (var child in directChildren)
         {

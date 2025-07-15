@@ -1,10 +1,12 @@
 ﻿using Data.Shared.Managers;
 using SkipperData.Data.Repositories;
+using SkipperModels.Converters;
 using SkipperModels.Entities;
+using SkipperModels.Models;
 
 namespace SkipperData.Managers;
 
-public class SlipManager : ManagerBase<SlipEntity, SlipRepository>
+public class SlipManager : ManagerBase<SlipEntity, SlipModel, SlipRepository, SlipEntityToModelConverter>
 {
     public SlipManager(SlipRepository repository) : base(repository) { }
 }

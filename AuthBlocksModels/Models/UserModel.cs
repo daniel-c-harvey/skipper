@@ -16,6 +16,8 @@ public class UserModel : IModel
     public DateTimeOffset? LockoutEnd { get; set; }
     public bool LockoutEnabled { get; set; }
     public int AccessFailedCount { get; set; }
+    public bool IsDeactivated { get; set; }
+    public bool CanDelete { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 } 

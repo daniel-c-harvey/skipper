@@ -10,11 +10,10 @@ using NetBlocks.Models;
 namespace API.Shared.Controllers
 {
     [ApiController] 
-    public abstract class BaseModelController<TEntity, TModel, TManager, TConverter> : ControllerBase, IBaseModelController<TEntity, TModel> 
+    public abstract class BaseModelController<TEntity, TModel, TManager> : ControllerBase, IBaseModelController<TEntity, TModel> 
     where TEntity : class, IEntity, new()
     where TModel : class, IModel, new()
-    where TManager : IManager<TEntity>
-    where TConverter : IEntityToModelConverter<TEntity, TModel>
+    where TManager : IManager<TEntity, TModel>
     {
         protected readonly TManager Manager;
         private readonly Dictionary<string, Expression<Func<TEntity, object>>> _sortExpressions;
@@ -24,7 +23,6 @@ namespace API.Shared.Controllers
             Manager = manager;
             _sortExpressions = new Dictionary<string, Expression<Func<TEntity, object>>>(StringComparer.OrdinalIgnoreCase);
             
-            // Initialize base sort expressions using nameof()
             _sortExpressions[nameof(IEntity.Id)] = e => e.Id;
             _sortExpressions[nameof(IEntity.CreatedAt)] = e => e.CreatedAt;
             _sortExpressions[nameof(IEntity.UpdatedAt)] = e => e.UpdatedAt;
@@ -36,18 +34,11 @@ namespace API.Shared.Controllers
             var queryResult = await Manager.Get();
             
             var result = ApiResult<IEnumerable<TModel>>.From(queryResult);
-            if (queryResult.Value is IEnumerable<TEntity> items)
-            {
-                result.Value = items.Select(TConverter.Convert);
-            }
             var dto = new ApiResultDto<IEnumerable<TModel>>(result);
             
             return !result.Success ? StatusCode(500, dto) : Ok(dto);
         }
-
-        /// <summary>
-        /// Get entities - returns existing PagedResult<T> directly
-        /// </summary>
+        
         [HttpGet]
         public virtual async Task<ActionResult<ApiResultDto<PagedResult<TModel>>>> Get([FromQuery] PagedQuery query)
         {
@@ -63,10 +54,6 @@ namespace API.Shared.Controllers
             var pageResult = await Manager.GetPage(predicate, paging);
             
             var result = ApiResult<PagedResult<TModel>>.From(pageResult);
-            if (pageResult.Value != null)
-            {
-                result.Value = PagedResult<TModel>.From(pageResult.Value, pageResult.Value.Items?.Select(TConverter.Convert) ?? []);
-            }
             ApiResultDto<PagedResult<TModel>> dto = new(result);
             
             return result.Success ? Ok(dto) : StatusCode(500, dto);
@@ -78,18 +65,14 @@ namespace API.Shared.Controllers
         [HttpGet("{id:long}")]
         public virtual async Task<ActionResult<ApiResultDto<TModel>>> Get(long id)
         {
-            var pageResult = await Manager.GetPage(e => e.Id == id, new PagingParameters<TEntity> { PageSize = 1 });
+            var getResult = await Manager.GetById(id);
             
-            ApiResult<TModel> result = ApiResult<TModel>.From(pageResult);
-            var val = pageResult?.Value?.Items.FirstOrDefault();
-            if (val != null) result.Value = TConverter.Convert(val);
-            
+            ApiResult<TModel> result = ApiResult<TModel>.From(getResult);
             ApiResultDto<TModel> dto = new(result);
             
             if (!result.Success) { return StatusCode(500, dto); }
             
-            var entity = result.Value;
-            return entity == null ? NotFound(dto) : Ok(dto);
+            return result.Value == null ? NotFound(dto) : Ok(dto);
         }
 
         [HttpGet("count")]
@@ -120,15 +103,14 @@ namespace API.Shared.Controllers
         [HttpPost]
         public virtual async Task<ActionResult<ApiResultDto<TModel>>> Post([FromBody] TModel model)
         {
-            var entity = TConverter.Convert(model);
-            var existsResult = await Manager.Exists(entity); 
+            var existsResult = await Manager.Exists(model); 
             if (existsResult is not { Success: true }) { return StatusCode(500, ApiResult<TModel>.From(existsResult)); }
 
             // Add or update based on entity existence
             if (existsResult.Value)
             {
                 // Entity exists, update
-                var updateResult = await Manager.Update(entity);
+                var updateResult = await Manager.Update(model);
                 ApiResult<TModel> result = ApiResult<TModel>.From(updateResult);
                 result.Value = model;
                 
@@ -140,8 +122,8 @@ namespace API.Shared.Controllers
             }
             else
             {
-                // Entity does NOT exist, insert
-                var addResult = await Manager.Add(entity);
+                // model does NOT exist, insert
+                var addResult = await Manager.Add(model);
                 ApiResult<TModel> result = ApiResult<TModel>.From(addResult);
                 result.Value = model;
                 

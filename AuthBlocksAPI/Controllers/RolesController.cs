@@ -17,14 +17,13 @@ namespace AuthBlocksAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class RolesController : BaseModelController<ApplicationRole, RoleModel, IRoleService, RoleEntityToModelConverter>
+public class RolesController : BaseModelController<ApplicationRole, RoleModel, IRoleService>
 {
     public RolesController(IRoleService roleService) : base(roleService)
     {
         // Add custom sort expressions
         AddSortExpression(nameof(RoleModel.Name), e => e.Name ?? string.Empty);
         AddSortExpression(nameof(RoleModel.NormalizedName), e => e.NormalizedName ?? string.Empty);
-        AddSortExpression(nameof(RoleModel.ParentRoleId), e => e.ParentRoleId ?? 0);
     }
 
     [HierarchicalRoleAuthorize(SystemRoleConstants.UserAdmin)]

@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Identity;
 using AuthBlocksModels.Entities.Identity;
 using AuthBlocksData.Data.Repositories;
+using AuthBlocksModels.Converters;
+using AuthBlocksModels.Models;
 using Data.Shared.Managers;
 using NetBlocks.Models;
 
 namespace AuthBlocksData.Services;
 
-public class RoleService : ManagerBase<ApplicationRole, IRoleRepository>, IRoleService
+public class RoleService : ManagerBase<ApplicationRole, RoleModel, IRoleRepository, RoleEntityToModelConverter>, IRoleService
 {
     private readonly RoleManager<ApplicationRole> _roleManager;
 
@@ -15,11 +17,11 @@ public class RoleService : ManagerBase<ApplicationRole, IRoleRepository>, IRoleS
         _roleManager = roleManager;
     }
 
-    public override async Task<Result> Add(ApplicationRole entity)
+    public override async Task<Result> Add(RoleModel model)
     {
         try
         {
-            var identityResult = await _roleManager.CreateAsync(entity);
+            var identityResult = await _roleManager.CreateAsync(RoleEntityToModelConverter.Convert(model));
             if (identityResult.Succeeded)
             {
                 return Result.CreatePassResult();
@@ -35,24 +37,64 @@ public class RoleService : ManagerBase<ApplicationRole, IRoleRepository>, IRoleS
         }
     }
 
-    public async Task<ApplicationRole?> FindByNameAsync(string roleName)
+    public async Task<ResultContainer<RoleModel>> FindByNameAsync(string roleName)
     {
-        return await _roleManager.FindByNameAsync(roleName);
+        try
+        {
+            var role = await _roleManager.FindByNameAsync(roleName);
+            if (role is null) return ResultContainer<RoleModel>.CreatePassResult().Inform("Role not found");
+            return ResultContainer<RoleModel>.CreatePassResult(RoleEntityToModelConverter.Convert(role));
+        }
+        catch (Exception e)
+        {
+            return ResultContainer<RoleModel>.CreateFailResult(e.Message);
+        }
     }
     
     // Hierarchy methods
-    public async Task<IEnumerable<ApplicationRole>> GetRootRolesAsync()
+    public async Task<ResultContainer<IEnumerable<RoleModel>>> GetRootRolesAsync()
     {
-        return await Repository.GetRootRolesAsync();
+        try
+        {
+            var roles = await Repository.GetRootRolesAsync();
+            return ResultContainer<IEnumerable<RoleModel>>.CreatePassResult(roles.Select(RoleEntityToModelConverter.Convert));
+        }
+        catch (Exception e)
+        {
+            return ResultContainer<IEnumerable<RoleModel>>.CreateFailResult(e.Message);
+        }
     }
     
-    public async Task<IEnumerable<ApplicationRole>> GetChildRolesAsync(long parentRoleId)
+    public async Task<ResultContainer<IEnumerable<RoleModel>>> GetChildRolesAsync(long parentRoleId)
     {
-        return await Repository.GetChildRolesAsync(parentRoleId);
+        try
+        {
+            return ResultContainer<IEnumerable<RoleModel>>.CreatePassResult
+            (
+                (await Repository.GetChildRolesAsync(parentRoleId))
+                .Select(RoleEntityToModelConverter.Convert)
+            );
+        }
+        catch (Exception e)
+        {
+            return ResultContainer<IEnumerable<RoleModel>>.CreateFailResult(e.Message);
+        }
     }
     
-    public async Task<IEnumerable<ApplicationRole>> GetAncestorsAsync(long roleId)
+    public async Task<ResultContainer<IEnumerable<RoleModel>>> GetAncestorsAsync(long roleId)
     {
-        return await Repository.GetAncestorsAsync(roleId);
+
+        try
+        {
+            return ResultContainer<IEnumerable<RoleModel>>.CreatePassResult
+            (
+                (await Repository.GetAncestorsAsync(roleId))
+                .Select(RoleEntityToModelConverter.Convert)
+            );
+        }
+        catch (Exception e)
+        {
+            return ResultContainer<IEnumerable<RoleModel>>.CreateFailResult(e.Message);
+        }
     }
 } 

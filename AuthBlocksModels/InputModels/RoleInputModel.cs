@@ -8,7 +8,7 @@ public class RoleInputModel : IInputModel
     public string Name { get; set; } = string.Empty;
     public string NormalizedName { get; set; } = string.Empty;
     public string? ConcurrencyStamp { get; set; }
-    public long? ParentRoleId { get; set; }
+    public RoleInputModel? ParentRole { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 } 

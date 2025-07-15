@@ -1,11 +1,11 @@
 using AuthBlocksAPI.Models;
-using AuthBlocksModels.Entities.Identity;
 using AuthBlocksData.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using AuthBlocksModels.Models;
 using Microsoft.Extensions.Options;
 
 namespace AuthBlocksAPI.Services;
@@ -39,7 +39,7 @@ public class JwtService : IJwtService
         };
     }
 
-    public async Task<string> GenerateTokenAsync(ApplicationUser user)
+    public async Task<string> GenerateTokenAsync(UserModel user)
     {
         var roleResult = await _userRoleService.GetByUser(user);
         if (roleResult is { Success: false } or { Value: null })

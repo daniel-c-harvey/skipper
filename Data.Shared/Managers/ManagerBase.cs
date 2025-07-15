@@ -1,14 +1,18 @@
 ﻿using System.Linq.Expressions;
 using Data.Shared.Data.Repositories;
 using Models.Shared.Common;
+using Models.Shared.Converters;
 using Models.Shared.Entities;
+using Models.Shared.Models;
 using NetBlocks.Models;
 
 namespace Data.Shared.Managers;
 
-public abstract class ManagerBase<TEntity, TRepository> : IManager<TEntity>
+public abstract class ManagerBase<TEntity, TModel, TRepository, TConverter> : IManager<TEntity, TModel>
 where TEntity : class, IEntity
+where TModel : class, IModel, new()
 where TRepository : IRepository<TEntity>
+where TConverter : IEntityToModelConverter<TEntity, TModel>
 {
     protected TRepository Repository;
 
@@ -17,7 +21,7 @@ where TRepository : IRepository<TEntity>
         Repository = repository;
     }
 
-    public virtual async Task<ResultContainer<bool>> Exists(TEntity entity)
+    public virtual async Task<ResultContainer<bool>> Exists(TModel entity)
     {
         try
         {
@@ -30,32 +34,40 @@ where TRepository : IRepository<TEntity>
         }
     }
 
-    public async Task<ResultContainer<TEntity>> GetById(long id)
+    public async Task<ResultContainer<TModel>> GetById(long id)
     {
         try
         {
-            return ResultContainer<TEntity>.CreatePassResult(await Repository.GetByIdAsync(id));
+            var entity = await Repository.GetByIdAsync(id);
+            if (entity is null) return ResultContainer<TModel>.CreateFailResult("Entity not found.");
+
+            return ResultContainer<TModel>.CreatePassResult(TConverter.Convert(entity));
         }
         catch (Exception e)
         {
-            return ResultContainer<TEntity>.CreateFailResult(e.Message);
+            return ResultContainer<TModel>.CreateFailResult(e.Message);
         }
     }
 
-    public async Task<ResultContainer<IEnumerable<TEntity>>> Get(Expression<Func<TEntity, bool>>? predicate = null)
+    public async Task<ResultContainer<IEnumerable<TModel>>> Get(Expression<Func<TEntity, bool>>? predicate = null)
     {
         try
         {
+            IEnumerable<TEntity> entities;
             if (predicate is null)
             {
-                return ResultContainer<IEnumerable<TEntity>>.CreatePassResult(await Repository.GetAllAsync());
+                entities = await Repository.GetAllAsync();
             }
-            return ResultContainer<IEnumerable<TEntity>>.CreatePassResult(await Repository.FindAsync(predicate));
+            else
+            {
+                entities = await Repository.FindAsync(predicate);
+            }
+            
+            return ResultContainer<IEnumerable<TModel>>.CreatePassResult(entities.Select(TConverter.Convert));
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            return ResultContainer<IEnumerable<TModel>>.CreateFailResult(e.Message);
         }
     }
     
@@ -74,26 +86,25 @@ where TRepository : IRepository<TEntity>
         }
     }
 
-    public virtual async Task<ResultContainer<PagedResult<TEntity>>> GetPage(Expression<Func<TEntity, bool>> predicate, PagingParameters<TEntity> pagingParameters)
+    public virtual async Task<ResultContainer<PagedResult<TModel>>> GetPage(Expression<Func<TEntity, bool>> predicate, PagingParameters<TEntity> pagingParameters)
     {
         try
         {
-            return ResultContainer<PagedResult<TEntity>>.CreatePassResult
-            (
-                await Repository.GetPagedAsync(predicate, pagingParameters)    
-            );
+            var entities = await Repository.GetPagedAsync(predicate, pagingParameters);
+            var models = PagedResult<TModel>.From(entities, entities.Items.Select(TConverter.Convert));
+            return ResultContainer<PagedResult<TModel>>.CreatePassResult(models);
         }
         catch (Exception e)
         {
-            return  ResultContainer<PagedResult<TEntity>>.CreateFailResult(e.Message);
+            return  ResultContainer<PagedResult<TModel>>.CreateFailResult(e.Message);
         }
     }
 
-    public virtual async Task<Result> Add(TEntity entity)
+    public virtual async Task<Result> Add(TModel entity)
     {
         try
         {
-            await Repository.AddAsync(entity);
+            await Repository.AddAsync(TConverter.Convert(entity));
             return await Repository.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -102,11 +113,11 @@ where TRepository : IRepository<TEntity>
         }
     }
 
-    public virtual async Task<Result> Update(TEntity entity)
+    public virtual async Task<Result> Update(TModel entity)
     {
         try
         {
-            await Repository.UpdateAsync(entity);
+            await Repository.UpdateAsync(TConverter.Convert(entity));
             return await Repository.SaveChangesAsync();
         }
         catch (Exception ex)

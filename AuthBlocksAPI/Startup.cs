@@ -3,6 +3,7 @@ using AuthBlocksAPI.Common;
 using AuthBlocksAPI.Models;
 using AuthBlocksData.Services;
 using AuthBlocksModels.Entities.Identity;
+using AuthBlocksModels.Models;
 using AuthBlocksModels.SystemDefinitions;
 using NetBlocks.Models.Environment;
 using NetBlocks.Utilities.Environment;
@@ -121,17 +122,17 @@ internal static class Startup
         // Create roles in hierarchical order (parents first)
         foreach (var systemRole in SystemRole.GetAll().OrderBy(r => r.ParentRole?.Id ?? 0))
         {
-            var existingRole = await roleService.FindByNameAsync(systemRole.Name);
-            if (existingRole == null)
+            var existingRoleResult = await roleService.FindByNameAsync(systemRole.Name);
+            if (existingRoleResult.Value == null)
             {
                 var existingParentRole = (systemRole.ParentRole is not null) 
                                             ? await roleService.FindByNameAsync(systemRole.ParentRole.Name) 
                                             : null;
-                var role = new ApplicationRole
+                var role = new RoleModel
                 {
                     Name = systemRole.Name,
                     NormalizedName = systemRole.Name.ToUpperInvariant(),
-                    ParentRoleId = existingParentRole?.Id,
+                    ParentRole = existingParentRole?.Value,
                     ConcurrencyStamp = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
@@ -149,7 +150,7 @@ internal static class Startup
         var existingUser = await userService.FindByNameAsync(adminSettings.UserName);
         if (existingUser is null)
         {
-            var user = new ApplicationUser
+            var user = new UserModel
             {
                 UserName = adminSettings.UserName,
                 Email = adminSettings.Email,

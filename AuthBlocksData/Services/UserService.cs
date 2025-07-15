@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Identity;
 using AuthBlocksModels.Entities.Identity;
 using AuthBlocksData.Data.Repositories;
+using AuthBlocksModels.Converters;
+using AuthBlocksModels.Models;
 using Data.Shared.Managers;
 using NetBlocks.Models;
 
 namespace AuthBlocksData.Services;
 
-public class UserService : ManagerBase<ApplicationUser, IUserRepository>, IUserService
+public class UserService : ManagerBase<ApplicationUser, UserModel, IUserRepository, UserEntityToModelConverter>, IUserService
 {
     private readonly UserManager<ApplicationUser> _userManager;
 
@@ -16,11 +18,11 @@ public class UserService : ManagerBase<ApplicationUser, IUserRepository>, IUserS
         _userManager = userManager;
     }
 
-    public override async Task<Result> Add(ApplicationUser entity)
+    public override async Task<Result> Add(UserModel model)
     {
         try 
         {
-            var identityResult = await _userManager.CreateAsync(entity);
+            var identityResult = await _userManager.CreateAsync(UserEntityToModelConverter.Convert(model));
             if (identityResult.Succeeded)
             {
                 return Result.CreatePassResult();
@@ -36,11 +38,11 @@ public class UserService : ManagerBase<ApplicationUser, IUserRepository>, IUserS
         }
     }
     
-    public async Task<Result> Add(ApplicationUser entity, string password)
+    public async Task<Result> Add(UserModel model, string password)
     {
         try 
         {
-            var identityResult = await _userManager.CreateAsync(entity, password);
+            var identityResult = await _userManager.CreateAsync(UserEntityToModelConverter.Convert(model), password);
             if (identityResult.Succeeded)
             {
                 return Result.CreatePassResult();
@@ -56,24 +58,27 @@ public class UserService : ManagerBase<ApplicationUser, IUserRepository>, IUserS
         }
     }
 
-    public async Task<ApplicationUser?> FindByEmailAsync(string email)
+    public async Task<UserModel?> FindByEmailAsync(string email)
     {
-        return await _userManager.FindByEmailAsync(email);
+        var entity = await _userManager.FindByEmailAsync(email);
+        return entity is null ? null : UserEntityToModelConverter.Convert(entity);
     }
 
-    public async Task<ApplicationUser?> FindByNameAsync(string userName)
+    public async Task<UserModel?> FindByNameAsync(string userName)
     {
-        return await _userManager.FindByNameAsync(userName);
+        var entity = await _userManager.FindByNameAsync(userName);
+        return entity is null ? null : UserEntityToModelConverter.Convert(entity);
     }
 
-    public async Task<bool> CheckPassword(ApplicationUser user, string password)
+    public async Task<bool> CheckPassword(UserModel user, string password)
     {
-        return await _userManager.CheckPasswordAsync(user, password);
+        return await _userManager.CheckPasswordAsync(UserEntityToModelConverter.Convert(user), password);
     }
     
-    public async Task UpdatePassword(ApplicationUser user, string password)
+    public async Task UpdatePassword(UserModel user, string password)
     {
-        await _userManager.RemovePasswordAsync(user);
-        await _userManager.AddPasswordAsync(user, password);
+        var entity = UserEntityToModelConverter.Convert(user);
+        await _userManager.RemovePasswordAsync(entity);
+        await _userManager.AddPasswordAsync(entity, password);
     }
 } 

@@ -15,7 +15,7 @@ public class RoleEntityToModelConverter : IEntityToModelConverter<ApplicationRol
             Name = entity.Name ?? string.Empty,
             NormalizedName = entity.NormalizedName ?? string.Empty,
             ConcurrencyStamp = entity.ConcurrencyStamp,
-            ParentRoleId = entity.ParentRoleId,
+            ParentRole = entity.ParentRole is null ? null : Convert(entity.ParentRole),
             CreatedAt = entity.CreatedAt,
             UpdatedAt = entity.UpdatedAt,
         };
@@ -29,7 +29,8 @@ public class RoleEntityToModelConverter : IEntityToModelConverter<ApplicationRol
             Name = model.Name,
             NormalizedName = model.NormalizedName,
             ConcurrencyStamp = model.ConcurrencyStamp,
-            ParentRoleId = model.ParentRoleId,
+            ParentRoleId = model.ParentRole?.Id,
+            ParentRole = model.ParentRole is null ? null : Convert(model.ParentRole),
             CreatedAt = model.CreatedAt,
             UpdatedAt = model.UpdatedAt,
         };
@@ -48,7 +49,7 @@ public class RoleModelToInputConverter : IModelToInputConverter<RoleModel, RoleI
             ConcurrencyStamp = model.ConcurrencyStamp,
             CreatedAt = model.CreatedAt,
             UpdatedAt = model.UpdatedAt,
-            ParentRoleId = model.ParentRoleId
+            ParentRole = model.ParentRole is null ? null : Convert(model.ParentRole),
         };
     }
 
@@ -62,7 +63,7 @@ public class RoleModelToInputConverter : IModelToInputConverter<RoleModel, RoleI
             ConcurrencyStamp = input.ConcurrencyStamp,
             CreatedAt = input.CreatedAt,
             UpdatedAt = input.UpdatedAt,
-            ParentRoleId = input.ParentRoleId
+            ParentRole = input.ParentRole is null ? null : Convert(input.ParentRole),
         };
     }
 }

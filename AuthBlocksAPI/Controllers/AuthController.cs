@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using AuthBlocksAPI.HierarchicalAuthorize;
 using AuthBlocksModels.ApiModels;
+using AuthBlocksModels.Converters;
+using AuthBlocksModels.Models;
 using NetBlocks.Models;
 
 namespace AuthBlocksAPI.Controllers;
@@ -49,8 +51,9 @@ public class AuthController : ControllerBase
                 var emailResult = ApiResult<AuthResponse>.CreateFailResult("Invalid email or password");
                 return BadRequest(new ApiResultDto<AuthResponse>(emailResult));
             }
+            var userEntity = UserEntityToModelConverter.Convert(user);
 
-            var passwordValid = await _userManager.CheckPasswordAsync(user, request.Password);
+            var passwordValid = await _userManager.CheckPasswordAsync(userEntity, request.Password);
             if (!passwordValid)
             {
                 var passwordResult = ApiResult<AuthResponse>.CreateFailResult("Invalid email or password");
@@ -110,7 +113,7 @@ public class AuthController : ControllerBase
                 return BadRequest(new ApiResultDto<AuthResponse>(resultFailure));
             }
 
-            var user = new ApplicationUser
+            var user = new UserModel
             {
                 UserName = request.UserName,
                 Email = request.Email,
@@ -198,6 +201,7 @@ public class AuthController : ControllerBase
             }
 
             var user = userResult.Value!;
+            var userEntity = UserEntityToModelConverter.Convert(user);
 
             // Revoke old refresh token and generate new tokens
             await _jwtService.RevokeRefreshTokenAsync(request.RefreshToken);
@@ -334,7 +338,6 @@ public class AuthController : ControllerBase
                 Id = r.Id,
                 Name = r.Name ?? string.Empty,
                 NormalizedName = r.NormalizedName ?? string.Empty,
-                ParentRoleId = r.ParentRoleId,
                 ParentRoleName = r.ParentRole?.Name ?? string.Empty,
                 Created = r.CreatedAt,
                 Modified = r.UpdatedAt

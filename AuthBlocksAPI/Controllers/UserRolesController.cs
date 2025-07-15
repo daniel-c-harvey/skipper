@@ -13,7 +13,7 @@ namespace AuthBlocksAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class UserRolesController : BaseModelController<ApplicationUserRole, UserRoleModel, IUserRoleService, UserRoleEntityToModelConverter>
+public class UserRolesController : BaseModelController<ApplicationUserRole, UserRoleModel, IUserRoleService>
 {
     private IUserService _userService;
     

@@ -10,7 +10,7 @@ using SkipperModels.Models;
 namespace SkipperAPI.Controllers;
 
 [Route("api/[controller]")]
-public class RentalAgreementController : BaseModelController<RentalAgreementEntity, RentalAgreementModel, RentalAgreementManager, RentalAgreementEntityToModelConverter>
+public class RentalAgreementController : BaseModelController<RentalAgreementEntity, RentalAgreementModel, RentalAgreementManager>
 {
     public RentalAgreementController(RentalAgreementManager manager) : base(manager)
     {

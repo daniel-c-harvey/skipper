@@ -13,6 +13,7 @@ public class UserInputModel : IInputModel
     public bool TwoFactorEnabled { get; set; }
     public bool LockoutEnabled { get; set; }
     public int AccessFailedCount { get; set; }
+    public bool IsDeactivated { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }

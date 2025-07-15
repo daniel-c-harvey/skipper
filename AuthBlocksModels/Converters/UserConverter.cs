@@ -23,6 +23,7 @@ public class UserEntityToModelConverter : IEntityToModelConverter<ApplicationUse
             LockoutEnd = entity.LockoutEnd,
             LockoutEnabled = entity.LockoutEnabled,
             AccessFailedCount = entity.AccessFailedCount,
+            IsDeactivated = entity.IsDeactivated,
             CreatedAt = entity.CreatedAt,
             UpdatedAt = entity.UpdatedAt
         };
@@ -44,6 +45,7 @@ public class UserEntityToModelConverter : IEntityToModelConverter<ApplicationUse
             LockoutEnd = model.LockoutEnd,
             LockoutEnabled = model.LockoutEnabled,
             AccessFailedCount = model.AccessFailedCount,
+            IsDeactivated = model.IsDeactivated,
             CreatedAt = model.CreatedAt,
             UpdatedAt = model.UpdatedAt
         };
@@ -65,6 +67,7 @@ public class UserModelToInputConverter : IModelToInputConverter<UserModel, UserI
             TwoFactorEnabled = model.TwoFactorEnabled,
             LockoutEnabled = model.LockoutEnabled,
             AccessFailedCount = model.AccessFailedCount,
+            IsDeactivated = model.IsDeactivated,
             UpdatedAt = model.UpdatedAt,
             CreatedAt = model.CreatedAt
         };
@@ -83,6 +86,7 @@ public class UserModelToInputConverter : IModelToInputConverter<UserModel, UserI
             TwoFactorEnabled = input.TwoFactorEnabled,
             LockoutEnabled = input.LockoutEnabled,
             AccessFailedCount = input.AccessFailedCount,
+            IsDeactivated = input.IsDeactivated,
             UpdatedAt = input.UpdatedAt,
             CreatedAt = input.CreatedAt
         };

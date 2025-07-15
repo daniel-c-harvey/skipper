@@ -56,6 +56,9 @@ public class ApplicationUserConfiguration : BaseEntityConfiguration<ApplicationU
         builder.Property(u => u.AccessFailedCount)
             .IsRequired();
 
+        builder.Property(u => u.IsDeactivated)
+            .HasDefaultValue(false);
+
         // Identity-specific indexes
         builder.HasIndex(u => u.NormalizedUserName)
             .HasDatabaseName("ix_users_normalizedusername")

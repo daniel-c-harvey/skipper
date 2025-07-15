@@ -1,11 +1,11 @@
-using AuthBlocksModels.Entities.Identity;
 using System.Security.Claims;
+using AuthBlocksModels.Models;
 
 namespace AuthBlocksAPI.Services;
 
 public interface IJwtService
 {
-    Task<string> GenerateTokenAsync(ApplicationUser user);
+    Task<string> GenerateTokenAsync(UserModel user);
     Task<string> GenerateRefreshTokenAsync();
     ClaimsPrincipal? ValidateToken(string token);
     Task<bool> ValidateRefreshTokenAsync(string refreshToken, long userId);

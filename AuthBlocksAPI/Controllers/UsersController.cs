@@ -16,8 +16,8 @@ namespace AuthBlocksAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
-public class UsersController : BaseModelController<ApplicationUser, UserModel, IUserService, UserEntityToModelConverter>
+[HierarchicalRoleAuthorize]
+public class UsersController : BaseModelController<ApplicationUser, UserModel, IUserService>
 {
 
     public UsersController(IUserService userService) : base(userService)
@@ -40,8 +40,7 @@ public class UsersController : BaseModelController<ApplicationUser, UserModel, I
     {
         return await base.Get(query);
     }
-
-    // Override base Get by ID to provide proper authorization
+    
     [HierarchicalRoleAuthorize]
     public override async Task<ActionResult<ApiResultDto<UserModel>>> Get(long id)
     {

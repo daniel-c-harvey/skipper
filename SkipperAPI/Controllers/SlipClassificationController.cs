@@ -10,7 +10,7 @@ using SkipperModels.Models;
 namespace SkipperAPI.Controllers;
 
 [Route("api/[controller]")]
-public class SlipClassificationController : BaseModelController<SlipClassificationEntity, SlipClassificationModel, SlipClassificationManager, SlipClassificationEntityToModelConverter>
+public class SlipClassificationController : BaseModelController<SlipClassificationEntity, SlipClassificationModel, SlipClassificationManager>
 {
     public SlipClassificationController(SlipClassificationManager manager) : base(manager)
     {
