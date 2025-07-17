@@ -120,7 +120,7 @@ internal static class Startup
         var roleService = scope.ServiceProvider.GetRequiredService<IRoleService>();
         
         // Create roles in hierarchical order (parents first)
-        foreach (var systemRole in SystemRole.GetAll().OrderBy(r => r.ParentRole?.Id ?? 0))
+        foreach (var systemRole in SystemRole.GetAll().OrderBy(r => r.Id))
         {
             var existingRoleResult = await roleService.FindByNameAsync(systemRole.Name);
             if (existingRoleResult.Value == null)
@@ -132,7 +132,10 @@ internal static class Startup
                 {
                     Name = systemRole.Name,
                     NormalizedName = systemRole.Name.ToUpperInvariant(),
-                    ParentRole = existingParentRole?.Value,
+                    // Only set the ID, not the full ParentRole object to avoid Entity Framework tracking conflicts
+                    ParentRole = existingParentRole?.Value != null 
+                        ? new RoleModel { Id = existingParentRole.Value.Id } 
+                        : null,
                     ConcurrencyStamp = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
@@ -153,7 +156,9 @@ internal static class Startup
             var user = new UserModel
             {
                 UserName = adminSettings.UserName,
+                NormalizedUserName = adminSettings.UserName.ToUpperInvariant(),
                 Email = adminSettings.Email,
+                NormalizedEmail = adminSettings.Email.ToUpperInvariant(),
                 EmailConfirmed = true,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow

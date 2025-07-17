@@ -13,10 +13,6 @@ public class ApplicationUserConfiguration : BaseEntityConfiguration<ApplicationU
         
         // Call base configuration first (handles IEntity properties)
         base.Configure(builder);
-        
-        // Configure inherited properties from IdentityUser<long>
-        builder.Property(u => u.Id)
-            .ValueGeneratedOnAdd();
             
         builder.Property(u => u.UserName)
             .HasMaxLength(256);

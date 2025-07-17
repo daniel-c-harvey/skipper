@@ -9,6 +9,18 @@ namespace SkipperData.Data.Repositories;
 public class RentalAgreementRepository : Repository<SkipperContext, RentalAgreementEntity>
 {
     public RentalAgreementRepository(SkipperContext context, ILogger<RentalAgreementRepository> logger) : base(context, logger) { }
+    
+    protected override void UpdateModel(RentalAgreementEntity target, RentalAgreementEntity source)
+    {
+        base.UpdateModel(target, source);
+        target.EndDate = source.EndDate;
+        target.StartDate = source.StartDate;
+        target.Status = source.Status;
+        target.SlipId = source.SlipId;
+        target.VesselId = source.VesselId;
+        target.PriceUnit = source.PriceUnit;
+        target.PriceRate = source.PriceRate;
+    }
 
     public async Task<IEnumerable<RentalAgreementEntity>> GetByStatusAsync(RentalStatus status)
     {

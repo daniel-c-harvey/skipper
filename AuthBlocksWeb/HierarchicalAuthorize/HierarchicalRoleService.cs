@@ -45,6 +45,16 @@ public class HierarchicalRoleService : IHierarchicalRoleService
         return false;
     }
 
+    public void ClearCache()
+    {
+        lock (_cacheLock)
+        {
+            _roleInheritanceCache.Clear();
+            _lastCacheRefresh = DateTime.MinValue;
+        }
+        _logger.LogDebug("Hierarchical role cache manually cleared");
+    }
+
     private async Task<bool> InheritsFromRoleAsync(string userRoleName, string targetRoleName)
     {
         // Create cache key

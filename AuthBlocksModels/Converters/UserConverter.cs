@@ -68,6 +68,7 @@ public class UserModelToInputConverter : IModelToInputConverter<UserModel, UserI
             LockoutEnabled = model.LockoutEnabled,
             AccessFailedCount = model.AccessFailedCount,
             IsDeactivated = model.IsDeactivated,
+            CanDelete = model.CanDelete,
             UpdatedAt = model.UpdatedAt,
             CreatedAt = model.CreatedAt
         };
@@ -87,6 +88,7 @@ public class UserModelToInputConverter : IModelToInputConverter<UserModel, UserI
             LockoutEnabled = input.LockoutEnabled,
             AccessFailedCount = input.AccessFailedCount,
             IsDeactivated = input.IsDeactivated,
+            CanDelete = input.CanDelete,
             UpdatedAt = input.UpdatedAt,
             CreatedAt = input.CreatedAt
         };

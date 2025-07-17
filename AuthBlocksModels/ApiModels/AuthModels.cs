@@ -64,7 +64,7 @@ public class RoleInfo
     public string Name { get; set; } = string.Empty;
     public string NormalizedName { get; set; } = string.Empty;
     public long? ParentRoleId { get; set; }
-    public string ParentRoleName { get; set; } = string.Empty;
+    public string? ParentRoleName { get; set; }
     public DateTime Created { get; set; }
     public DateTime Modified { get; set; }
 }

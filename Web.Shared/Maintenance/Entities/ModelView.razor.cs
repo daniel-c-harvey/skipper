@@ -54,7 +54,7 @@ public partial class ModelView<T, TModel, TEditModal, TViewModel, TConverter>  :
     [Parameter]
     public string Placeholder { get; set; } = "Search...";
 
-    private MudDataGrid<T>? _grid;
+    private MudDataGrid<T>? Grid;
     private bool _updatingParameters = false;
     private bool _forceReload = false;
 
@@ -68,7 +68,7 @@ public partial class ModelView<T, TModel, TEditModal, TViewModel, TConverter>  :
         }
 
         _updatingParameters = true;
-        if (_grid != null) await _grid.ReloadServerData();
+        if (Grid != null) await Grid.ReloadServerData();
         _updatingParameters = false;
     }
 
@@ -138,13 +138,18 @@ public partial class ModelView<T, TModel, TEditModal, TViewModel, TConverter>  :
         if (result is { Canceled: false, Data: T model })
         {
             await ViewModel.UpdateItem(TConverter.Convert(model));
-            // Refresh data
-            _forceReload = true;
-            await (_grid?.ReloadServerData() ?? Task.CompletedTask);
-            _forceReload = false;
+            await RefreshGridData();
         }
     }
-    
+
+    public async Task RefreshGridData()
+    {
+        // Refresh data
+        _forceReload = true;
+        await (Grid?.ReloadServerData() ?? Task.CompletedTask);
+        _forceReload = false;
+    }
+
     public async Task DeleteItem(T inputModel)
     {
         var dialog = await DialogService.ShowAsync<ConfirmDeleteModal>("Delete Item");
@@ -152,10 +157,7 @@ public partial class ModelView<T, TModel, TEditModal, TViewModel, TConverter>  :
         if (result is { Canceled: false, Data: bool confirm })
         {
             await ViewModel.DeleteItem(TConverter.Convert(inputModel));
-            // Refresh data
-            _forceReload = true;
-            await (_grid?.ReloadServerData() ?? Task.CompletedTask);
-            _forceReload = false;
+            await RefreshGridData();
         }
     }
 }

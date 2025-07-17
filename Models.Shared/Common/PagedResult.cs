@@ -18,7 +18,7 @@ public class PagedResult<T>
     {
         return new PagedResult<T>()
         {
-            Items = items,
+            Items = items.ToList(),
             Page = other.Page,
             PageSize = other.PageSize,
             TotalCount = other.TotalCount,
@@ -27,7 +27,7 @@ public class PagedResult<T>
 
     public PagedResult(IEnumerable<T> items, int totalCount, int page, int pageSize)
     {
-        Items = items ?? new List<T>();
+        Items = items.ToList() ?? new List<T>();
         TotalCount = totalCount;
         Page = page;
         PageSize = pageSize;

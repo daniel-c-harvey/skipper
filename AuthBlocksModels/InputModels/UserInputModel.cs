@@ -14,6 +14,7 @@ public class UserInputModel : IInputModel
     public bool LockoutEnabled { get; set; }
     public int AccessFailedCount { get; set; }
     public bool IsDeactivated { get; set; }
+    public bool CanDelete { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }

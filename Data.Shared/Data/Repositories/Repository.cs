@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
 using Models.Shared.Common;
 using Models.Shared.Entities;
@@ -98,8 +99,21 @@ where TEntity : class, IEntity
     public async Task UpdateAsync(TEntity entity)
     {
         entity.UpdatedAt = DateTime.UtcNow;
-        _context.Entry(entity).State = EntityState.Modified;
+        
+        // This method handles both tracked and untracked entities
+        var dbentity = await _context.Set<TEntity>().Where(e => e.Id == entity.Id).FirstOrDefaultAsync();
+        if (dbentity != null)
+        {
+            UpdateModel(dbentity, entity);
+        }
         await Task.CompletedTask;
+    }
+
+    protected virtual void UpdateModel(TEntity target, TEntity source)
+    {
+        target.CreatedAt = source.CreatedAt;
+        target.UpdatedAt = source.UpdatedAt;
+        target.IsDeleted = source.IsDeleted;
     }
 
     public async Task DeleteAsync(long id)
@@ -133,4 +147,4 @@ where TEntity : class, IEntity
             return Result.CreateFailResult("A database error occured while saving changes.");
         }
     }
-} 
+}

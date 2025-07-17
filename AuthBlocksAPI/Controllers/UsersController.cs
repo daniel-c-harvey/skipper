@@ -16,12 +16,15 @@ namespace AuthBlocksAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[HierarchicalRoleAuthorize]
+[Authorize]
 public class UsersController : BaseModelController<ApplicationUser, UserModel, IUserService>
 {
+    private readonly IHierarchicalRoleService _authRoleService;
 
-    public UsersController(IUserService userService) : base(userService)
+    public UsersController(IUserService userService, IHierarchicalRoleService authRoleService) : base(userService)
     {
+        _authRoleService = authRoleService;
+        
         // Add custom sort expressions
         AddSortExpression(nameof(UserModel.UserName), e => e.UserName ?? string.Empty);
         AddSortExpression(nameof(UserModel.Email), e => e.Email ?? string.Empty);
@@ -38,9 +41,11 @@ public class UsersController : BaseModelController<ApplicationUser, UserModel, I
     [HierarchicalRoleAuthorize(SystemRoleConstants.UserAdmin)]
     public override async Task<ActionResult<ApiResultDto<PagedResult<UserModel>>>> Get(PagedQuery query)
     {
-        return await base.Get(query);
+        var currentUserId = GetCurrentUserId();
+        return await base.Get(query, (predicate, parameters) => Manager.GetPage(currentUserId, predicate, parameters));
     }
-    
+
+    // Override base Get by ID to provide proper authorization
     [HierarchicalRoleAuthorize]
     public override async Task<ActionResult<ApiResultDto<UserModel>>> Get(long id)
     {
@@ -57,7 +62,7 @@ public class UsersController : BaseModelController<ApplicationUser, UserModel, I
     {
         // Add logic to allow users to update their own basic info
         var currentUserId = GetCurrentUserId();
-        if (currentUserId != model.Id && !User.IsInRole(SystemRole.UserAdmin))
+        if (currentUserId != model.Id && !(await _authRoleService.HasRoleOrInheritsAsync(GetCurrentUserRoles(), SystemRoleConstants.UserAdmin)))
         {
             return Forbid();
         }
@@ -96,5 +101,14 @@ public class UsersController : BaseModelController<ApplicationUser, UserModel, I
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
         return long.TryParse(userIdClaim?.Value, out var userId) ? userId : 0;
+    }
+
+    private IList<string> GetCurrentUserRoles()
+    {
+        // Get user's roles from JWT claims
+        return User.Claims
+            .Where(c => c.Type == ClaimTypes.Role)
+            .Select(c => c.Value)
+            .ToList();
     }
 } 

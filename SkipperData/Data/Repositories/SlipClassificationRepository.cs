@@ -8,6 +8,16 @@ namespace SkipperData.Data.Repositories;
 public class SlipClassificationRepository : Repository<SkipperContext, SlipClassificationEntity>
 {
     public SlipClassificationRepository(SkipperContext context, ILogger<SlipClassificationRepository> logger) : base(context, logger) { }
+    
+    protected override void UpdateModel(SlipClassificationEntity target, SlipClassificationEntity source)
+    {
+        base.UpdateModel(target, source);
+        target.BasePrice = source.BasePrice;
+        target.Description = source.Description;
+        target.MaxLength = source.MaxLength;
+        target.MaxBeam = source.MaxBeam;
+        target.Name = source.Name;
+    }
 
     public async Task<SlipClassificationEntity?> GetByNameAsync(string name)
     {

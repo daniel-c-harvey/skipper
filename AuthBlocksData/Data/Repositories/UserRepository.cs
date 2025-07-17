@@ -11,6 +11,22 @@ public class UserRepository : Repository<AuthDbContext, ApplicationUser>, IUserR
     {
     }
 
+    protected override void UpdateModel(ApplicationUser target, ApplicationUser source)
+    {
+        base.UpdateModel(target, source);
+        target.IsDeactivated = source.IsDeactivated;
+        target.UserName = source.UserName;
+        target.NormalizedUserName = source.NormalizedUserName;
+        target.Email = source.Email;
+        target.NormalizedEmail = source.NormalizedEmail;
+        target.EmailConfirmed = source.EmailConfirmed;
+        target.PhoneNumber = source.PhoneNumber;
+        target.PhoneNumberConfirmed = source.PhoneNumberConfirmed;
+        target.LockoutEnd = source.LockoutEnd;
+        target.LockoutEnabled = source.LockoutEnabled;
+        target.AccessFailedCount = source.AccessFailedCount;
+    }
+
     // Identity-specific methods
     public async Task<ApplicationUser?> GetByUsernameAsync(string normalizedUsername)
     {

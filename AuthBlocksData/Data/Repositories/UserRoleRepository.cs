@@ -7,10 +7,15 @@ namespace AuthBlocksData.Data.Repositories;
 
 public class UserRoleRepository : Repository<AuthDbContext, ApplicationUserRole>, IUserRoleRepository
 {
-    public UserRoleRepository(AuthDbContext context, ILogger<Repository<AuthDbContext, ApplicationUserRole>> logger) : base(context, logger)
-    {
-    }
+    public UserRoleRepository(AuthDbContext context, ILogger<Repository<AuthDbContext, ApplicationUserRole>> logger) : base(context, logger) { }
 
+    protected override void UpdateModel(ApplicationUserRole target, ApplicationUserRole source)
+    {
+        base.UpdateModel(target, source);
+        target.UserId = source.UserId;
+        target.RoleId = source.RoleId;
+    }
+    
     public async Task<IList<ApplicationUser>> GetUsersInRoleAsync(string roleName)
     {
         return await _context.UserRoles
@@ -23,15 +28,20 @@ public class UserRoleRepository : Repository<AuthDbContext, ApplicationUserRole>
     
     public async Task<IList<ApplicationRole>> GetRolesAsync(ApplicationUser user)
     {
+        return await GetRolesAsync(user.Id);
+    }
+
+    public async Task<IList<ApplicationRole>> GetRolesAsync(long userId)
+    {
         return await _context.UserRoles
-            .Where(ur => ur.UserId == user.Id && !ur.IsDeleted)
+            .Where(ur => ur.UserId == userId && !ur.IsDeleted)
             .Join(_context.Roles.Where(r => !r.IsDeleted),
                 ur => ur.RoleId,
                 r => r.Id,
                 (ur, r) => r)
             .ToListAsync();
     }
-    
+
 
     public async Task<bool> IsInRoleAsync(ApplicationUser user, string roleName)
     {

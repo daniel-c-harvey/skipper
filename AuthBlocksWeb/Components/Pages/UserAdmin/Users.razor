@@ -2,6 +2,7 @@
 @using AuthBlocksModels.InputModels
 @using AuthBlocksModels.Models
 @using Web.Shared.Maintenance.Entities
+@using Web.Shared.Modal
 
 @attribute [HierarchicalRoleAuthorize(SystemRoleConstants.UserAdmin)]
 @page "/useradmin/users"
@@ -33,17 +34,20 @@
         </TemplateColumn>
     </Columns>
     <DeleteAction Context="item">
-        <MudButton OnClick="@(() => _modelView.DeleteItem(item))"
-                   Color="Color.Error"
+        <MudButton OnClick="@(() => Deactivate(item))"
+                   Color="@DeactivateColor(item)"
                    Variant="Variant.Outlined"
-                   Disabled="@DeleteDisabled(item)"
+                   Disabled="@DeactivateDisabled(item)"
                    StartIcon="@Icons.Material.Filled.Delete">
-            Revoke
+            @DeactivateText(item)
         </MudButton>
     </DeleteAction>
 </ModelView>
 
 @code {
+    [Inject]
+    public required IDialogService DialogService { get; set; }
+    
     private ModelView<UserInputModel, UserModel, UserEditModal, UsersViewModel, UserModelToInputConverter> _modelView;
 
     private async Task ResetPassword(UserInputModel? item)
@@ -51,8 +55,37 @@
         // todo integrate with email for secure reset
     }
 
-    private bool DeleteDisabled(UserInputModel user)
+    private MudBlazor.Color DeactivateColor(UserInputModel user)
     {
-        return true;
+        return (user.IsDeactivated) ? Color.Tertiary : Color.Error;
     }
+    
+    private string DeactivateText(UserInputModel user)
+    {
+        return (user.IsDeactivated) ? "Reactivate" : "Deactivate";
+    }
+
+    private bool DeactivateDisabled(UserInputModel user)
+    {
+        return !user.CanDelete;
+    }
+
+    private async Task Deactivate(UserInputModel item)
+    {
+        var action = item.IsDeactivated ? "Reactivate" : "Deactivate";
+        var message = $"Are you sure you want to {action.ToLower()} this user?";
+        var parameters = new DialogParameters<ConfirmCancelModal>
+        {
+            { x => x.BodyText, message },
+        };
+
+        var dialog = await DialogService.ShowAsync<ConfirmCancelModal>($"{action} User", parameters);
+        var result = await dialog.Result;
+        if (result is { Canceled: false })
+        {
+            await _modelView.ViewModel.ToggleDeactivated(item);
+            await _modelView.RefreshGridData();
+        }
+    }
+
 }

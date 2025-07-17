@@ -8,9 +8,20 @@ namespace SkipperData.Data.Repositories;
 
 public class SlipRepository : Repository<SkipperContext, SlipEntity>
 {
-    public SlipRepository(SkipperContext context, ILogger<SlipRepository> logger) : base(context, logger) { }
+    public SlipRepository(SkipperContext context, ILogger<SlipRepository> logger) : base(context, logger)
+    {
+    }
 
-    public async Task<IEnumerable<SlipEntity>> GetByStatusAsync(SlipStatus status)
+    protected override void UpdateModel(SlipEntity target, SlipEntity source)
+    {
+        base.UpdateModel(target, source);
+        target.LocationCode = source.LocationCode;
+        target.Status = source.Status;
+        target.SlipNumber = source.SlipNumber;
+        target.SlipClassificationId = source.SlipClassificationId;
+    }
+
+public async Task<IEnumerable<SlipEntity>> GetByStatusAsync(SlipStatus status)
     {
         return await FindAsync(s => s.Status == status);
     }

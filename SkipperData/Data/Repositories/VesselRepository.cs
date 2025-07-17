@@ -10,6 +10,16 @@ public class VesselRepository : Repository<SkipperContext, VesselEntity>
 {
     public VesselRepository(SkipperContext context, ILogger<VesselRepository> logger) : base(context, logger) { }
 
+    protected override void UpdateModel(VesselEntity target, VesselEntity source)
+    {
+        base.UpdateModel(target, source);
+        target.Beam = source.Beam;
+        target.Length = source.Length;
+        target.Name = source.Name;
+        target.VesselType = source.VesselType;
+        target.RegistrationNumber = source.RegistrationNumber;
+    }
+    
     public async Task<VesselEntity?> GetByRegistrationNumberAsync(string registrationNumber)
     {
         var results = await FindAsync(v => v.RegistrationNumber == registrationNumber);

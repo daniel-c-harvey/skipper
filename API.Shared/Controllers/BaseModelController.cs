@@ -42,6 +42,13 @@ namespace API.Shared.Controllers
         [HttpGet]
         public virtual async Task<ActionResult<ApiResultDto<PagedResult<TModel>>>> Get([FromQuery] PagedQuery query)
         {
+            return await Get(query, Manager.GetPage);
+        }
+
+        protected async Task<ActionResult<ApiResultDto<PagedResult<TModel>>>> Get(PagedQuery query, Func<Expression<Func<TEntity,bool>>, 
+                                                                                                            PagingParameters<TEntity>, 
+                                                                                                            Task<ResultContainer<PagedResult<TModel>>>> getPageFunc)
+        {
             var paging = new PagingParameters<TEntity>
             {
                 Page = query.Page,
@@ -51,7 +58,7 @@ namespace API.Shared.Controllers
             }; 
             
             var predicate = BuildSearchPredicate(query.Search);
-            var pageResult = await Manager.GetPage(predicate, paging);
+            var pageResult = await getPageFunc(predicate, paging);
             
             var result = ApiResult<PagedResult<TModel>>.From(pageResult);
             ApiResultDto<PagedResult<TModel>> dto = new(result);

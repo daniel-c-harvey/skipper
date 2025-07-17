@@ -4,6 +4,7 @@ using System.Security.Claims;
 using AuthBlocksWeb.ApiClients;
 using AuthBlocksModels.ApiModels;
 using Microsoft.AspNetCore.Identity;
+using AuthBlocksWeb.HierarchicalAuthorize;
 
 namespace AuthBlocksWeb.Services;
 
@@ -12,11 +13,16 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
     private readonly ITokenService _tokenService;
     private readonly IAuthApiClient _authApiClient;
     private readonly JwtSecurityTokenHandler _jwtHandler;
+    private readonly IHierarchicalRoleService _hierarchicalRoleService;
 
-    public JwtAuthenticationStateProvider(ITokenService tokenService, IAuthApiClient authApiClient)
+    public JwtAuthenticationStateProvider(
+        ITokenService tokenService, 
+        IAuthApiClient authApiClient,
+        IHierarchicalRoleService hierarchicalRoleService)
     {
         _tokenService = tokenService;
         _authApiClient = authApiClient;
+        _hierarchicalRoleService = hierarchicalRoleService;
         _jwtHandler = new JwtSecurityTokenHandler();
     }
 
@@ -71,6 +77,9 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
             var response = await _authApiClient.LoginAsync(loginRequest);
             if (response.Success && response.Value != null)
             {
+                // Clear the role cache when a new user logs in
+                _hierarchicalRoleService.ClearCache();
+                
                 // Ensure localStorage operations are complete before notifying
                 var token = await _tokenService.GetAccessTokenAsync();
                 if (!string.IsNullOrEmpty(token))
@@ -96,6 +105,9 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
             var response = await _authApiClient.RegisterAsync(registerRequest);
             if (response.Success && response.Value != null)
             {
+                // Clear the role cache when a new user registers
+                _hierarchicalRoleService.ClearCache();
+                
                 // Ensure localStorage operations are complete before notifying
                 var token = await _tokenService.GetAccessTokenAsync();
                 if (!string.IsNullOrEmpty(token))
@@ -136,6 +148,9 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
         }
         finally
         {
+            // Clear the role cache when user logs out
+            _hierarchicalRoleService.ClearCache();
+            
             await _tokenService.ClearTokensAsync();
             // Pre-compute the authentication state to ensure it's ready
             var authState = await GetAuthenticationStateAsync();

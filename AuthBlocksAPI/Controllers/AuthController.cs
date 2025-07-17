@@ -45,31 +45,40 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var user = await _userService.FindByEmailAsync(request.Email);
+            // Use the manager instead of the service to get the entity with password hash
+            var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
             {
                 var emailResult = ApiResult<AuthResponse>.CreateFailResult("Invalid email or password");
-                return BadRequest(new ApiResultDto<AuthResponse>(emailResult));
+                return Ok(new ApiResultDto<AuthResponse>(emailResult));
             }
-            var userEntity = UserEntityToModelConverter.Convert(user);
 
-            var passwordValid = await _userManager.CheckPasswordAsync(userEntity, request.Password);
+            if (user.IsDeactivated)
+            {
+                var deactivatedResult = ApiResult<AuthResponse>.CreateFailResult("User account is deactivated")
+                    .Inform("Please contact the administrator to reactivate your account.");
+                return Ok(new ApiResultDto<AuthResponse>(deactivatedResult));
+            }
+
+            var passwordValid = await _userManager.CheckPasswordAsync(user, request.Password);
             if (!passwordValid)
             {
                 var passwordResult = ApiResult<AuthResponse>.CreateFailResult("Invalid email or password");
-                return BadRequest(new ApiResultDto<AuthResponse>(passwordResult));
+                return Ok(new ApiResultDto<AuthResponse>(passwordResult));
             }
 
-            var accessToken = await _jwtService.GenerateTokenAsync(user);
+            var userModel = UserEntityToModelConverter.Convert(user);
+            
+            var accessToken = await _jwtService.GenerateTokenAsync(userModel);
             var refreshToken = await _jwtService.GenerateRefreshTokenAsync();
             await _jwtService.SaveRefreshTokenAsync(refreshToken, user.Id);
 
-            var rolesResult = await _userRoleService.GetByUser(user);
+            var rolesResult = await _userRoleService.GetByUser(userModel);
             if (rolesResult is null or { Success: false } or { Value: null })
             {
                 var resultFailure = ApiResult<AuthResponse>.CreateFailResult("Login failed")
                     .Fail("User roles could not be determined");
-                return BadRequest(new ApiResultDto<AuthResponse>(resultFailure));
+                return Ok(new ApiResultDto<AuthResponse>(resultFailure));
             }
 
             var roles = rolesResult.Value!;
@@ -118,6 +127,8 @@ public class AuthController : ControllerBase
                 UserName = request.UserName,
                 Email = request.Email,
                 EmailConfirmed = true, // For API, we'll skip email confirmation
+                NormalizedUserName = request.UserName.ToUpper(),
+                NormalizedEmail = request.Email.ToUpper(),
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
@@ -320,7 +331,6 @@ public class AuthController : ControllerBase
         }
     }
     [HttpGet("roles")]
-    [HierarchicalRoleAuthorize(SystemRoleConstants.UserAdmin)]
     public async Task<ActionResult<ApiResultDto<List<RoleInfo>>>> GetRoles()
     {
         try
@@ -337,8 +347,9 @@ public class AuthController : ControllerBase
             {
                 Id = r.Id,
                 Name = r.Name ?? string.Empty,
-                NormalizedName = r.NormalizedName ?? string.Empty,
-                ParentRoleName = r.ParentRole?.Name ?? string.Empty,
+                NormalizedName = r.NormalizedName,
+                ParentRoleName = r.ParentRole?.Name,
+                ParentRoleId = r.ParentRole?.Id,
                 Created = r.CreatedAt,
                 Modified = r.UpdatedAt
             }).ToList();

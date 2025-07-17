@@ -1,4 +1,6 @@
-﻿using AuthBlocksModels.Models;
+﻿using AuthBlocksModels.Converters;
+using AuthBlocksModels.InputModels;
+using AuthBlocksModels.Models;
 using AuthBlocksWeb.ApiClients;
 using Web.Shared.Maintenance.Entities;
 
@@ -13,9 +15,9 @@ public class UsersViewModel : ModelPageViewModel<UserModel, UsersClient, UsersCl
         this.RoleClient = roleClient;
     }
 
-
-    public override async Task DeleteItem(UserModel model)
+    public async Task ToggleDeactivated(UserInputModel item)
     {
-        await base.DeleteItem(model);
+        item.IsDeactivated = !item.IsDeactivated;
+        await Client.Update(UserModelToInputConverter.Convert(item));
     }
 }
