@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Web.Shared.Email.Mailtrap.Models
+namespace API.Shared.Common.Email.Mailtrap.Models
 {
     public class EmailWithHtml
     {

@@ -1,11 +1,11 @@
 ﻿using System.Text;
 using System.Text.Json;
+using API.Shared.Common.Email.Mailtrap.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NetBlocks.Models.Environment;
-using Web.Shared.Email.Mailtrap.Models;
 
-namespace Web.Shared.Email.Mailtrap;
+namespace API.Shared.Common.Email.Mailtrap;
 
 public class MailtrapEmailSender(
     IOptions<EmailConnections> connectionOptions,

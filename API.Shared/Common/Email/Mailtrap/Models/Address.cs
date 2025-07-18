@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Web.Shared.Email.Mailtrap.Models;
+namespace API.Shared.Common.Email.Mailtrap.Models;
 
 public class Address
 {

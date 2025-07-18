@@ -124,9 +124,7 @@ public class AuthController : ControllerBase
             {
                 UserName = request.UserName,
                 Email = request.Email,
-                EmailConfirmed = true, // For API, we'll skip email confirmation
-                NormalizedUserName = request.UserName.ToUpper(),
-                NormalizedEmail = request.Email.ToUpper(),
+                EmailConfirmed = true, // For now, we'll skip email confirmation
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
