@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\lib\NetBlocks\NetBlocks.csproj" />
       <ProjectReference Include="..\Models.Shared\Models.Shared.csproj" />
+      <ProjectReference Include="C:\lib\NetBlocks\NetBlocks.csproj" />
     </ItemGroup>
 
     <ItemGroup>

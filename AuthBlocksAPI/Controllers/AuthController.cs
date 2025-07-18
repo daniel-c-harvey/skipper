@@ -140,9 +140,12 @@ public class AuthController : ControllerBase
                 return StatusCode(500, new ApiResultDto<AuthResponse>(resultFailure));
             }
 
-            var accessToken = await _jwtService.GenerateTokenAsync(user);
+            // Use the returned user from createResult instead of fetching again
+            var createdUser = createResult.Value!;
+
+            var accessToken = await _jwtService.GenerateTokenAsync(createdUser);
             var refreshToken = await _jwtService.GenerateRefreshTokenAsync();
-            await _jwtService.SaveRefreshTokenAsync(refreshToken, user.Id);
+            await _jwtService.SaveRefreshTokenAsync(refreshToken, createdUser.Id);
 
             var response = new AuthResponse
             {
@@ -151,9 +154,9 @@ public class AuthController : ControllerBase
                 ExpiresAt = DateTime.UtcNow.AddMinutes(60),
                 User = new UserInfo
                 {
-                    Id = user.Id,
-                    UserName = user.UserName ?? string.Empty,
-                    Email = user.Email ?? string.Empty,
+                    Id = createdUser.Id,
+                    UserName = createdUser.UserName ?? string.Empty,
+                    Email = createdUser.Email ?? string.Empty,
                     Roles = new List<string>() // New user has no roles initially
                 }
             };

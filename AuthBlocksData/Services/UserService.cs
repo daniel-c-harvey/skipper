@@ -79,23 +79,28 @@ public class UserService : ManagerBase<ApplicationUser, UserModel, IUserReposito
         }
     }
     
-    public async Task<Result> Add(UserModel model, string password)
+    public async Task<ResultContainer<UserModel>> Add(UserModel model, string password)
     {
         try 
         {
-            var identityResult = await _userManager.CreateAsync(UserEntityToModelConverter.Convert(model), password);
+            var entity = UserEntityToModelConverter.Convert(model);
+            var identityResult = await _userManager.CreateAsync(entity, password);
             if (identityResult.Succeeded)
             {
-                return Result.CreatePassResult();
+                // Return the created user with the proper ID
+                var createdUser = await _userManager.FindByEmailAsync(model.Email);
+                return ResultContainer<UserModel>.CreatePassResult(
+                    UserEntityToModelConverter.Convert(createdUser));
             }
             else
             {
-                return Result.CreateFailResult(identityResult.Errors.Select(error => error.Description).ToArray());
+                return ResultContainer<UserModel>.CreateFailResult(
+                    identityResult.Errors.Select(error => error.Description).ToArray());
             }
         }
         catch (Exception ex)
         {
-            return Result.CreateFailResult(ex.Message);
+            return ResultContainer<UserModel>.CreateFailResult(ex.Message);
         }
     }
 

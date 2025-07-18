@@ -10,7 +10,7 @@ namespace AuthBlocksData.Services;
 public interface IUserService : IManager<ApplicationUser, UserModel>
 {
     Task<ResultContainer<PagedResult<UserModel>>> GetPage(long userId, Expression<Func<ApplicationUser, bool>> predicate, PagingParameters<ApplicationUser> pagingParameters);
-    public Task<Result> Add(UserModel model, string password);
+    public Task<ResultContainer<UserModel>> Add(UserModel model, string password);
     
     // Standard Identity operations
     Task<UserModel?> FindByEmailAsync(string email);

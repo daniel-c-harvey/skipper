@@ -30,7 +30,6 @@ public class RoleEntityToModelConverter : IEntityToModelConverter<ApplicationRol
             NormalizedName = model.NormalizedName,
             ConcurrencyStamp = model.ConcurrencyStamp,
             ParentRoleId = model.ParentRole?.Id,
-            ParentRole = model.ParentRole is null ? null : Convert(model.ParentRole),
             CreatedAt = model.CreatedAt,
             UpdatedAt = model.UpdatedAt,
         };

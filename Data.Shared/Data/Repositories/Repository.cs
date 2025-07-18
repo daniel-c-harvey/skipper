@@ -101,7 +101,7 @@ where TEntity : class, IEntity
         entity.UpdatedAt = DateTime.UtcNow;
         
         // This method handles both tracked and untracked entities
-        var dbentity = await _context.Set<TEntity>().Where(e => e.Id == entity.Id).FirstOrDefaultAsync();
+        var dbentity = await _dbSet.Where(e => e.Id == entity.Id).FirstOrDefaultAsync();
         if (dbentity != null)
         {
             UpdateModel(dbentity, entity);

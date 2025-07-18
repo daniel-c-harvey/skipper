@@ -163,8 +163,11 @@ internal static class Startup
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
-            await userService.Add(user, adminSettings.Password);
-            await userRoleService.AddUserToRoleAsync(user, SystemRoleConstants.Admin);
+            var createResult = await userService.Add(user, adminSettings.Password);
+            if (createResult.Success && createResult.Value != null)
+            {
+                await userRoleService.AddUserToRoleAsync(createResult.Value, SystemRoleConstants.Admin);
+            }
         }
         else if (existingUser.Email != adminSettings.Email)
         {
