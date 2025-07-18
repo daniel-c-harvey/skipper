@@ -2,7 +2,6 @@
 using AuthBlocksAPI.Common;
 using AuthBlocksAPI.Models;
 using AuthBlocksData.Services;
-using AuthBlocksModels.Entities.Identity;
 using AuthBlocksModels.Models;
 using AuthBlocksModels.SystemDefinitions;
 using NetBlocks.Models.Environment;
@@ -150,15 +149,14 @@ internal static class Startup
         var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
         var userRoleService = scope.ServiceProvider.GetRequiredService<IUserRoleService>();
         var adminSettings = LoadAdminConfig();
+        
         var existingUser = await userService.FindByNameAsync(adminSettings.UserName);
         if (existingUser is null)
         {
             var user = new UserModel
             {
                 UserName = adminSettings.UserName,
-                NormalizedUserName = adminSettings.UserName.ToUpperInvariant(),
                 Email = adminSettings.Email,
-                NormalizedEmail = adminSettings.Email.ToUpperInvariant(),
                 EmailConfirmed = true,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow

@@ -28,8 +28,6 @@ public class UsersController : BaseModelController<ApplicationUser, UserModel, I
         // Add custom sort expressions
         AddSortExpression(nameof(UserModel.UserName), e => e.UserName ?? string.Empty);
         AddSortExpression(nameof(UserModel.Email), e => e.Email ?? string.Empty);
-        AddSortExpression(nameof(UserModel.NormalizedUserName), e => e.NormalizedUserName ?? string.Empty);
-        AddSortExpression(nameof(UserModel.NormalizedEmail), e => e.NormalizedEmail ?? string.Empty);
         AddSortExpression(nameof(UserModel.EmailConfirmed), e => e.EmailConfirmed);
         AddSortExpression(nameof(UserModel.PhoneNumber), e => e.PhoneNumber ?? string.Empty);
         AddSortExpression(nameof(UserModel.PhoneNumberConfirmed), e => e.PhoneNumberConfirmed);
