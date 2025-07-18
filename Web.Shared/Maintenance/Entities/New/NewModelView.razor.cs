@@ -36,7 +36,14 @@ where TConverter : IModelToInputConverter<TModel, TInputModel>
     
     [Parameter]
     public required RenderFragment<TInputModel> ChildContent { get; set; }
-    
+
+    // [Parameter] public Func<EditContext, Task>? PostAction { get; set; }
+    //
+    // protected override void OnInitialized()
+    // {
+    //     PostAction ??= Post;
+    // }
+
     public async Task Post(EditContext editContext)
     {
         Task<NetBlocks.Models.Result> resultTask = Task.Run(async () =>

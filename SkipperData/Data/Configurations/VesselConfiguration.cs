@@ -7,9 +7,11 @@ namespace SkipperData.Data.Configurations;
 
 public class VesselConfiguration : BaseEntityConfiguration<VesselEntity>
 {
-    protected override void ConfigureEntity(EntityTypeBuilder<VesselEntity> builder)
+    public override void Configure(EntityTypeBuilder<VesselEntity> builder)
     {
         builder.ToTable("vessels");
+        
+        base.Configure(builder);
         
         builder.Property(e => e.RegistrationNumber)
             .HasMaxLength(50)

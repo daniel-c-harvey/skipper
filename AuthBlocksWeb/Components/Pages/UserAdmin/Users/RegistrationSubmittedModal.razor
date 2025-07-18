@@ -1,0 +1,28 @@
+﻿@using AuthBlocksModels.ApiModels
+@using NetBlocks.Models
+@using Web.Shared.Result
+@using Web.Shared.Modal
+
+<ResultModal TResult="TokenCreationResult"
+             ResultTask="ResultTask">
+    <Success Context="result">
+        <MudText>Registration has been <MudText Inline="true" Color="Color.Success">submitted</MudText>.</MudText>
+        <MudText>An email has been sent to: @result.RegistrationEmail</MudText>
+        <MudText Color="Color.Warning">TODO: remove this when the actual email sender is implemented:</MudText>
+        <MudText Color="Color.Warning">REGISTRATION CODE: @result.RegistrationToken</MudText>
+    </Success>
+    <Failure Context="result">
+        <MudText>Registration was <MudText Inline="true" Color="Color.Warning">NOT</MudText> submitted</MudText>
+        <MudContainer Class="pa-5">
+            <ResultDetails Result="result"/>
+        </MudContainer>
+    </Failure>
+</ResultModal>
+    
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter] 
+    public required Task<TokenCreationResult> ResultTask { get; set; }
+}

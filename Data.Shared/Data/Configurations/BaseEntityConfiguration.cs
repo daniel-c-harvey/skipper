@@ -23,10 +23,5 @@ where TEntity : class, IEntity
             
         // Add index on IsDeleted for performance when filtering soft-deleted records
         builder.HasIndex(e => e.IsDeleted);
-        
-        // Call derived configuration
-        ConfigureEntity(builder);
     }
-    
-    protected abstract void ConfigureEntity(EntityTypeBuilder<TEntity> builder);
 } 

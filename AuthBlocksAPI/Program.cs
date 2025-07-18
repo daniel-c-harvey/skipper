@@ -2,6 +2,7 @@ using System.Text;
 using AuthBlocksAPI.Models;
 using AuthBlocksAPI.Services;
 using AuthBlocksAPI.HierarchicalAuthorize;
+using AuthBlocksData;
 using AuthBlocksData.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -95,6 +96,9 @@ internal class Program
             builder.Services.AddScoped<IHierarchicalRoleService, HierarchicalRoleService>();
             builder.Services.AddScoped<IAuthorizationHandler, HierarchicalRolesAuthorizationHandler>();
 
+            // Add Registration Token Service
+            builder.Services.AddScoped<IRegistrationTokenService, RegistrationTokenService>();
+            
             var app = builder.Build();
 
             ConfigureAppProxy(app);

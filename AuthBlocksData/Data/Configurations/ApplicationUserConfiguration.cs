@@ -63,10 +63,4 @@ public class ApplicationUserConfiguration : BaseEntityConfiguration<ApplicationU
         builder.HasIndex(u => u.NormalizedEmail)
             .HasDatabaseName("ix_users_normalizedemail");
     }
-
-    protected override void ConfigureEntity(EntityTypeBuilder<ApplicationUser> builder)
-    {
-        // Additional ApplicationUser-specific configuration can go here
-        // Base IEntity properties are already configured by the base class
-    }
 } 

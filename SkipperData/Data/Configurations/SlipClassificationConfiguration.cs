@@ -7,9 +7,11 @@ namespace SkipperData.Data.Configurations;
 
 public class SlipClassificationConfiguration : BaseEntityConfiguration<SlipClassificationEntity>
 {
-    protected override void ConfigureEntity(EntityTypeBuilder<SlipClassificationEntity> builder)
+    public override void Configure(EntityTypeBuilder<SlipClassificationEntity> builder)
     {
         builder.ToTable("slip_classifications");
+        
+        base.Configure(builder);
         
         builder.Property(e => e.Name)
             .HasMaxLength(255)

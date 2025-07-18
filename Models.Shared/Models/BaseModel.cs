@@ -1,7 +1,7 @@
 ﻿
 namespace Models.Shared.Models;
 
-public abstract class BaseModel
+public abstract class BaseModel : IModel
 {
     public long Id { get; set; }
     public DateTime CreatedAt { get; set; }

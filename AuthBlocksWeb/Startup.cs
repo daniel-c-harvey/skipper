@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using AuthBlocksModels.Entities.Identity;
 using AuthBlocksWeb.Components.Pages.UserAdmin;
+using AuthBlocksWeb.Components.Pages.UserAdmin.Users;
 using AuthBlocksWeb.HierarchicalAuthorize;
 
 namespace AuthBlocksWeb;
@@ -49,6 +50,8 @@ public static class Startup
         // services.AddSingleton(new UserRoleClientConfig(apiBaseUrl));
         // builderServices.AddScoped<UserRoleClient>();
 
-
+        // Pending Registration Client
+        services.AddSingleton(new PendingRegistrationClientConfig(apiBaseUrl));
+        services.AddScoped<PendingRegistrationClient>();
     }
 }

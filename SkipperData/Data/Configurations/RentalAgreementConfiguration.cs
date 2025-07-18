@@ -7,9 +7,11 @@ namespace SkipperData.Data.Configurations;
 
 public class RentalAgreementConfiguration : BaseEntityConfiguration<RentalAgreementEntity>
 {
-    protected override void ConfigureEntity(EntityTypeBuilder<RentalAgreementEntity> builder)
+    public override void Configure(EntityTypeBuilder<RentalAgreementEntity> builder)
     {
         builder.ToTable("rental_agreements");
+        
+        base.Configure(builder);
         
         builder.Property(e => e.StartDate)
             .IsRequired();

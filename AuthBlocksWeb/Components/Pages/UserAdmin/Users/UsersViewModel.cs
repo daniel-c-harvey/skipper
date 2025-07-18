@@ -4,7 +4,7 @@ using AuthBlocksModels.Models;
 using AuthBlocksWeb.ApiClients;
 using Web.Shared.Maintenance.Entities;
 
-namespace AuthBlocksWeb.Components.Pages.UserAdmin;
+namespace AuthBlocksWeb.Components.Pages.UserAdmin.Users;
 
 public class UsersViewModel : ModelPageViewModel<UserModel, UsersClient, UsersClientConfig>
 {
