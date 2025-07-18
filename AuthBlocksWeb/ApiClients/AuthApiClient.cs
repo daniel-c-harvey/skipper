@@ -23,14 +23,14 @@ public class AuthApiClient : ApiClient<AuthClientConfig>, IAuthApiClient
         };
     }
 
-    public async Task<ApiResult<AuthResponse>> LoginAsync(LoginRequest request)
+    public async Task<LoginResult<AuthResponse>> LoginAsync(LoginRequest request)
     {
         try
         {
             var response = await http.PostAsJsonAsync($"api/{config.ControllerName}/login", request);
-            var dtoResult = await response.Content.ReadFromJsonAsync<ApiResultDto<AuthResponse>>(_jsonOptions);
+            var dtoResult = await response.Content.ReadFromJsonAsync<LoginResultDto<AuthResponse>>(_jsonOptions);
             
-            if (dtoResult == null) return ApiResult<AuthResponse>.CreateFailResult("Failed to parse response");
+            if (dtoResult == null) return LoginResult<AuthResponse>.CreateFailResult("Failed to parse response", LoginFailureReason.SystemError);
             var result = dtoResult.From();
             
             if (result is {Success: true, Value: AuthResponse authReponse} )
@@ -43,7 +43,7 @@ public class AuthApiClient : ApiClient<AuthClientConfig>, IAuthApiClient
         }
         catch (Exception ex)
         {
-            return ApiResult<AuthResponse>.CreateFailResult(ex.Message);
+            return LoginResult<AuthResponse>.CreateFailResult(ex.Message);
         }
     }
 

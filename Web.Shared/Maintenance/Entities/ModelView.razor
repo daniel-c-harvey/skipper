@@ -12,22 +12,27 @@
 
 <MudText Typo="Typo.h4">@Title</MudText>
 
-<MudGrid Class="my-5">
+<MudGrid Spacing="4" Class="my-5">
     <MudItem xs="12" md="8">
-        <MudTextField Adornment="Adornment.Start" 
-                      AdornmentIcon="@Icons.Material.Filled.Search" 
-                      Placeholder="@Placeholder" 
-                      Clearable="true"
-                      @bind-Value="SearchTerm"
-                      DebounceInterval="300"
-                      OnDebounceIntervalElapsed="OnSearchChanged"/>
+        
     </MudItem>
-    <MudItem xs="4" md="4" Class="d-flex justify-end">
-        <MudButton Color="Color.Primary" EndIcon="@Icons.Material.Outlined.AddCircleOutline" Variant="Variant.Filled" OnClick="@NewEntity">
-            New @ModelDisplayName
-        </MudButton>
+    <MudItem xs="12" md="4">
+        
     </MudItem>
 </MudGrid>
+
+<MudStack Row Breakpoint="@Breakpoint.Xs">
+    <MudTextField Adornment="Adornment.Start"
+                  AdornmentIcon="@Icons.Material.Filled.Search"
+                  Placeholder="@Placeholder"
+                  Clearable="true"
+                  @bind-Value="SearchTerm"
+                  DebounceInterval="300"
+                  OnDebounceIntervalElapsed="OnSearchChanged" />
+    <MudButton Color="Color.Primary" EndIcon="@Icons.Material.Outlined.AddCircleOutline" Variant="Variant.Filled" OnClick="@NewEntity">
+        New @ModelDisplayName
+    </MudButton>
+</MudStack>
 
 @if (ViewModel.ErrorResults != null)
 {

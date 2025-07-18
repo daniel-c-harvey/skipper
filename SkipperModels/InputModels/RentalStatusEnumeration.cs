@@ -12,7 +12,7 @@ public class RentalStatusEnumeration : DisplayEnumeration<RentalStatusEnumeratio
     
     public RentalStatus RentalStatus { get; init; }
     
-    private RentalStatusEnumeration(RentalStatus rentalStatus, string disaplyName) : base((int)rentalStatus, rentalStatus.ToString("G"), disaplyName)
+    private RentalStatusEnumeration(RentalStatus rentalStatus, string displayName) : base((int)rentalStatus, rentalStatus.ToString("G"), displayName)
     {
     }
 }

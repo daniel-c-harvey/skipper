@@ -7,35 +7,43 @@
 
 <PageTitle>Log in</PageTitle>
 
-<MudText Typo="Typo.h6">Use a local account to log in.</MudText>
-
-<StatusMessage Message="@errorMessage" />
-<EditForm Model="Input" OnValidSubmit="LoginUser" FormName="login">
-    <DataAnnotationsValidator />
-    <MudGrid Class="my-5" Spacing="3">
-        <MudItem xs="12" md="6">
-            <MudTextField Label="Email"
-                          Adornment="Adornment.Start"
-                          AdornmentIcon="@Icons.Material.Filled.Person"
-                          AdornmentColor="Color.Primary"
-                          Placeholder="Enter your email"
-                          Variant="Variant.Outlined"
-                          @bind-Value="Input.Email"
-                          For="() => Input.Email"/>
-        </MudItem>
-        <MudItem xs="12" md="6">
-            <MudTextField Label="Password"
-                          Adornment="Adornment.Start"
-                          AdornmentIcon="@Icons.Material.Filled.Lock"
-                          AdornmentColor="Color.Primary"
-                          Placeholder="Enter your password"
-                          Variant="Variant.Outlined"
-                          InputType="InputType.Password"
-                          @bind-Value="Input.Password"
-                          For="() => Input.Password"/>
-        </MudItem>
-        <MudItem xs="12" Class="d-flex justify-start py-5">
-            <MudStack Spacing="4">
+<MudContainer MaxWidth="MaxWidth.Medium">
+    <EditForm Model="Input" OnValidSubmit="LoginUser" FormName="login">
+    <MudCard>
+        <MudCardHeader Class="mud-theme-primary">
+                <MudText Typo="Typo.h5">Use a local account to log in.</MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            <DataAnnotationsValidator/>
+            <MudGrid Class="my-5" Spacing="3">
+                <MudItem xs="12" md="6">
+                    <MudTextField Label="Email"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Person"
+                                  AdornmentColor="Color.Primary"
+                                  Placeholder="Enter your email"
+                                  Variant="Variant.Outlined"
+                                  @bind-Value="Input.Email"
+                                  For="() => Input.Email"/>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField Label="Password"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Lock"
+                                  AdornmentColor="Color.Primary"
+                                  Placeholder="Enter your password"
+                                  Variant="Variant.Outlined"
+                                  InputType="InputType.Password"
+                                  @bind-Value="Input.Password"
+                                  For="() => Input.Password"/>
+                </MudItem>
+                <MudItem xs="12">
+                    <StatusMessage Message="@errorMessage"/>
+                </MudItem>
+            </MudGrid>
+        </MudCardContent>
+        <MudCardActions Class="justify-center pb-4">
+            <MudStack Row Justify="Justify.Center">
                 <MudButton StartIcon="@((isLoading) ? Icons.Material.Filled.Refresh : null)"
                            Disabled="isLoading"
                            Color="Color.Primary"
@@ -49,11 +57,11 @@
                     Use Registration Code
                 </MudButton>
             </MudStack>
-        </MudItem>
-    </MudGrid>
-</EditForm>
-
-
+        </MudCardActions>
+            
+    </MudCard>
+    </EditForm>
+</MudContainer>
 @code {
     private string? errorMessage;
     private bool isLoading;
@@ -82,15 +90,15 @@
 
         try
         {
-            var success = await AuthStateProvider.LoginAsync(Input);
+            var result = await AuthStateProvider.LoginAsync(Input);
             
-            if (success)
+            if (result is {Success: true})
             {                
                 Navigation.NavigateTo(ReturnUrl ?? "/");
             }
             else
             {
-                errorMessage = "Invalid email or password.";
+                errorMessage = $"Login could not be completed: {LoginFailureReasonDisplay.GetById((int)result.FailureReason)?.DisplayName}";
             }
         }
         catch (Exception ex)

@@ -11,7 +11,7 @@ public class PriceUnitEnumeration : DisplayEnumeration<PriceUnitEnumeration>
     
     public PriceUnit PriceUnit { get; init; }
     
-    private PriceUnitEnumeration(PriceUnit priceUnit, string disaplyName) : base((int)priceUnit, priceUnit.ToString("G"), disaplyName) 
+    private PriceUnitEnumeration(PriceUnit priceUnit, string displayName) : base((int)priceUnit, priceUnit.ToString("G"), displayName) 
     {
         PriceUnit = priceUnit;
     }

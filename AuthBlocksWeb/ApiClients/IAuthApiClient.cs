@@ -5,7 +5,7 @@ namespace AuthBlocksWeb.ApiClients;
 
 public interface IAuthApiClient
 {
-    Task<ApiResult<AuthResponse>> LoginAsync(LoginRequest request);
+    Task<LoginResult<AuthResponse>> LoginAsync(LoginRequest request);
     Task<ApiResult<AuthResponse>> RegisterAsync(RegisterRequest request);
     Task<ApiResult<AuthResponse>> RefreshTokenAsync(RefreshTokenRequest request);
     Task<ApiResult> LogoutAsync(RefreshTokenRequest request);

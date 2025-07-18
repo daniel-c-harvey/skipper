@@ -16,9 +16,7 @@ public class UserRepository : Repository<AuthDbContext, ApplicationUser>, IUserR
         base.UpdateModel(target, source);
         target.IsDeactivated = source.IsDeactivated;
         target.UserName = source.UserName;
-        target.NormalizedUserName = source.NormalizedUserName;
         target.Email = source.Email;
-        target.NormalizedEmail = source.NormalizedEmail;
         target.EmailConfirmed = source.EmailConfirmed;
         target.PhoneNumber = source.PhoneNumber;
         target.PhoneNumberConfirmed = source.PhoneNumberConfirmed;

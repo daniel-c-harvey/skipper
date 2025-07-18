@@ -5,6 +5,7 @@ using AuthBlocksWeb.ApiClients;
 using AuthBlocksModels.ApiModels;
 using Microsoft.AspNetCore.Identity;
 using AuthBlocksWeb.HierarchicalAuthorize;
+using NetBlocks.Models;
 
 namespace AuthBlocksWeb.Services;
 
@@ -70,7 +71,7 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
         }
     }
-    public async Task<bool> LoginAsync(LoginRequest loginRequest)
+    public async Task<LoginResult> LoginAsync(LoginRequest loginRequest)
     {
         try
         {
@@ -88,13 +89,13 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
                     var authState = await GetAuthenticationStateAsync();
                     NotifyAuthenticationStateChanged(Task.FromResult(authState));
                 }
-                return true;
+                return LoginResult.CreatePassResult();
             }
-            return false;
+            return LoginResult.From(response);
         }
         catch
         {
-            return false;
+            return LoginResult.CreateFailResult("Failed to login", LoginFailureReason.SystemError);
         }
     }
 

@@ -7,8 +7,6 @@ public class UserModel : IModel
     public long Id { get; set; }
     public string UserName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
-    public string NormalizedUserName { get; set; } = string.Empty;
-    public string NormalizedEmail { get; set; } = string.Empty;
     public bool EmailConfirmed { get; set; }
     public string PhoneNumber { get; set; } = string.Empty;
     public bool PhoneNumberConfirmed { get; set; }

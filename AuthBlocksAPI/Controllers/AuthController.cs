@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using AuthBlocksAPI.HierarchicalAuthorize;
 using AuthBlocksModels.ApiModels;
 using AuthBlocksModels.Converters;
 using AuthBlocksModels.Models;
@@ -41,7 +40,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<ApiResultDto<AuthResponse>>> Login([FromBody] LoginRequest request)
+    public async Task<ActionResult<LoginResultDto<AuthResponse>>> Login([FromBody] LoginRequest request)
     {
         try
         {
@@ -49,24 +48,23 @@ public class AuthController : ControllerBase
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
             {
-                var emailResult = ApiResult<AuthResponse>.CreateFailResult("Invalid email or password");
-                return Ok(new ApiResultDto<AuthResponse>(emailResult));
+                var emailResult = LoginResult<AuthResponse>.CreateFailResult("Invalid email", LoginFailureReason.InvalidCredentials);
+                return Ok(new LoginResultDto<AuthResponse>(emailResult));
+            }
+            
+            var passwordValid = await _userManager.CheckPasswordAsync(user, request.Password);
+            if (!passwordValid)
+            {
+                var passwordResult = LoginResult<AuthResponse>.CreateFailResult("Invalid password", LoginFailureReason.InvalidCredentials);
+                return Ok(new LoginResultDto<AuthResponse>(passwordResult));
             }
 
             if (user.IsDeactivated)
             {
-                var deactivatedResult = ApiResult<AuthResponse>.CreateFailResult("User account is deactivated")
-                    .Inform("Please contact the administrator to reactivate your account.");
-                return Ok(new ApiResultDto<AuthResponse>(deactivatedResult));
+                var deactivatedResult = LoginResult<AuthResponse>.CreateFailResult("User account is deactivated", LoginFailureReason.UserNotActive);
+                return Ok(new LoginResultDto<AuthResponse>(deactivatedResult));
             }
-
-            var passwordValid = await _userManager.CheckPasswordAsync(user, request.Password);
-            if (!passwordValid)
-            {
-                var passwordResult = ApiResult<AuthResponse>.CreateFailResult("Invalid email or password");
-                return Ok(new ApiResultDto<AuthResponse>(passwordResult));
-            }
-
+            
             var userModel = UserEntityToModelConverter.Convert(user);
             
             var accessToken = await _jwtService.GenerateTokenAsync(userModel);
@@ -76,9 +74,9 @@ public class AuthController : ControllerBase
             var rolesResult = await _userRoleService.GetByUser(userModel);
             if (rolesResult is null or { Success: false } or { Value: null })
             {
-                var resultFailure = ApiResult<AuthResponse>.CreateFailResult("Login failed")
-                    .Fail("User roles could not be determined");
-                return Ok(new ApiResultDto<AuthResponse>(resultFailure));
+                var resultFailure = LoginResult<AuthResponse>.CreateFailResult("Role check failed", LoginFailureReason.SystemError)
+                    .Fail("User roles could not be loaded");
+                return Ok(new LoginResultDto<AuthResponse>(resultFailure));
             }
 
             var roles = rolesResult.Value!;
@@ -96,16 +94,16 @@ public class AuthController : ControllerBase
                 }
             };
 
-            var resultSuccess = ApiResult<AuthResponse>.CreatePassResult(response)
+            var resultSuccess = LoginResult<AuthResponse>.CreatePassResult(response)
                 .Inform("Login successful");
-            return Ok(new ApiResultDto<AuthResponse>(resultSuccess));
+            return Ok(new LoginResultDto<AuthResponse>(resultSuccess));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during login for user {Email}", request.Email);
-            var result = ApiResult<AuthResponse>.CreateFailResult("An error occurred during login")
+            var result = LoginResult<AuthResponse>.CreateFailResult("An error occurred during login", LoginFailureReason.SystemError)
                 .Fail("Internal server error");
-            return StatusCode(500, new ApiResultDto<AuthResponse>(result));
+            return StatusCode(500, new LoginResultDto<AuthResponse>(result));
         }
     }
 
