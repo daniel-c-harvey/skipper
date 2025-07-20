@@ -106,11 +106,26 @@
 
     private static Dictionary<string, object> _inputAttributes = [];
 
+    [SupplyParameterFromQuery]
+    public string? UserEmail { get; set; }
+    
+    [SupplyParameterFromQuery]
+    public string? RegistrationToken { get; set; }
+    
     [SupplyParameterFromForm]
     private RegisterRequest Input { get; set; } = new();
 
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (UserEmail is not null && string.IsNullOrEmpty(Input.Email)) 
+            Input.Email = UserEmail;
+        if (RegistrationToken is not null && string.IsNullOrEmpty(Input.RegistrationCode)) 
+            Input.RegistrationCode = RegistrationToken;
+        base.OnParametersSet();
+    }
 
     public async Task RegisterUser()
     {
