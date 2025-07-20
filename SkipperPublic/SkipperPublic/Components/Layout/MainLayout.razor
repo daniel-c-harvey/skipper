@@ -1,0 +1,196 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode"/>
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudLink Href="/" Underline="Underline.None">
+            <MudStack Row AlignItems="AlignItems.Center">
+                <MudImage Fluid="true" Width="24" Src="img/skipper-hero-boat-md.png"/>
+                <MudText Typo="Typo.button">Skipper ERP</MudText>
+            </MudStack>
+        </MudLink>
+        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle"/>
+    </MudAppBar>
+    <MudMainContent>
+        @* Mobile Layout *@
+        <MudContainer Gutters="false" Class="d-flex d-sm-none">
+            @Body
+        </MudContainer>
+        
+        @* Main Layout *@
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="d-none d-sm-flex pa-12">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private MudTheme? _theme = null;
+    private string _bodyClass = string.Empty;
+    
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _theme = new()
+        {
+            PaletteLight = _lightPalette,
+            PaletteDark = _darkPalette,
+            LayoutProperties = new LayoutProperties(),
+            Typography = new Typography()
+            {
+                Default = new DefaultTypography()
+                {
+                    FontFamily = ["Josefin Sans"]
+                }
+            }
+        };
+    }
+    
+    private bool _isDarkMode = false;
+
+    private void DarkModeToggle()
+    {
+        _isDarkMode = !_isDarkMode;
+    }
+
+    private string DarkLightModeButtonIcon => _isDarkMode switch
+    {
+        false => Icons.Material.Rounded.LightMode,
+        true => Icons.Material.Outlined.DarkMode,
+    };
+
+    private readonly PaletteLight _lightPalette = new()
+    {
+        Primary = "#00796B",
+        PrimaryContrastText = "#ffffff",
+        PrimaryDarken = "#004D40",
+        PrimaryLighten = "#009688",
+        Secondary = "#546E7A",
+        SecondaryContrastText = "#ffffff",
+        SecondaryDarken = "#455A64",
+        SecondaryLighten = "#607D8B",
+        Tertiary = "#0D5457",
+        TertiaryContrastText = "#ffffff",
+        Surface = "#f5f5f5",
+        Background = "#fafafa",
+        BackgroundGray = "#f0f0f0",
+        AppbarText = "#37474F",
+        AppbarBackground = "rgba(240,240,240,0.9)",
+        DrawerBackground = "#f5f5f5",
+        DrawerText = "#37474F",
+        DrawerIcon = "#455A64",
+        TextPrimary = "#37474F",
+        TextSecondary = "#546E7A",
+        TextDisabled = "#00000061",
+        ActionDefault = "#9e9e9e",
+        ActionDisabled = "#00000026",
+        ActionDisabledBackground = "#0000001f",
+        GrayDefault = "#bdbdbd",
+        GrayLight = "#e0e0e0",
+        GrayLighter = "#f5f5f5",
+        GrayDark = "#9e9e9e",
+        GrayDarker = "#757575",
+        Info = "#1976D2",
+        InfoContrastText = "#ffffff",
+        InfoDarken = "#0D47A1",
+        InfoLighten = "#2196F3",
+        Success = "#0dbf72",
+        SuccessContrastText = "#000000",
+        SuccessDarken = "#00cc73",
+        SuccessLighten = "#33ffa3",
+        Warning = "#F57C00",
+        WarningContrastText = "#ffffff",
+        WarningDarken = "#E65100",
+        WarningLighten = "#FF9800",
+        Error = "#FF1744",
+        ErrorContrastText = "#ffffff",
+        ErrorDarken = "#D50000",
+        ErrorLighten = "#FF5252",
+        Dark = "#424242",
+        DarkContrastText = "#ffffff",
+        DarkLighten = "#616161",
+        DarkDarken = "#212121",
+        LinesDefault = "#e0e0e0",
+        LinesInputs = "#bdbdbd",
+        TableLines = "#e0e0e0",
+        TableStriped = "#f9f9f9",
+        TableHover = "#f5f5f5",
+        Divider = "#e0e0e0",
+        DividerLight = "#f0f0f0",
+        OverlayDark = "#00000052",
+        OverlayLight = "#ffffff80",
+        HoverOpacity = 0.04,
+        RippleOpacity = 0.1,
+        Black = "#37474F",
+        White = "#ffffff",
+    };
+
+    private readonly PaletteDark _darkPalette = new()
+    {
+        Primary = "#009688",
+        PrimaryContrastText = "#ECEFF1",
+        PrimaryDarken = "#00796B",
+        PrimaryLighten = "#0fa794",
+        Secondary = "#668784",
+        SecondaryContrastText = "#ECEFF1",
+        SecondaryDarken = "#4F6864",
+        SecondaryLighten = "#679a94",
+        Tertiary = "#156b73",
+        TertiaryContrastText = "#ECEFF1",
+        Surface = "#37474F",
+        Background = "#263238",
+        BackgroundGray = "#2C393F",
+        AppbarText = "#B0BEC5",
+        AppbarBackground = "rgba(44,57,63,0.8)",
+        DrawerBackground = "#2C393F",
+        DrawerText = "#B0BEC5",
+        DrawerIcon = "#B0BEC5",
+        TextPrimary = "#B0BEC5",
+        TextSecondary = "#80CBC4",
+        TextDisabled = "#ffffff33",
+        ActionDefault = "#80CBC4",
+        ActionDisabled = "#9999994d",
+        ActionDisabledBackground = "#605f6d4d",
+        GrayDefault = "#455A64",
+        GrayLight = "#546E7A",
+        GrayLighter = "#37474F",
+        GrayDark = "#2C393F",
+        GrayDarker = "#263238",
+        Info = "#42A5F5",
+        InfoContrastText = "#ffffff",
+        InfoDarken = "#1976D2",
+        InfoLighten = "#90CAF9",
+        Success = "#00ff90",
+        SuccessContrastText = "#000000",
+        SuccessDarken = "#00cc73",
+        SuccessLighten = "#33ffa3",
+        Warning = "#ffb545",
+        WarningContrastText = "#263238",
+        WarningDarken = "#FF8F00",
+        WarningLighten = "#FFD54F",
+        Error = "#FF1744",
+        ErrorContrastText = "#ffffff",
+        ErrorDarken = "#D50000",
+        ErrorLighten = "#FF5252",
+        Dark = "#263238",
+        DarkContrastText = "#B0BEC5",
+        DarkLighten = "#2C393F",
+        DarkDarken = "#1C262A",
+        LinesDefault = "#205b7a",
+        LinesInputs = "#205b7a",
+        TableLines = "#205b7a",
+        TableStriped = "#324447",
+        TableHover = "#293d47",
+        Divider = "#2C393F",
+        DividerLight = "#37474F",
+        OverlayDark = "#00000080",
+        OverlayLight = "#26323880",
+        HoverOpacity = 0.06,
+        RippleOpacity = 0.1,
+    };
+}

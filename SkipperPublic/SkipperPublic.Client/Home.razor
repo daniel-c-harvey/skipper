@@ -1,0 +1,297 @@
+﻿@page "/"
+
+<PageTitle>Skipper Marina ERP - Complete Marina Management Solution</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="pa-0">
+    
+    <!-- Main Hero Section -->
+    <MudPaper Elevation="0" Class="pa-16 text-center align-center justify-center mud-theme-primary">
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="d-none d-sm-block pa-16">
+            <MudText Align="Align.Center" Typo="Typo.h3" Class="mb-4 font-weight-bold">
+                Streamline Your Marina Operations with
+            </MudText>
+            <MudText Align="Align.Center" Typo="Typo.h1" Class="mb-4 font-weight-bold">
+                Skipper ERP
+            </MudText>
+            <MudText Align="Align.Center" Typo="Typo.h5" Class="mb-6" Style="opacity: 0.9;">
+                The complete marina management solution that handles slip management, vessel tracking, rental agreements, and more - all in one powerful platform.
+            </MudText>
+            <MudStack Row Justify="Justify.Center" Spacing="4">
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Large" StartIcon="@Icons.Material.Filled.RocketLaunch" Class="pa-4 text-h6">
+                    Request Beta Access
+                </MudButton>
+            </MudStack>
+        </MudContainer>
+    </MudPaper>
+
+    <!-- Mobile Hero Section -->
+    <div class="d-flex d-sm-none">
+        <MudPaper Elevation="0" Class="text-center align-center justify-center mud-theme-primary">
+            <MudContainer Class="pa-8">
+                <MudGrid>
+                    <MudItem xs="12" md="8" Class="mx-auto">
+                        <MudText Align="Align.Center" Typo="Typo.h4" Class="mb-4 font-weight-bold">
+                            Streamline Your Marina Operations with
+                        </MudText>
+                        <MudText Align="Align.Center" Typo="Typo.h2" Class="mb-4 font-weight-bold">
+                            Skipper ERP
+                        </MudText>
+                        <MudText Align="Align.Justify" Typo="Typo.h5" Class="mb-6" Style="opacity: 0.9;">
+                            The complete marina management solution that handles slip management, vessel tracking, rental agreements, and more - all in one powerful platform.
+                        </MudText>
+                        <MudStack Row Justify="Justify.Center" Spacing="4">
+                            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Large" StartIcon="@Icons.Material.Filled.RocketLaunch" Class="pa-4 text-h6">
+                                Request Beta Access
+                            </MudButton>
+                        </MudStack>
+                    </MudItem>
+                </MudGrid>
+            </MudContainer>
+        </MudPaper>
+    </div>
+    
+    <!-- Technology Highlights Section -->
+    <MudPaper Elevation="0" Class="pa-12 mud-theme-surface">
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+            <MudGrid>
+                <MudItem xs="12" sm="3" Class="text-center">
+                    <MudIcon Icon="@Icons.Material.Filled.Cloud" Size="Size.Large" Color="Color.Primary" Class="mb-2" />
+                    <MudText Typo="Typo.h5" Color="Color.Primary" Class="font-weight-bold">Cloud-Native</MudText>
+                    <MudText Typo="Typo.body1" Color="Color.Secondary">Built from the ground up for the cloud</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="3" Class="text-center">
+                    <MudIcon Icon="@Icons.Material.Filled.Security" Size="Size.Large" Color="Color.Secondary" Class="mb-2" />
+                    <MudText Typo="Typo.h5" Color="Color.Secondary" Class="font-weight-bold">Enterprise Security</MudText>
+                    <MudText Typo="Typo.body1" Color="Color.Secondary">Advanced authentication & authorization</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="3" Class="text-center">
+                    <MudIcon Icon="@Icons.Material.Filled.Speed" Size="Size.Large" Color="Color.Success" Class="mb-2" />
+                    <MudText Typo="Typo.h5" Color="Color.Success" Class="font-weight-bold">High Performance</MudText>
+                    <MudText Typo="Typo.body1" Color="Color.Secondary">Optimized for speed and scalability</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="3" Class="text-center">
+                    <MudIcon Icon="@Icons.Material.Filled.PhoneIphone" Size="Size.Large" Color="Color.Tertiary" Class="mb-2" />
+                    <MudText Typo="Typo.h5" Color="Color.Tertiary" Class="font-weight-bold">Mobile Ready</MudText>
+                    <MudText Typo="Typo.body1" Color="Color.Secondary">Responsive design works everywhere</MudText>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+    </MudPaper>
+
+    <!-- Features Section -->
+    <MudPaper Elevation="0" Class="pa-12 mud-theme-background">
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+            <MudText Typo="Typo.h2" Align="Align.Center" Class="mb-4 font-weight-bold" Color="Color.Primary">
+                Everything You Need to Manage Your Marina
+            </MudText>
+            <MudText Typo="Typo.h6" Align="Align.Center" Class="mb-10 text-body2">
+                Powerful features designed specifically for marina operations
+            </MudText>
+            
+            <MudGrid Class="align-center">
+                <!-- Slip Management -->
+                <MudItem xs="12" md="6" lg="4">
+                    <MudCard Elevation="3" Class="pa-6 text-center h-100 rounded-lg">
+                        <MudCardContent>
+                            <MudIcon Icon="@Icons.Material.Filled.GridView" Size="Size.Large" Color="Color.Primary" Class="mb-4" />
+                            <MudText Typo="Typo.h5" Class="mb-3 font-weight-medium">Smart Slip Management</MudText>
+                            <MudText Typo="Typo.body1" Class="text-body2">
+                                Real-time slip availability, automated booking system, maintenance tracking, and dynamic pricing management.
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                <!-- Vessel Tracking -->
+                <MudItem xs="12" md="6" lg="4">
+                    <MudCard Elevation="3" Class="pa-6 text-center h-100 rounded-lg">
+                        <MudCardContent>
+                            <MudIcon Icon="@Icons.Material.Filled.DirectionsBoat" Size="Size.Large" Color="Color.Secondary" Class="mb-4" />
+                            <MudText Typo="Typo.h5" Class="mb-3 font-weight-medium">Comprehensive Vessel Registry</MudText>
+                            <MudText Typo="Typo.body1" Class="text-body2">
+                                Complete vessel database with registrations, specifications, owner information, and maintenance history.
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                <!-- Rental Agreements -->
+                <MudItem xs="12" md="6" lg="4">
+                    <MudCard Elevation="3" Class="pa-6 text-center h-100 rounded-lg">
+                        <MudCardContent>
+                            <MudIcon Icon="@Icons.Material.Filled.Description" Size="Size.Large" Color="Color.Success" Class="mb-4" />
+                            <MudText Typo="Typo.h5" Class="mb-3 font-weight-medium">Digital Rental Agreements</MudText>
+                            <MudText Typo="Typo.body1" Class="text-body2">
+                                Automated contract generation, digital signatures, payment tracking, and renewal notifications.
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                <!-- Financial Management -->
+                <MudItem xs="12" md="6" lg="4">
+                    <MudCard Elevation="3" Class="pa-6 text-center h-100 rounded-lg">
+                        <MudCardContent>
+                            <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Size="Size.Large" Color="Color.Success" Class="mb-4" />
+                            <MudText Typo="Typo.h5" Class="mb-3 font-weight-medium">Financial Analytics</MudText>
+                            <MudText Typo="Typo.body1" Class="text-body2">
+                                Revenue tracking, expense management, automated billing, and comprehensive financial reporting.
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                <!-- User Management -->
+                <MudItem xs="12" md="6" lg="4">
+                    <MudCard Elevation="3" Class="pa-6 text-center h-100 rounded-lg">
+                        <MudCardContent>
+                            <MudIcon Icon="@Icons.Material.Filled.Security" Size="Size.Large" Color="Color.Error" Class="mb-4" />
+                            <MudText Typo="Typo.h5" Class="mb-3 font-weight-medium">Advanced Security & Roles</MudText>
+                            <MudText Typo="Typo.body1" Class="text-body2">
+                                Hierarchical user roles, secure authentication, audit trails, and granular access control.
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                <!-- Maintenance -->
+                <MudItem xs="12" md="6" lg="4">
+                    <MudCard Elevation="3" Class="pa-6 text-center h-100 rounded-lg">
+                        <MudCardContent>
+                            <MudIcon Icon="@Icons.Material.Filled.Build" Size="Size.Large" Color="Color.Info" Class="mb-4" />
+                            <MudText Typo="Typo.h5" Class="mb-3 font-weight-medium">Maintenance Scheduling</MudText>
+                            <MudText Typo="Typo.body1" Class="text-body2">
+                                Preventive maintenance scheduling, work order management, and equipment lifecycle tracking.
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+    </MudPaper>
+
+    <!-- Benefits Section -->
+    <MudPaper Elevation="0" Class="pa-12 mud-theme-surface">
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.h2" Class="mb-4 font-weight-bold" Color="Color.Primary">
+                        Why Choose Skipper ERP?
+                    </MudText>
+                    <MudStack Spacing="4">
+                        <MudStack Row Spacing="3" AlignItems="AlignItems.Center">
+                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Size="Size.Medium" />
+                            <MudText Typo="Typo.body1" Style="font-weight: 500;">Modern .NET architecture for reliability</MudText>
+                        </MudStack>
+                        <MudStack Row Spacing="3" AlignItems="AlignItems.Center">
+                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Size="Size.Medium" />
+                            <MudText Typo="Typo.body1" Style="font-weight: 500;">Intuitive interface designed for efficiency</MudText>
+                        </MudStack>
+                        <MudStack Row Spacing="3" AlignItems="AlignItems.Center">
+                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Size="Size.Medium" />
+                            <MudText Typo="Typo.body1" Style="font-weight: 500;">Real-time data synchronization</MudText>
+                        </MudStack>
+                        <MudStack Row Spacing="3" AlignItems="AlignItems.Center">
+                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Size="Size.Medium" />
+                            <MudText Typo="Typo.body1" Style="font-weight: 500;">Comprehensive reporting and analytics</MudText>
+                        </MudStack>
+                        <MudStack Row Spacing="3" AlignItems="AlignItems.Center">
+                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Size="Size.Medium" />
+                            <MudText Typo="Typo.body1" Style="font-weight: 500;">Cloud-native scalability</MudText>
+                        </MudStack>
+                        <MudStack Row Spacing="3" AlignItems="AlignItems.Center">
+                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Size="Size.Medium" />
+                            <MudText Typo="Typo.body1" Style="font-weight: 500;">Direct developer support</MudText>
+                        </MudStack>
+                    </MudStack>
+                </MudItem>
+                <MudItem xs="12" md="6" Class="d-flex align-center justify-center">
+                    <MudPaper Elevation="6" Class="pa-8 rounded-xl mud-theme-background">
+                        <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-4 font-weight-medium" Color="Color.Primary">
+                            Ready to Transform Your Marina?
+                        </MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center" Class="mb-6 text-body2">
+                            Be part of the next generation of marina management technology. Built with modern tools and designed for tomorrow's challenges.
+                        </MudText>
+                        <MudStack Spacing="3">
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" FullWidth="true" StartIcon="@Icons.Material.Filled.RocketLaunch">
+                                Join Beta Program
+                            </MudButton>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Large" FullWidth="true" StartIcon="@Icons.Material.Filled.Schedule">
+                                Schedule a Demo
+                            </MudButton>
+                        </MudStack>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+    </MudPaper>
+
+    <!-- Beta Program Section -->
+    <MudPaper Elevation="0" Class="pa-12 mud-theme-background">
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+            <MudText Typo="Typo.h2" Align="Align.Center" Class="mb-8 font-weight-bold" Color="Color.Primary">
+                Join Our Beta Program
+            </MudText>
+            <MudGrid>
+                <MudItem xs="12" md="4">
+                    <MudCard Elevation="2" Class="pa-6 rounded-lg text-center" Style="height: 280px;">
+                        <MudCardContent>
+                            <MudIcon Icon="@Icons.Material.Filled.AirlineStops" Size="Size.Large" Color="Color.Primary" Class="mb-4" />
+                            <MudText Typo="Typo.h5" Class="mb-3 font-weight-medium">Early Access</MudText>
+                            <MudText Typo="Typo.body2" Class="text-body2">
+                                Be among the first to experience Skipper ERP's cutting-edge marina management capabilities. Get exclusive early access to all features.
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="12" md="4">
+                    <MudCard Elevation="2" Class="pa-6 rounded-lg text-center" Style="height: 280px;">
+                        <MudCardContent>
+                            <MudIcon Icon="@Icons.Material.Filled.Feedback" Size="Size.Large" Color="Color.Secondary" Class="mb-4" />
+                            <MudText Typo="Typo.h5" Class="mb-3 font-weight-medium">Shape the Product</MudText>
+                            <MudText Typo="Typo.body2" Class="text-body2">
+                                Your feedback directly influences our development roadmap. Help us build the perfect marina management solution for your needs.
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="12" md="4">
+                    <MudCard Elevation="2" Class="pa-6 rounded-lg text-center" Style="height: 280px;">
+                        <MudCardContent>
+                            <MudIcon Icon="@Icons.Material.Filled.Support" Size="Size.Large" Color="Color.Success" Class="mb-4" />
+                            <MudText Typo="Typo.h5" Class="mb-3 font-weight-medium">Direct Support</MudText>
+                            <MudText Typo="Typo.body2" Class="text-body2">
+                                Get direct access to our development team. Receive personalized support and training to maximize your marina's efficiency.
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+    </MudPaper>
+
+    <!-- Final CTA Section -->
+    <MudPaper Elevation="0" Class="pa-4 pa-sm-16 text-center mud-theme-primary">
+        <MudContainer Class="text-center" MaxWidth="MaxWidth.ExtraExtraLarge">
+            <MudText Align="Align.Center" Typo="Typo.h2" Class="mb-4 font-weight-bold">
+                Ready to Pioneer the Future of Marina Management?
+            </MudText>
+            <MudText Align="Align.Center" Typo="Typo.h6" Class="mb-8" Style="opacity: 0.9;">
+                Be part of something revolutionary. Join our beta program and help shape the next generation of marina management software.
+            </MudText>
+            <MudStack Row Justify="Justify.Center" Spacing="4" Wrap="Wrap.Wrap">
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Large" StartIcon="@Icons.Material.Filled.RocketLaunch" Class="pa-4 text-h6">
+                    Apply for Beta Access
+                </MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Tertiary" Size="Size.Large" StartIcon="@Icons.Material.Filled.Email" Class="pa-4 text-h6">
+                    Contact Us
+                </MudButton>
+            </MudStack>
+            <MudText Typo="Typo.body2" Align="Align.Center" Class="mt-6" Style="opacity: 0.7;">
+                Limited beta spots available • Direct developer feedback • Shape the product roadmap
+            </MudText>
+        </MudContainer>
+    </MudPaper>
+
+</MudContainer>

@@ -41,6 +41,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data.Shared", "Data.Shared\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.Shared", "Web.Shared\Web.Shared.csproj", "{A0E3BECB-92A8-4033-B333-010C931A430D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperPublic", "SkipperPublic\SkipperPublic\SkipperPublic.csproj", "{5ADD5059-EAE2-41C6-A63D-ED455BB11CEC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkipperPublic.Client", "SkipperPublic\SkipperPublic.Client\SkipperPublic.Client.csproj", "{D79910BE-82CC-4496-B66B-539CC48221A8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -123,6 +127,14 @@ Global
 		{A0E3BECB-92A8-4033-B333-010C931A430D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0E3BECB-92A8-4033-B333-010C931A430D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0E3BECB-92A8-4033-B333-010C931A430D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5ADD5059-EAE2-41C6-A63D-ED455BB11CEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ADD5059-EAE2-41C6-A63D-ED455BB11CEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5ADD5059-EAE2-41C6-A63D-ED455BB11CEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5ADD5059-EAE2-41C6-A63D-ED455BB11CEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D79910BE-82CC-4496-B66B-539CC48221A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D79910BE-82CC-4496-B66B-539CC48221A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D79910BE-82CC-4496-B66B-539CC48221A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D79910BE-82CC-4496-B66B-539CC48221A8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
