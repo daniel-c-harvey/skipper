@@ -6,7 +6,6 @@ public class PendingRegistrationModel: BaseModel
 {
     public string PendingUserEmail { get; set; } = string.Empty;
     public DateTime ExpiresAt { get; set; }
-    public string TokenHash { get; set; } = string.Empty;
     public bool IsConsumed { get; set; }
-    public DateTime ConsumedAt { get; set; }
+    public DateTime? ConsumedAt { get; set; }
 }

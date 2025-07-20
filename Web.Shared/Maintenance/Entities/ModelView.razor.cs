@@ -132,8 +132,10 @@ public partial class ModelView<T, TModel, TEditModal, TViewModel, TConverter>  :
         {
             { x => x.Model, inputModel },
         };
+        
+        var options = new DialogOptions { FullWidth = true};
 
-        var dialog = await DialogService.ShowAsync<TEditModal>("Edit Item", parameters);
+        var dialog = await DialogService.ShowAsync<TEditModal>("Edit Item", parameters, options);
         var result = await dialog.Result;
         if (result is { Canceled: false, Data: T model })
         {

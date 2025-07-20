@@ -9,5 +9,5 @@ public class PendingRegistration : BaseEntity, IEntity
     public DateTime ExpiresAt { get; set; }
     public string TokenHash { get; set; }
     public bool IsConsumed { get; set; }
-    public DateTime ConsumedAt { get; set; }
+    public DateTime? ConsumedAt { get; set; }
 }

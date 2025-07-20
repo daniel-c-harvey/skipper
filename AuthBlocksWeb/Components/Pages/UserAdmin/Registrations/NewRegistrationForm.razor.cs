@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 
-namespace AuthBlocksWeb.Components.Pages.UserAdmin.Users;
+namespace AuthBlocksWeb.Components.Pages.UserAdmin.Registrations;
 
-public partial class NewUserForm : ComponentBase
+public partial class NewRegistrationForm : ComponentBase
 {
     [SupplyParameterFromForm]
     public PendingRegistrationInputModel Input { get; set; } = new();
@@ -25,14 +25,14 @@ public partial class NewUserForm : ComponentBase
     {
         Task<RegistrationCreatedResult> resultTask = Task.Run(async () => await Client.CreatePendingRegistration(Input.Email, Navigation.ToAbsoluteUri("account/register").AbsoluteUri));
 
-        var parameters = new DialogParameters<UserSubmittedModal>
+        var parameters = new DialogParameters<RegistrationSubmittedModal>
         {
             { x => x.ResultTask, resultTask },
         };
         var options = new DialogOptions { CloseButton = true, FullWidth = true };
 
         // Post and show results
-        var dialog = await DialogService.ShowAsync<UserSubmittedModal>($"Submit Account Registration Result", parameters, options);
+        var dialog = await DialogService.ShowAsync<RegistrationSubmittedModal>($"Sending Account Registration", parameters, options);
         var dialogResult = await dialog.Result;
 
         if(dialogResult != null && 
@@ -40,7 +40,7 @@ public partial class NewUserForm : ComponentBase
            dialogResult.Data is NetBlocks.Models.Result result &&
            result.Success)
         {
-            // Navigation.NavigateTo($"/useradmin/users", forceLoad: true);
+            Navigation.NavigateTo($"/useradmin/registrations", forceLoad: true);
         }
     }
 }

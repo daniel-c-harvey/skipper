@@ -29,4 +29,8 @@
       <ProjectReference Include="..\AuthBlocksWeb.Client\AuthBlocksWeb.Client.csproj" />
       <ProjectReference Include="..\AuthBlocksModels\AuthBlocksModels.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Models\" />
+    </ItemGroup>
 </Project>

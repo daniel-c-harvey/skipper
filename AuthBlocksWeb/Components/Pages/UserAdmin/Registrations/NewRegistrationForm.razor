@@ -6,13 +6,13 @@
                 <MudText Typo="Typo.h5" Align="Align.Center">
                     <MudStack Row AlignItems="AlignItems.Center">
                         <MudIcon Icon="@Icons.Material.Outlined.AddCircleOutline"/>
-                        Activate New User
+                        Provision New User
                     </MudStack>
                 </MudText>
             </MudCardHeader>
             <MudCardContent>
                 <MudText Typo="Typo.body1">
-                    Create a new user account, bypassing email registration.  The password must be provided now.
+                    A registration code and link will be sent to the email address provided.
                 </MudText>
                 <MudSpacer/>
                 <MudTextField Variant="Variant.Outlined"
@@ -23,7 +23,7 @@
                 </MudTextField>
             </MudCardContent>
             <MudCardActions Class="pa-4">
-                <MudButton Href="@($"/useradmin/users")" StartIcon="@Icons.Material.Outlined.ArrowBack" Color="Color.Secondary"
+                <MudButton Href="@($"/useradmin/registrations")" StartIcon="@Icons.Material.Outlined.ArrowBack" Color="Color.Secondary"
                            Variant="Variant.Filled">Back to users
                 </MudButton>
                 <MudSpacer/>
