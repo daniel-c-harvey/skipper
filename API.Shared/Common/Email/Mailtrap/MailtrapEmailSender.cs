@@ -8,12 +8,11 @@ using NetBlocks.Models.Environment;
 namespace API.Shared.Common.Email.Mailtrap;
 
 public class MailtrapEmailSender(
-    IOptions<EmailConnections> connectionOptions,
-    ILogger<MailtrapEmailSender> logger)
+    IOptions<EmailConnection> connectionOptions,
+    ILogger<MailtrapEmailSender> logger) : IGeneralEmailSender
 {
     private readonly ILogger _logger = logger;
-    private readonly EmailConnection _connection = 
-        connectionOptions.Value.Connections.First(ec => connectionOptions.Value.ActiveConnectionID == ec.ID);
+    private readonly EmailConnection _connection = connectionOptions.Value;
     
     public async Task SendEmailAsync(string toEmail, string? toName, string subject, string message)
     {

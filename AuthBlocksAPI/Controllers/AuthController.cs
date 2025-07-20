@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using API.Shared.Common.Email.Mailtrap;
 using AuthBlocksModels.ApiModels;
 using AuthBlocksModels.Converters;
 using AuthBlocksModels.Models;
@@ -21,6 +22,7 @@ public class AuthController : ControllerBase
     private readonly IUserRoleService _userRoleService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IJwtService _jwtService;
+    private readonly IRegistrationTokenService _registrationTokenService;
     private readonly ILogger<AuthController> _logger;
 
     public AuthController(
@@ -29,6 +31,7 @@ public class AuthController : ControllerBase
         IUserRoleService userRoleService,
         UserManager<ApplicationUser> userManager,
         IJwtService jwtService,
+        IRegistrationTokenService registrationTokenService,
         ILogger<AuthController> logger)
     {
         _userService = userService;
@@ -36,6 +39,7 @@ public class AuthController : ControllerBase
         _userRoleService = userRoleService;
         _userManager = userManager;
         _jwtService = jwtService;
+        _registrationTokenService = registrationTokenService;
         _logger = logger;
     }
 
@@ -119,25 +123,32 @@ public class AuthController : ControllerBase
                     .Fail("User with this email already exists");
                 return BadRequest(new ApiResultDto<AuthResponse>(resultFailure));
             }
+            
+            var tokenValidationResult = await _registrationTokenService.ValidateTokenAsync(request.Email, request.RegistrationCode);
+            if (tokenValidationResult is null or { Success: false })
+            {
+                var validationResult = ApiResult<AuthResponse>.CreateFailResult("Invalid registration code");
+                return BadRequest(new ApiResultDto<AuthResponse>(validationResult));
+            }
 
             var user = new UserModel
             {
                 UserName = request.UserName,
                 Email = request.Email,
-                EmailConfirmed = true, // For now, we'll skip email confirmation
+                EmailConfirmed = true, // registration takes place via email
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
 
             var createResult = await _userService.Add(user, request.Password);
-            if (!createResult.Success)
+            if (!createResult.Success || createResult.Value is null)
             {
                 var resultFailure = ApiResult<AuthResponse>.From(createResult);
                 return StatusCode(500, new ApiResultDto<AuthResponse>(resultFailure));
             }
-
-            // Use the returned user from createResult instead of fetching again
-            var createdUser = createResult.Value!;
+            var createdUser = createResult.Value;
+            
+            await _registrationTokenService.ConsumeTokenAsync(createdUser.Email, request.RegistrationCode);;
 
             var accessToken = await _jwtService.GenerateTokenAsync(createdUser);
             var refreshToken = await _jwtService.GenerateRefreshTokenAsync();

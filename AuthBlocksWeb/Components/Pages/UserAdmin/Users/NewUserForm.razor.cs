@@ -23,7 +23,7 @@ public partial class NewUserForm : ComponentBase
 
     private async Task CreatePendingRegistration(EditContext arg)
     {
-        Task<TokenCreationResult> resultTask = Task.Run(async () => await Client.CreatePendingRegistration(Input.Email));
+        Task<RegistrationCreatedResult> resultTask = Task.Run(async () => await Client.CreatePendingRegistration(Input.Email, Navigation.ToAbsoluteUri("account/register").AbsoluteUri));
 
         var parameters = new DialogParameters<RegistrationSubmittedModal>
         {

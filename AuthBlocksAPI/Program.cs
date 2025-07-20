@@ -1,4 +1,5 @@
 using System.Text;
+using API.Shared.Common.Email.Mailtrap;
 using AuthBlocksAPI.Models;
 using AuthBlocksAPI.Services;
 using AuthBlocksAPI.HierarchicalAuthorize;
@@ -7,7 +8,10 @@ using AuthBlocksData.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using NetBlocks.Models.Environment;
 using Scalar.AspNetCore;
 
 namespace AuthBlocksAPI;
@@ -98,6 +102,10 @@ internal class Program
 
             // Add Registration Token Service
             builder.Services.AddScoped<IRegistrationTokenService, RegistrationTokenService>();
+
+            builder.Services.AddSingleton<IOptions<EmailConnection>>(_ =>
+                new OptionsWrapper<EmailConnection>(Startup.LoadEmailConfig()));
+            builder.Services.AddScoped<IGeneralEmailSender, MailtrapEmailSender>();
             
             var app = builder.Build();
 

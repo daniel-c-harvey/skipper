@@ -3,17 +3,15 @@
 @using Web.Shared.Result
 @using Web.Shared.Modal
 
-<ResultModal TResult="TokenCreationResult"
+<ResultModal TResult="RegistrationCreatedResult"
              ResultTask="ResultTask">
     <Success Context="result">
-        <MudText>Registration has been <MudText Inline="true" Color="Color.Success">submitted</MudText>.</MudText>
-        <MudText>An email has been sent to: @result.RegistrationEmail</MudText>
-        <MudText Color="Color.Warning">TODO: remove this when the actual email sender is implemented:</MudText>
-        <MudText Color="Color.Warning">REGISTRATION CODE: @result.RegistrationToken</MudText>
+        <MudText Align="Align.Center">Registration has been <MudText Inline="true" Color="Color.Success">submitted</MudText>.</MudText>
+        <MudText Align="Align.Center">An email has been sent to: @result.RegistrationEmail</MudText>
     </Success>
     <Failure Context="result">
-        <MudText>Registration was <MudText Inline="true" Color="Color.Warning">NOT</MudText> submitted</MudText>
-        <MudContainer Class="pa-5">
+        <MudText>Registration was <MudText Inline="true" Color="Color.Error">NOT</MudText> submitted:</MudText>
+        <MudContainer Class="pa-5" MaxWidth="MaxWidth.Small">
             <ResultDetails Result="result"/>
         </MudContainer>
     </Failure>
@@ -24,5 +22,5 @@
     private IMudDialogInstance MudDialog { get; set; }
 
     [Parameter] 
-    public required Task<TokenCreationResult> ResultTask { get; set; }
+    public required Task<RegistrationCreatedResult> ResultTask { get; set; }
 }

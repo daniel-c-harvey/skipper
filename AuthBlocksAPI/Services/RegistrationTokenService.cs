@@ -5,6 +5,7 @@ using AuthBlocksData.Data;
 using AuthBlocksModels.ApiModels;
 using AuthBlocksModels.Entities;
 using Microsoft.EntityFrameworkCore;
+using NetBlocks.Models;
 
 namespace AuthBlocksAPI.Services;
 
@@ -27,7 +28,7 @@ public class RegistrationTokenService : IRegistrationTokenService
         try
         {
             var token = GenerateRandomToken();
-            var hashedToken = HashToken(token);
+            var hashedToken = HashToken(pendingUserEmail, token);
         
             var pendingRegistration = new PendingRegistration()
             {
@@ -59,41 +60,36 @@ public class RegistrationTokenService : IRegistrationTokenService
         }
 
         var normalizedToken = token.Trim().ToUpperInvariant();
-        var hashedToken = HashToken(normalizedToken);
+        var hashedToken = HashToken(email, normalizedToken);
         
-        var registrationToken = await _context.Set<PendingRegistration>()
-            .FirstOrDefaultAsync(rt => rt.TokenHash == hashedToken);
+        var pendingRegistration = await _context.Set<PendingRegistration>()
+            .FirstOrDefaultAsync(rt => rt.PendingUserEmail == email && !rt.IsConsumed);
         
-        if (registrationToken == null)
+        if (pendingRegistration == null)
         {
             return TokenValidationResult.CreateFailResult("Invalid registration token");
         }
         
-        if (registrationToken.ExpiresAt < DateTime.UtcNow)
+        if (pendingRegistration.ExpiresAt < DateTime.UtcNow)
         {
             return TokenValidationResult.CreateFailResult("Registration token has expired");
         }
 
-        if (registrationToken.IsConsumed)
+        if (pendingRegistration.IsConsumed)
         {
             return TokenValidationResult.CreateFailResult("Registration token has already been consumed");
         }
-
-        if (!registrationToken.PendingUserEmail.Equals(email))
-        {
-            return TokenValidationResult.CreateFailResult("Invalid registration token");
-        }
         
-        return new TokenValidationResult(registrationToken.Id, registrationToken.IsConsumed);
+        return new TokenValidationResult(pendingRegistration.Id, pendingRegistration.IsConsumed);
     }
 
-    public async Task<bool> ConsumeTokenAsync(string token)
+    public async Task<Result> ConsumeTokenAsync(string email, string token)
     {
         if (string.IsNullOrWhiteSpace(token))
-            return false;
+            return Result.CreateFailResult("Token cannot be empty");
 
         var normalizedToken = token.Trim().ToUpperInvariant();
-        var hashedToken = HashToken(normalizedToken);
+        var hashedToken = HashToken(email, normalizedToken);
         
         var registrationToken = await _context.Set<PendingRegistration>()
             .FirstOrDefaultAsync(rt => rt.TokenHash == hashedToken);
@@ -102,7 +98,7 @@ public class RegistrationTokenService : IRegistrationTokenService
             registrationToken.ExpiresAt < DateTime.UtcNow || 
             registrationToken.IsConsumed)
         {
-            return false;
+            return Result.CreateFailResult("Invalid registration token");
         }
         
         registrationToken.IsConsumed = true;
@@ -112,7 +108,7 @@ public class RegistrationTokenService : IRegistrationTokenService
         
         _logger.LogInformation("Registration token consumed for pending user {PendingUserEmail}", registrationToken.PendingUserEmail);
         
-        return true;
+        return Result.CreatePassResult();
     }
 
     private static string GenerateRandomToken()
@@ -131,10 +127,14 @@ public class RegistrationTokenService : IRegistrationTokenService
         return token.ToString();
     }
 
-    private static string HashToken(string token)
+    private static string HashToken(string email, string token)
     {
         using var sha256 = SHA256.Create();
-        var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(token));
-        return Convert.ToBase64String(hashedBytes);
+        
+        {
+            var bytes = Encoding.UTF8.GetBytes($"{email}::{token}");
+            var hashedBytes = sha256.ComputeHash(bytes);
+            return Convert.ToBase64String(hashedBytes);
+        }
     }
 }

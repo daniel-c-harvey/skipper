@@ -96,9 +96,9 @@
 
         try
         {
-            var success = await AuthStateProvider.RegisterAsync(Input);
+            var result = await AuthStateProvider.RegisterAsync(Input);
             
-            if (success)
+            if (result.Success)
             {
                 Navigation.NavigateTo(ReturnUrl ?? "/");
             }

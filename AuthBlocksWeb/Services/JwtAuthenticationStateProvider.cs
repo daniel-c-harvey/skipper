@@ -99,7 +99,7 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
         }
     }
 
-    public async Task<bool> RegisterAsync(RegisterRequest registerRequest)
+    public async Task<Result> RegisterAsync(RegisterRequest registerRequest)
     {
         try
         {
@@ -117,13 +117,12 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
                     var authState = await GetAuthenticationStateAsync();
                     NotifyAuthenticationStateChanged(Task.FromResult(authState));
                 }
-                return true;
             }
-            return false;
+            return Result.From(response);
         }
         catch
         {
-            return false;
+            return Result.CreateFailResult("Registration Failed");
         }
     }
 

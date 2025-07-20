@@ -75,6 +75,29 @@ internal static class Startup
         }
     }
     
+    public static EmailConnection LoadEmailConfig()
+    {
+        try
+        {
+            var emailConnections = JsonTools<EmailConnections>.LoadFromFile("environment/email_connections.json");
+            
+            if (emailConnections == null)
+                throw new InvalidOperationException("No email connections configuration found in file");
+            
+            var emailConnection = emailConnections.Connections.FirstOrDefault(c => c.ID == emailConnections.ActiveConnectionID);
+            
+            if (emailConnection == null)
+                throw new InvalidOperationException($"Active email connection with ID '{emailConnections.ActiveConnectionID}' not found in email connections file");
+            
+            return emailConnection;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+    
     private static AdminUserSettings LoadAdminConfig()
     {
         const string configPath = "environment/admin.json";

@@ -17,23 +17,23 @@ public class PendingRegistrationClient : AuthorizingModelClient<PendingRegistrat
     {
     }
 
-    public async Task<TokenCreationResult> CreatePendingRegistration(string email)
+    public async Task<RegistrationCreatedResult> CreatePendingRegistration(string email, string returnUrl)
     {
         try
         {
             await AddAuthorizationHeader();
-            var request = new CreatePendingRegistrationRequest { Email = email };
+            var request = new CreatePendingRegistrationRequest { Email = email, ReturnHost = returnUrl };
             var response = await http.PostAsJsonAsync($"api/{config.ControllerName}/create", request, Options);
             if (response == null) throw new HttpRequestException("Failed to get response");
 
-            var result = await response.Content.ReadFromJsonAsync<TokenCreationResult>(Options)
+            var result = await response.Content.ReadFromJsonAsync<RegistrationCreatedResult.RegistrationCreatedResultDto>(Options)
                 ?? throw new HttpRequestException("Failed to deserialize response");
 
-            return result;
+            return result.From();
         }
         catch (Exception e)
         {
-            return TokenCreationResult.CreateFailResult(e.Message);
+            return RegistrationCreatedResult.CreateFailResult(e.Message);
         }
     }
 }
