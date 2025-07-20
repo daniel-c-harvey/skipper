@@ -34,13 +34,29 @@ public abstract class AuthorizingModelClient<TModel, TConfig> : ModelClient<TMod
         
         return Result.CreatePassResult();
     }
-    
+
     protected void ClearAuthorizationHeader()
     {
         http.DefaultRequestHeaders.Authorization = null;
     }
     
     /* Model Client Overrides */
+    public override async Task<ApiResult<TModel>> GetById(long id)
+    {
+        if (await AddAuthorizationHeader() is {Success: false} error) return ApiResult<TModel>.From(error);
+        var result = await base.GetById(id);
+        ClearAuthorizationHeader();
+        return result;
+    }
+    
+    public override async Task<ApiResult<IEnumerable<TModel>>> GetAll()
+    {
+        if (await AddAuthorizationHeader() is {Success: false} error) return ApiResult<IEnumerable<TModel>>.From(error);
+        var result = await base.GetAll();
+        ClearAuthorizationHeader();
+        return result;   
+    }
+    
     public override async Task<ApiResult<PagedResult<TModel>>> GetByPage(PagedQuery query)
     {
         if (await AddAuthorizationHeader() is {Success: false} error) return ApiResult<PagedResult<TModel>>.From(error);

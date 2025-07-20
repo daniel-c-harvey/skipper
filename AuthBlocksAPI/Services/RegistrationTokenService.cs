@@ -2,7 +2,9 @@
 using System.Text;
 using AuthBlocksAPI.Models;
 using AuthBlocksData.Data;
+using AuthBlocksData.Data.Repositories;
 using AuthBlocksModels.ApiModels;
+using AuthBlocksModels.Converters;
 using AuthBlocksModels.Entities;
 using Microsoft.EntityFrameworkCore;
 using NetBlocks.Models;
@@ -11,15 +13,15 @@ namespace AuthBlocksAPI.Services;
 
 public class RegistrationTokenService : IRegistrationTokenService
 {
-    private readonly AuthDbContext _context;
     private readonly ILogger<RegistrationTokenService> _logger;
+    private readonly IPendingRegistrationRepository _repository;
     private const string CharacterSet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     private const int TokenLength = 10;
     private static readonly TimeSpan TokenExpiration = TimeSpan.FromDays(7);
     
-    public RegistrationTokenService(AuthDbContext context, ILogger<RegistrationTokenService> logger)
+    public RegistrationTokenService(IPendingRegistrationRepository repository, ILogger<RegistrationTokenService> logger)
     {
-        _context = context;
+        _repository = repository;
         _logger = logger;
     }
     
@@ -29,22 +31,8 @@ public class RegistrationTokenService : IRegistrationTokenService
         {
             var token = GenerateRandomToken();
             var hashedToken = HashToken(pendingUserEmail, token);
-        
-            var pendingRegistration = new PendingRegistration()
-            {
-                TokenHash = hashedToken,
-                PendingUserEmail = pendingUserEmail,
-                CreatedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.Add(TokenExpiration),
-                IsConsumed = false
-            };
-
-            _context.Set<PendingRegistration>().Add(pendingRegistration);
-            await _context.SaveChangesAsync();
-        
-            _logger.LogInformation("Generated registration token for pending user {pendingUserEmail}", pendingUserEmail);
-        
-            return TokenCreationResult.CreatePassResult(pendingUserEmail, token);
+            
+            return TokenCreationResult.CreatePassResult(pendingUserEmail, token, hashedToken, TokenExpiration);
         }
         catch (Exception e)
         {
@@ -61,9 +49,8 @@ public class RegistrationTokenService : IRegistrationTokenService
 
         var normalizedToken = token.Trim().ToUpperInvariant();
         var hashedToken = HashToken(email, normalizedToken);
-        
-        var pendingRegistration = await _context.Set<PendingRegistration>()
-            .FirstOrDefaultAsync(rt => rt.PendingUserEmail == email && !rt.IsConsumed);
+
+        var pendingRegistration = (await _repository.FindAsync(rt => rt.PendingUserEmail == email && !rt.IsConsumed)).FirstOrDefault();
         
         if (pendingRegistration == null)
         {
@@ -80,7 +67,9 @@ public class RegistrationTokenService : IRegistrationTokenService
             return TokenValidationResult.CreateFailResult("Registration token has already been consumed");
         }
         
-        return new TokenValidationResult(pendingRegistration.Id, pendingRegistration.IsConsumed);
+        return new TokenValidationResult(pendingRegistration.Id, 
+                                         pendingRegistration.IsConsumed, 
+                                         pendingRegistration.Roles?.Select(RoleEntityToModelConverter.Convert));
     }
 
     public async Task<Result> ConsumeTokenAsync(string email, string token)
@@ -90,9 +79,8 @@ public class RegistrationTokenService : IRegistrationTokenService
 
         var normalizedToken = token.Trim().ToUpperInvariant();
         var hashedToken = HashToken(email, normalizedToken);
-        
-        var registrationToken = await _context.Set<PendingRegistration>()
-            .FirstOrDefaultAsync(rt => rt.TokenHash == hashedToken);
+
+        var registrationToken = (await _repository.FindAsync(rt => rt.TokenHash == hashedToken)).FirstOrDefault();
         
         if (registrationToken == null || 
             registrationToken.ExpiresAt < DateTime.UtcNow || 
@@ -104,7 +92,8 @@ public class RegistrationTokenService : IRegistrationTokenService
         registrationToken.IsConsumed = true;
         registrationToken.ConsumedAt = DateTime.UtcNow;
         
-        await _context.SaveChangesAsync();
+        await _repository.UpdateAsync(registrationToken);
+        await _repository.SaveChangesAsync();
         
         _logger.LogInformation("Registration token consumed for pending user {PendingUserEmail}", registrationToken.PendingUserEmail);
         

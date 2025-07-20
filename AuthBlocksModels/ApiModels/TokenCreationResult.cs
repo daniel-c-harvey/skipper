@@ -6,24 +6,38 @@ public class TokenCreationResult : ResultBase<TokenCreationResult>
 {
     public string RegistrationEmail { get; set; }
     public string? RegistrationToken { get; set; }
+    public string? RegistrationTokenHash { get; set; }
+    public TimeSpan? TokenExpiration { get; set; }
     
     public TokenCreationResult() : base()
     {
-        RegistrationToken = null;
         RegistrationEmail = string.Empty;
+        RegistrationToken = null;
+        RegistrationTokenHash = null;
+        TokenExpiration = null;
     }
     
-    public TokenCreationResult(string registrationEmail, string registrationToken) : base()
+    public TokenCreationResult(string registrationEmail, 
+                               string registrationToken, 
+                               string registrationTokenHash,
+                               TimeSpan expiration) : base()
     {
         RegistrationEmail = registrationEmail;
         RegistrationToken = registrationToken;
+        RegistrationTokenHash = registrationTokenHash;
+        TokenExpiration = expiration;
     }
 
-    public static TokenCreationResult CreatePassResult(string registrationEmail, string registrationToken)
+    public static TokenCreationResult CreatePassResult(string registrationEmail, 
+                                                       string registrationToken, 
+                                                       string registrationTokenHash,
+                                                       TimeSpan expiration)
     {
         var result = ResultBase<TokenCreationResult>.CreatePassResult();
         result.RegistrationEmail = registrationEmail;
         result.RegistrationToken = registrationToken;
+        result.RegistrationTokenHash = registrationTokenHash;
+        result.TokenExpiration = expiration;
         return result;
     }
 }

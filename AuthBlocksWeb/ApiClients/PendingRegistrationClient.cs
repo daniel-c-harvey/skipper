@@ -17,16 +17,18 @@ public class PendingRegistrationClient : AuthorizingModelClient<PendingRegistrat
     {
     }
 
-    public async Task<RegistrationCreatedResult> CreatePendingRegistration(string email, string returnUrl)
+    public async Task<RegistrationCreatedResult> CreatePendingRegistration(string email, IEnumerable<RoleModel>? roles, string returnUrl)
     {
         try
         {
             await AddAuthorizationHeader();
-            var request = new CreatePendingRegistrationRequest { Email = email, ReturnHost = returnUrl };
+            var request = new CreatePendingRegistrationRequest { Email = email, Roles = roles?.ToArray(), ReturnHost = returnUrl };
             var response = await http.PostAsJsonAsync($"api/{config.ControllerName}/create", request, Options);
             if (response == null) throw new HttpRequestException("Failed to get response");
 
-            var result = await response.Content.ReadFromJsonAsync<RegistrationCreatedResult.RegistrationCreatedResultDto>(Options)
+            var result =
+                await response.Content.ReadFromJsonAsync<RegistrationCreatedResult.RegistrationCreatedResultDto>(
+                    Options)
                 ?? throw new HttpRequestException("Failed to deserialize response");
 
             return result.From();
@@ -34,6 +36,10 @@ public class PendingRegistrationClient : AuthorizingModelClient<PendingRegistrat
         catch (Exception e)
         {
             return RegistrationCreatedResult.CreateFailResult(e.Message);
+        }
+        finally
+        {
+            ClearAuthorizationHeader();
         }
     }
 }

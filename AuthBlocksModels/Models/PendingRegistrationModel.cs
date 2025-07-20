@@ -8,4 +8,6 @@ public class PendingRegistrationModel: BaseModel
     public DateTime ExpiresAt { get; set; }
     public bool IsConsumed { get; set; }
     public DateTime? ConsumedAt { get; set; }
+    
+    public IEnumerable<RoleModel>? Roles { get; set; }
 }

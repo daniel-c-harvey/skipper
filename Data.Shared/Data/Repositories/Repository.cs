@@ -23,17 +23,17 @@ where TEntity : class, IEntity
         _logger = logger;
     }
 
-    public async Task<TEntity?> GetByIdAsync(long id)
+    public virtual async Task<TEntity?> GetByIdAsync(long id)
     {
         return await _dbSet.FirstOrDefaultAsync(e => e.Id == id && !e.IsDeleted);
     }
 
-    public async Task<IEnumerable<TEntity>> GetAllAsync()
+    public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
     {
         return await _dbSet.Where(e => !e.IsDeleted).ToListAsync();
     }
 
-    public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
+    public virtual async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
     {
         return await _dbSet.Where(e => !e.IsDeleted).Where(predicate).ToListAsync();
     }
@@ -49,13 +49,13 @@ where TEntity : class, IEntity
         return (int)Math.Ceiling(rowCount);
     }
     
-    public async Task<PagedResult<TEntity>> GetPagedAsync(PagingParameters<TEntity> pagingParameters)
+    public virtual async Task<PagedResult<TEntity>> GetPagedAsync(PagingParameters<TEntity> pagingParameters)
     {
         var query = _dbSet.Where(e => !e.IsDeleted);
         return await ExecutePagedQueryAsync(query, pagingParameters);
     }
 
-    public async Task<PagedResult<TEntity>> GetPagedAsync(Expression<Func<TEntity, bool>> predicate, PagingParameters<TEntity> pagingParameters)
+    public virtual async Task<PagedResult<TEntity>> GetPagedAsync(Expression<Func<TEntity, bool>> predicate, PagingParameters<TEntity> pagingParameters)
     {
         var query = _dbSet.Where(e => !e.IsDeleted).Where(predicate);
         return await ExecutePagedQueryAsync(query, pagingParameters);
@@ -88,7 +88,7 @@ where TEntity : class, IEntity
         return new PagedResult<TEntity>(items, totalCount, pagingParameters.Page, pagingParameters.PageSize);
     }
 
-    public async Task<TEntity> AddAsync(TEntity entity)
+    public virtual async Task<TEntity> AddAsync(TEntity entity)
     {
         entity.CreatedAt = DateTime.UtcNow;
         entity.UpdatedAt = DateTime.UtcNow;

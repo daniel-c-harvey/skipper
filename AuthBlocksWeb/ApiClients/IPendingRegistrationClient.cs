@@ -6,5 +6,5 @@ namespace AuthBlocksWeb.ApiClients;
 
 public interface IPendingRegistrationClient : IModelClient<PendingRegistrationModel>
 {
-    Task<RegistrationCreatedResult> CreatePendingRegistration(string email, string returnUrl);
+    Task<RegistrationCreatedResult> CreatePendingRegistration(string email, IEnumerable<RoleModel>? roles, string returnUrl);
 }

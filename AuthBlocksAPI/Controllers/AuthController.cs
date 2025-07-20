@@ -147,8 +147,22 @@ public class AuthController : ControllerBase
                 return StatusCode(500, new ApiResultDto<AuthResponse>(resultFailure));
             }
             var createdUser = createResult.Value;
+
+            foreach (var role in tokenValidationResult.Roles ?? [])
+            {
+                var addToRoleResult = await _userRoleService.AddUserToRoleAsync(createdUser, role.Name);
+                if (addToRoleResult.Success) continue;
+                
+                var resultFailure = ApiResult<AuthResponse>.From(addToRoleResult);
+                return StatusCode(500, new ApiResultDto<AuthResponse>(resultFailure));
+            }
             
-            await _registrationTokenService.ConsumeTokenAsync(createdUser.Email, request.RegistrationCode);;
+            var consumeTokenResult = await _registrationTokenService.ConsumeTokenAsync(createdUser.Email, request.RegistrationCode);
+            if (!consumeTokenResult.Success)
+            {
+                var resultFailure = ApiResult<AuthResponse>.From(consumeTokenResult);
+                return StatusCode(500, new ApiResultDto<AuthResponse>(resultFailure));
+            }
 
             var accessToken = await _jwtService.GenerateTokenAsync(createdUser);
             var refreshToken = await _jwtService.GenerateRefreshTokenAsync();

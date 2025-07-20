@@ -7,7 +7,7 @@ namespace Web.Shared.ApiClients;
 public interface IModelClient<TModel>
     where TModel : class, IModel, new()
 {
-    Task<ApiResult<PagedResult<TModel>>> GetById(long id);
+    Task<ApiResult<TModel>> GetById(long id);
     Task<ApiResult<IEnumerable<TModel>>> GetAll();
     Task<ApiResult<PagedResult<TModel>>> GetByPage(PagedQuery query);
     Task<ApiResult<ItemCount>> GetPageCount(PagedQuery query);

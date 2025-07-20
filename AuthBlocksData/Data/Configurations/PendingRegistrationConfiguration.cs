@@ -28,8 +28,10 @@ public class PendingRegistrationConfiguration : BaseEntityConfiguration<PendingR
 
         builder.Property(x => x.ConsumedAt);
 
-        builder.HasIndex(x => new {x.PendingUserEmail, x.IsConsumed})
-            .IncludeProperties(x => new {x.TokenHash, x.ExpiresAt});
-        
+        builder.Ignore(x => x.Roles);
+        builder.Property(x => x.RoleIds);
+
+        builder.HasIndex(x => new { x.PendingUserEmail, x.IsConsumed });
+
     }
 }

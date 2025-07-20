@@ -52,8 +52,25 @@ public class PendingRegistrationController : BaseModelController<PendingRegistra
         
         var tokenResult = await _tokenService.GenerateTokenAsync(model.Email);
 
-        if (tokenResult is {Success: true, RegistrationToken: string token, RegistrationEmail: string email})
+        if (tokenResult is {
+                            Success: true, 
+                            RegistrationEmail: string email,            
+                            RegistrationToken: string token, 
+                            RegistrationTokenHash: string hash,
+                            TokenExpiration: TimeSpan expiration,
+                           })
         {
+            var pendingRegistration = new PendingRegistrationModel()
+            {
+                PendingUserEmail = email,
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.Add(expiration),
+                IsConsumed = false,
+                Roles = model.Roles
+            };
+
+            await Manager.Create(hash, pendingRegistration);
+            
             string subject = "[Skipper ERP] Register New Account";
             string link =  QueryHelpers.AddQueryString(model.ReturnHost, new Dictionary<string, string?>
             {

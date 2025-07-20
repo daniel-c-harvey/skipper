@@ -65,4 +65,6 @@ public class PendingRegistrationInputModel : InputModelBase
     public DateTime? ConsumedAtDate { get; set; }
     
     public TimeSpan? ConsumedAtTime { get; set; }
+    
+    public IEnumerable<RoleInputModel>? Roles { get; set; }
 }

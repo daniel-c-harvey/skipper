@@ -12,7 +12,7 @@ public class PendingRegistrationService : ManagerBase<PendingRegistration, Pendi
     public PendingRegistrationService(IPendingRegistrationRepository repository) : base(repository)
     {
     }
-
+    
     public async Task<ResultContainer<PendingRegistrationModel>> FindByEmail(string email)
     {
         try
@@ -32,6 +32,21 @@ public class PendingRegistrationService : ManagerBase<PendingRegistration, Pendi
         {
             return ResultContainer<PendingRegistrationModel>.CreateFailResult(e.Message);
         }
+    }
+
+    public async Task<Result> Create(string tokenHash, PendingRegistrationModel model)
+    {
         
+        try
+        {
+            var entity = PendingRegistrationEntityToModelConverter.Convert(model);
+            entity.TokenHash = tokenHash;
+            await Repository.AddAsync(entity);
+            return await Repository.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            return Result.CreateFailResult(ex.Message);
+        }
     }
 }

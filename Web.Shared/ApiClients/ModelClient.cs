@@ -18,22 +18,22 @@ where TConfig : ModelClientConfig
         Options = options.Value;
     }
 
-    public async Task<ApiResult<PagedResult<TModel>>> GetById(long id)
+    public virtual async Task<ApiResult<TModel>> GetById(long id)
     {
         try
         {
-            var dtoResult = await http.GetFromJsonAsync<ApiResultDto<PagedResult<TModel>>>($"api/{config.ControllerName}/{id}", Options)
+            var dtoResult = await http.GetFromJsonAsync<ApiResultDto<TModel>>($"api/{config.ControllerName}/{id}", Options)
                 ?? throw new HttpRequestException("Failed to deserialize response");
             
             return dtoResult.From();
         }
         catch (Exception e)
         {
-            return ApiResult<PagedResult<TModel>>.CreateFailResult(e.Message);
+            return ApiResult<TModel>.CreateFailResult(e.Message);
         }
     }
 
-    public async Task<ApiResult<IEnumerable<TModel>>> GetAll()
+    public virtual async Task<ApiResult<IEnumerable<TModel>>> GetAll()
     {
         try
         {
@@ -45,8 +45,7 @@ where TConfig : ModelClientConfig
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            return ApiResult<IEnumerable<TModel>>.CreateFailResult(e.Message);
         }
     }
 
