@@ -25,3 +25,23 @@ where TEntity : class, IEntity
         builder.HasIndex(e => e.IsDeleted);
     }
 } 
+
+public abstract class BaseLinkageEntityConfiguration<TEntity> : IEntityTypeConfiguration<TEntity> 
+where TEntity : class, ILinkageEntity
+{
+    public virtual void Configure(EntityTypeBuilder<TEntity> builder)
+    {
+        builder.Property(e => e.CreatedAt)
+            .IsRequired();
+            
+        builder.Property(e => e.UpdatedAt)
+            .IsRequired();
+            
+        builder.Property(e => e.IsDeleted)
+            .IsRequired()
+            .HasDefaultValue(false);
+            
+        // Add index on IsDeleted for performance when filtering soft-deleted records
+        builder.HasIndex(e => e.IsDeleted);
+    }
+} 
