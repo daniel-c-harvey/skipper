@@ -13,6 +13,8 @@ public class BusinessCustomerContactConfiguration : BaseLinkageEntityConfigurati
         
         base.Configure(builder);
         
+        builder.HasKey(e => new { e.BusinessCustomerProfileId, e.ContactId });
+        
         builder.Property(e => e.IsPrimary)
             .HasDefaultValue(false)
             .IsRequired();

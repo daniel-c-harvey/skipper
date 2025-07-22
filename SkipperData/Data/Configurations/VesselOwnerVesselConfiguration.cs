@@ -12,6 +12,8 @@ namespace SkipperData.Data.Configurations
             builder.ToTable("vessel_owner_vessels");
 
             base.Configure(builder);
+            
+            builder.HasKey(e => new { e.VesselOwnerProfileId, e.VesselId });
 
             builder.HasOne(e => e.VesselOwnerProfile)
                 .WithMany(e => e.VesselOwnerVessels)

@@ -12,6 +12,19 @@ public class SkipperContext : DbContext
     public DbSet<SlipClassificationEntity> SlipClassifications { get; set; }
     public DbSet<VesselEntity> Vessels { get; set; }
     public DbSet<RentalAgreementEntity> RentalAgreements { get; set; }
+    
+    // Customer entities
+    public DbSet<CustomerEntity> Customers { get; set; }
+    public DbSet<VesselOwnerProfileEntity> VesselOwnerProfiles { get; set; }
+    public DbSet<IndividualCustomerProfileEntity> IndividualCustomerProfiles { get; set; }
+    public DbSet<BusinessCustomerProfileEntity> BusinessCustomerProfiles { get; set; }
+    public DbSet<MemberCustomerProfileEntity> MemberCustomerProfiles { get; set; }
+    
+    // Supporting entities  
+    public DbSet<ContactEntity> Contacts { get; set; }
+    public DbSet<AddressEntity> Addresses { get; set; }
+    public DbSet<VesselOwnerVesselEntity> VesselOwnerVessels { get; set; }
+    public DbSet<BusinessCustomerContactsEntity> BusinessCustomerContacts { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -28,6 +41,19 @@ public class SkipperContext : DbContext
         modelBuilder.ApplyConfiguration(new SlipClassificationConfiguration());
         modelBuilder.ApplyConfiguration(new VesselConfiguration());
         modelBuilder.ApplyConfiguration(new RentalAgreementConfiguration());
+        
+        // Customer configurations
+        modelBuilder.ApplyConfiguration(new CustomerConfiguration());
+        modelBuilder.ApplyConfiguration(new VesselOwnerProfileConfiguration());
+        modelBuilder.ApplyConfiguration(new IndividualCustomerProfileConfiguration());
+        modelBuilder.ApplyConfiguration(new BusinessCustomerProfileConfiguration());
+        modelBuilder.ApplyConfiguration(new MemberCustomerProfileConfiguration());
+        
+        // Supporting configurations
+        modelBuilder.ApplyConfiguration(new AddressConfiguration());
+        modelBuilder.ApplyConfiguration(new ContactConfiguration());
+        modelBuilder.ApplyConfiguration(new VesselOwnerVesselConfiguration());
+        modelBuilder.ApplyConfiguration(new BusinessCustomerContactConfiguration());
 
         // Set global collation for all string properties
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
