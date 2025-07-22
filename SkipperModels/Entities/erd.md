@@ -66,6 +66,21 @@ erDiagram
         string Country
     }
 
+    ORDER {
+        long Id PK
+        datetime CreatedAt
+        datetime UpdatedAt
+        bool IsDeleted
+        string OrderNumber
+        long CustomerId FK
+        datetime OrderDate
+        string OrderType "OrderType enum"
+        long OrderTypeId FK
+        decimal TotalAmount
+        string Notes
+        string Status "OrderStatus enum"
+    }
+
     CUSTOMER ||--|| VESSEL_OWNER_PROFILE : "has profile"
     CUSTOMER ||--|| INDIVIDUAL_CUSTOMER_PROFILE : "has profile"
     CUSTOMER ||--|| BUSINESS_CUSTOMER_PROFILE : "has profile"
@@ -122,7 +137,6 @@ erDiagram
         bool IsDeleted
         long SlipId FK
         long VesselId FK
-        long CustomerId FK
         datetime StartDate
         datetime EndDate
         int PriceRate
@@ -133,4 +147,5 @@ erDiagram
     SLIP_CLASSIFICATION ||--o{ SLIP : "classifies"
     SLIP ||--o{ RENTAL_AGREEMENT : "rented_through"
     VESSEL ||--o{ RENTAL_AGREEMENT : "rented_through"
-    CUSTOMER ||--o{ RENTAL_AGREEMENT : "financial_owner"
+    CUSTOMER ||--o{ ORDER : "places"
+    ORDER ||--|| RENTAL_AGREEMENT : "polymorphic_link"

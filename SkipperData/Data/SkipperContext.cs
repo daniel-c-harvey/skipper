@@ -13,6 +13,9 @@ public class SkipperContext : DbContext
     public DbSet<VesselEntity> Vessels { get; set; }
     public DbSet<RentalAgreementEntity> RentalAgreements { get; set; }
     
+    // Order entities
+    public DbSet<OrderEntity> Orders { get; set; }
+    
     // Customer entities
     public DbSet<CustomerEntity> Customers { get; set; }
     public DbSet<VesselOwnerProfileEntity> VesselOwnerProfiles { get; set; }
@@ -41,6 +44,9 @@ public class SkipperContext : DbContext
         modelBuilder.ApplyConfiguration(new SlipClassificationConfiguration());
         modelBuilder.ApplyConfiguration(new VesselConfiguration());
         modelBuilder.ApplyConfiguration(new RentalAgreementConfiguration());
+        
+        // Order configurations
+        modelBuilder.ApplyConfiguration(new OrderConfiguration());
         
         // Customer configurations
         modelBuilder.ApplyConfiguration(new CustomerConfiguration());
