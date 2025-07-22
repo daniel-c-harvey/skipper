@@ -1,8 +1,8 @@
-﻿using Models.Shared.Entities;
+using Models.Shared.Entities;
 
 namespace SkipperModels.Entities;
 
-public class RentalAgreementEntity : BaseEntity, IEntity
+public class SlipReservationEntity : BaseEntity, IEntity
 {
     public long SlipId { get; set; }
     public virtual SlipEntity SlipEntity { get; set; }
@@ -13,4 +13,4 @@ public class RentalAgreementEntity : BaseEntity, IEntity
     public int PriceRate { get; set; }
     public PriceUnit PriceUnit { get; set; }
     public RentalStatus Status { get; set; }
-}
+} 

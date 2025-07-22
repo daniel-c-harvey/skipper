@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SkipperData.Data;
@@ -11,9 +12,11 @@ using SkipperData.Data;
 namespace SkipperData.Data.Migrations
 {
     [DbContext(typeof(SkipperContext))]
-    partial class SkipperContextModelSnapshot : ModelSnapshot
+    [Migration("20250722194800_SlipReservations")]
+    partial class SlipReservations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

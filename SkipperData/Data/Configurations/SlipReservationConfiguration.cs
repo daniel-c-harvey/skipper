@@ -1,13 +1,13 @@
-﻿using Data.Shared.Data.Configurations;
+using Data.Shared.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SkipperModels.Entities;
 
 namespace SkipperData.Data.Configurations;
 
-public class RentalAgreementConfiguration : BaseEntityConfiguration<RentalAgreementEntity>
+public class SlipReservationConfiguration : BaseEntityConfiguration<SlipReservationEntity>
 {
-    public override void Configure(EntityTypeBuilder<RentalAgreementEntity> builder)
+    public override void Configure(EntityTypeBuilder<SlipReservationEntity> builder)
     {
         builder.ToTable("slip_reservations");
         

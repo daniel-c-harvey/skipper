@@ -1,0 +1,19 @@
+@using SkipperModels.Converters
+@using SkipperModels.Models
+@using SkipperModels.InputModels
+@using SkipperWeb.ApiClients
+@using SkipperWeb.Components.Pages.Maintenance.SlipReservations.Forms
+@using Web.Shared.Maintenance.Entities.New
+
+@attribute [HierarchicalRoleAuthorize]
+@page "/maintenance/slipreservations/new"
+
+<NewModelView TInputModel="SlipReservationInputModel"
+              TModel="SlipReservationModel"
+              TClient="SlipReservationClient"
+              TClientConfig="SlipReservationClientConfig"
+              TConverter="SlipReservationModelToInputConverter"
+              ModelDisplayName="Slip Reservation"
+              PageRoute="/maintenance/slipreservations">
+    <EditSlipReservationForm Model="context" />
+</NewModelView> 

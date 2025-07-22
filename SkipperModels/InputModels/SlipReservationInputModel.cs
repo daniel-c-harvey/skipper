@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Models.Shared.InputModels;
 
 namespace SkipperModels.InputModels;
 
-public class RentalAgreementInputModel : IInputModel
+public class SlipReservationInputModel : IInputModel
 {
     public long Id { get; set; }
     
@@ -23,4 +23,4 @@ public class RentalAgreementInputModel : IInputModel
     public RentalStatusEnumeration? Status { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
-}
+} 

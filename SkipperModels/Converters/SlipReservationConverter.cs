@@ -1,15 +1,15 @@
-﻿using Models.Shared.Converters;
+using Models.Shared.Converters;
 using SkipperModels.Entities;
 using SkipperModels.InputModels;
 using SkipperModels.Models;
 
 namespace SkipperModels.Converters;
 
-public class RentalAgreementEntityToModelConverter : IEntityToModelConverter<RentalAgreementEntity, RentalAgreementModel>
+public class SlipReservationEntityToModelConverter : IEntityToModelConverter<SlipReservationEntity, SlipReservationModel>
 {
-    public static RentalAgreementModel Convert(RentalAgreementEntity entity)
+    public static SlipReservationModel Convert(SlipReservationEntity entity)
     {
-        return new RentalAgreementModel()
+        return new SlipReservationModel()
         {
             Id = entity.Id,
             Slip = SlipEntityToModelConverter.Convert(entity.SlipEntity),
@@ -24,9 +24,9 @@ public class RentalAgreementEntityToModelConverter : IEntityToModelConverter<Ren
         };
     }
 
-    public static RentalAgreementEntity Convert(RentalAgreementModel model)
+    public static SlipReservationEntity Convert(SlipReservationModel model)
     {
-        return new RentalAgreementEntity()
+        return new SlipReservationEntity()
         {
             Id = model.Id,
             SlipId = model.Slip.Id,
@@ -44,11 +44,11 @@ public class RentalAgreementEntityToModelConverter : IEntityToModelConverter<Ren
     }
 }
 
-public class RentalAgreementModelToInputConverter : IModelToInputConverter<RentalAgreementModel, RentalAgreementInputModel>
+public class SlipReservationModelToInputConverter : IModelToInputConverter<SlipReservationModel, SlipReservationInputModel>
 {
-    public static RentalAgreementModel Convert(RentalAgreementInputModel input)
+    public static SlipReservationModel Convert(SlipReservationInputModel input)
     {
-        return new RentalAgreementModel()
+        return new SlipReservationModel()
         {
             Id = input.Id,
             Slip = SlipModelToInputConverter.Convert(input.Slip!),
@@ -63,9 +63,9 @@ public class RentalAgreementModelToInputConverter : IModelToInputConverter<Renta
         };
     }
 
-    public static RentalAgreementInputModel Convert(RentalAgreementModel model)
+    public static SlipReservationInputModel Convert(SlipReservationModel model)
     {
-        return new RentalAgreementInputModel()
+        return new SlipReservationInputModel()
         {
             Id = model.Id,
             Slip = SlipModelToInputConverter.Convert(model.Slip),
@@ -79,4 +79,4 @@ public class RentalAgreementModelToInputConverter : IModelToInputConverter<Renta
             UpdatedAt = model.UpdatedAt
         };
     }
-}
+} 

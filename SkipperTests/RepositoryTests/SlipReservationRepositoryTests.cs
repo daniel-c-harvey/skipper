@@ -6,24 +6,24 @@ using SkipperModels.Entities;
 namespace SkipperTests.RepositoryTests;
 
 [TestFixture]
-public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreementEntity>
+public class SlipReservationRepositoryTests : RepositoryTestBase<SlipReservationEntity>
 {
-    private RentalAgreementRepository _repository;
-    protected ILogger<RentalAgreementRepository> Logger;
+    private SlipReservationRepository _repository;
+    protected ILogger<SlipReservationRepository> Logger;
 
     [SetUp]
     public override void SetUp()
     {
         base.SetUp();
-        Logger = TestSetup.CreateLogger<RentalAgreementRepository>();
-        _repository = new RentalAgreementRepository(Context, Logger);
+        Logger = TestSetup.CreateLogger<SlipReservationRepository>();
+        _repository = new SlipReservationRepository(Context, Logger);
     }
 
     #region Helper Methods
 
-    private RentalAgreementEntity CreateRentalAgreement(long id, long slipId, long vesselId, DateTime startDate, DateTime endDate, RentalStatus status = RentalStatus.Active, int priceRate = 100)
+    private SlipReservationEntity CreateSlipReservation(long id, long slipId, long vesselId, DateTime startDate, DateTime endDate, RentalStatus status = RentalStatus.Active, int priceRate = 100)
     {
-        return new RentalAgreementEntity
+        return new SlipReservationEntity
         {
             Id = id,
             SlipId = slipId,
@@ -39,7 +39,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
         };
     }
 
-    private async Task SetupRentalsAsync(params RentalAgreementEntity[] rentals)
+    private async Task SetupRentalsAsync(params SlipReservationEntity[] rentals)
     {
         foreach (var rental in rentals)
         {
@@ -58,10 +58,10 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
         // Arrange
         var rentals = new[]
         {
-            CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active),
-            CreateRentalAgreement(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active),
-            CreateRentalAgreement(3, 3, 3, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Pending),
-            CreateRentalAgreement(4, 4, 4, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Expired)
+            CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active),
+            CreateSlipReservation(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active),
+            CreateSlipReservation(3, 3, 3, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Pending),
+            CreateSlipReservation(4, 4, 4, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Expired)
         };
 
         await SetupRentalsAsync(rentals);
@@ -84,7 +84,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     {
         // Arrange
         var rentals = Enum.GetValues<RentalStatus>()
-            .Select((status, index) => CreateRentalAgreement(index + 1, index + 1, index + 1, DateTime.Today, DateTime.Today.AddDays(7), status))
+            .Select((status, index) => CreateSlipReservation(index + 1, index + 1, index + 1, DateTime.Today, DateTime.Today.AddDays(7), status))
             .ToArray();
 
         await SetupRentalsAsync(rentals);
@@ -103,8 +103,8 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
         // Arrange
         var rentals = new[]
         {
-            CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active),
-            CreateRentalAgreement(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Pending)
+            CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active),
+            CreateSlipReservation(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Pending)
         };
 
         await SetupRentalsAsync(rentals);
@@ -126,11 +126,11 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
         // Arrange
         var rentals = new[]
         {
-            CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active),
-            CreateRentalAgreement(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active),
-            CreateRentalAgreement(3, 3, 3, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Pending),
-            CreateRentalAgreement(4, 4, 4, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Expired),
-            CreateRentalAgreement(5, 5, 5, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active)
+            CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active),
+            CreateSlipReservation(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active),
+            CreateSlipReservation(3, 3, 3, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Pending),
+            CreateSlipReservation(4, 4, 4, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Expired),
+            CreateSlipReservation(5, 5, 5, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active)
         };
 
         await SetupRentalsAsync(rentals);
@@ -150,9 +150,9 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
         // Arrange
         var rentals = new[]
         {
-            CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Pending),
-            CreateRentalAgreement(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Expired),
-            CreateRentalAgreement(3, 3, 3, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Cancelled)
+            CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Pending),
+            CreateSlipReservation(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Expired),
+            CreateSlipReservation(3, 3, 3, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Cancelled)
         };
 
         await SetupRentalsAsync(rentals);
@@ -174,10 +174,10 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
         // Arrange
         var rentals = new[]
         {
-            CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7)),
-            CreateRentalAgreement(2, 1, 2, DateTime.Today.AddDays(10), DateTime.Today.AddDays(17)),
-            CreateRentalAgreement(3, 2, 3, DateTime.Today, DateTime.Today.AddDays(7)),
-            CreateRentalAgreement(4, 1, 4, DateTime.Today.AddDays(20), DateTime.Today.AddDays(27))
+            CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7)),
+            CreateSlipReservation(2, 1, 2, DateTime.Today.AddDays(10), DateTime.Today.AddDays(17)),
+            CreateSlipReservation(3, 2, 3, DateTime.Today, DateTime.Today.AddDays(7)),
+            CreateSlipReservation(4, 1, 4, DateTime.Today.AddDays(20), DateTime.Today.AddDays(27))
         };
 
         await SetupRentalsAsync(rentals);
@@ -195,7 +195,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task GetBySlipIdAsync_NonExistentSlipId_ReturnsEmpty()
     {
         // Arrange
-        var rental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
+        var rental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
         await SetupRentalsAsync(rental);
 
         // Act
@@ -215,10 +215,10 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
         // Arrange
         var rentals = new[]
         {
-            CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7)),
-            CreateRentalAgreement(2, 2, 1, DateTime.Today.AddDays(10), DateTime.Today.AddDays(17)),
-            CreateRentalAgreement(3, 3, 2, DateTime.Today, DateTime.Today.AddDays(7)),
-            CreateRentalAgreement(4, 4, 1, DateTime.Today.AddDays(20), DateTime.Today.AddDays(27))
+            CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7)),
+            CreateSlipReservation(2, 2, 1, DateTime.Today.AddDays(10), DateTime.Today.AddDays(17)),
+            CreateSlipReservation(3, 3, 2, DateTime.Today, DateTime.Today.AddDays(7)),
+            CreateSlipReservation(4, 4, 1, DateTime.Today.AddDays(20), DateTime.Today.AddDays(27))
         };
 
         await SetupRentalsAsync(rentals);
@@ -236,7 +236,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task GetByVesselIdAsync_NonExistentVesselId_ReturnsEmpty()
     {
         // Arrange
-        var rental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
+        var rental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
         await SetupRentalsAsync(rental);
 
         // Act
@@ -254,7 +254,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task HasConflictAsync_OverlappingDates_ReturnsTrue()
     {
         // Arrange
-        var existingRental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
+        var existingRental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
         await SetupRentalsAsync(existingRental);
 
         // Act - New rental overlaps in the middle
@@ -268,7 +268,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task HasConflictAsync_StartDateOverlaps_ReturnsTrue()
     {
         // Arrange
-        var existingRental = CreateRentalAgreement(1, 1, 1, DateTime.Today.AddDays(5), DateTime.Today.AddDays(12), RentalStatus.Active);
+        var existingRental = CreateSlipReservation(1, 1, 1, DateTime.Today.AddDays(5), DateTime.Today.AddDays(12), RentalStatus.Active);
         await SetupRentalsAsync(existingRental);
 
         // Act - New rental starts before existing and ends during existing
@@ -282,7 +282,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task HasConflictAsync_EndDateOverlaps_ReturnsTrue()
     {
         // Arrange
-        var existingRental = CreateRentalAgreement(1, 1, 1, DateTime.Today.AddDays(2), DateTime.Today.AddDays(9), RentalStatus.Active);
+        var existingRental = CreateSlipReservation(1, 1, 1, DateTime.Today.AddDays(2), DateTime.Today.AddDays(9), RentalStatus.Active);
         await SetupRentalsAsync(existingRental);
 
         // Act - New rental starts during existing and ends after existing
@@ -296,7 +296,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task HasConflictAsync_CompletelyEnclosed_ReturnsTrue()
     {
         // Arrange
-        var existingRental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(14), RentalStatus.Active);
+        var existingRental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(14), RentalStatus.Active);
         await SetupRentalsAsync(existingRental);
 
         // Act - New rental is completely within existing rental
@@ -310,7 +310,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task HasConflictAsync_CompletelyEncloses_ReturnsTrue()
     {
         // Arrange
-        var existingRental = CreateRentalAgreement(1, 1, 1, DateTime.Today.AddDays(5), DateTime.Today.AddDays(12), RentalStatus.Active);
+        var existingRental = CreateSlipReservation(1, 1, 1, DateTime.Today.AddDays(5), DateTime.Today.AddDays(12), RentalStatus.Active);
         await SetupRentalsAsync(existingRental);
 
         // Act - New rental completely encloses existing rental
@@ -324,7 +324,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task HasConflictAsync_ExactSameDates_ReturnsTrue()
     {
         // Arrange
-        var existingRental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
+        var existingRental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
         await SetupRentalsAsync(existingRental);
 
         // Act - New rental has exact same dates
@@ -338,7 +338,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task HasConflictAsync_AdjacentDatesStartAfterEnd_ReturnsFalse()
     {
         // Arrange
-        var existingRental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
+        var existingRental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
         await SetupRentalsAsync(existingRental);
 
         // Act - New rental starts exactly when existing ends
@@ -352,7 +352,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task HasConflictAsync_AdjacentDatesEndBeforeStart_ReturnsFalse()
     {
         // Arrange
-        var existingRental = CreateRentalAgreement(1, 1, 1, DateTime.Today.AddDays(7), DateTime.Today.AddDays(14), RentalStatus.Active);
+        var existingRental = CreateSlipReservation(1, 1, 1, DateTime.Today.AddDays(7), DateTime.Today.AddDays(14), RentalStatus.Active);
         await SetupRentalsAsync(existingRental);
 
         // Act - New rental ends exactly when existing starts
@@ -366,7 +366,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task HasConflictAsync_DifferentSlip_ReturnsFalse()
     {
         // Arrange
-        var existingRental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
+        var existingRental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
         await SetupRentalsAsync(existingRental);
 
         // Act - Same dates but different slip
@@ -382,9 +382,9 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
         // Arrange
         var existingRentals = new[]
         {
-            CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Pending),
-            CreateRentalAgreement(2, 1, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Expired),
-            CreateRentalAgreement(3, 1, 3, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Cancelled)
+            CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Pending),
+            CreateSlipReservation(2, 1, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Expired),
+            CreateSlipReservation(3, 1, 3, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Cancelled)
         };
 
         await SetupRentalsAsync(existingRentals);
@@ -402,9 +402,9 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
         // Arrange
         var existingRentals = new[]
         {
-            CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(3), RentalStatus.Active),
-            CreateRentalAgreement(2, 1, 2, DateTime.Today.AddDays(10), DateTime.Today.AddDays(17), RentalStatus.Active),
-            CreateRentalAgreement(3, 1, 3, DateTime.Today.AddDays(20), DateTime.Today.AddDays(27), RentalStatus.Active)
+            CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(3), RentalStatus.Active),
+            CreateSlipReservation(2, 1, 2, DateTime.Today.AddDays(10), DateTime.Today.AddDays(17), RentalStatus.Active),
+            CreateSlipReservation(3, 1, 3, DateTime.Today.AddDays(20), DateTime.Today.AddDays(27), RentalStatus.Active)
         };
 
         await SetupRentalsAsync(existingRentals);
@@ -436,7 +436,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task GetByIdAsync_ValidId_ReturnsRentalAgreement()
     {
         // Arrange
-        var rental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
+        var rental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
         await SetupRentalsAsync(rental);
 
         // Act
@@ -453,7 +453,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task GetByIdAsync_InvalidId_ReturnsNull()
     {
         // Arrange
-        var rental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
+        var rental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
         await SetupRentalsAsync(rental);
 
         // Act
@@ -469,9 +469,9 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
         // Arrange
         var rentals = new[]
         {
-            CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7)),
-            CreateRentalAgreement(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7)),
-            CreateRentalAgreement(3, 3, 3, DateTime.Today, DateTime.Today.AddDays(7))
+            CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7)),
+            CreateSlipReservation(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7)),
+            CreateSlipReservation(3, 3, 3, DateTime.Today, DateTime.Today.AddDays(7))
         };
 
         await SetupRentalsAsync(rentals);
@@ -488,7 +488,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task AddAsync_ValidRentalAgreement_AddsRentalAgreement()
     {
         // Arrange
-        var rental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
+        var rental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
 
         // Act
         var result = await _repository.AddAsync(rental);
@@ -507,7 +507,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task UpdateAsync_ValidRentalAgreement_UpdatesRentalAgreement()
     {
         // Arrange
-        var rental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
+        var rental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
         await SetupRentalsAsync(rental);
 
         // Act
@@ -528,7 +528,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task DeleteAsync_ValidId_SoftDeletesRentalAgreement()
     {
         // Arrange
-        var rental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
+        var rental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
         await SetupRentalsAsync(rental);
 
         // Act
@@ -548,7 +548,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task ExistsAsync_ExistingId_ReturnsTrue()
     {
         // Arrange
-        var rental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
+        var rental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
         await SetupRentalsAsync(rental);
 
         // Act
@@ -562,7 +562,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task ExistsAsync_NonExistentId_ReturnsFalse()
     {
         // Arrange
-        var rental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
+        var rental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
         await SetupRentalsAsync(rental);
 
         // Act
@@ -578,9 +578,9 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
         // Arrange
         var rentals = new[]
         {
-            CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active, 100),
-            CreateRentalAgreement(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active, 150),
-            CreateRentalAgreement(3, 3, 3, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Pending, 200)
+            CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active, 100),
+            CreateSlipReservation(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active, 150),
+            CreateSlipReservation(3, 3, 3, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Pending, 200)
         };
 
         await SetupRentalsAsync(rentals);
@@ -602,7 +602,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task GetByIdAsync_SoftDeletedEntity_ReturnsNull()
     {
         // Arrange
-        var rental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
+        var rental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
         rental.IsDeleted = true;
         await _repository.AddAsync(rental);
         await _repository.SaveChangesAsync();
@@ -618,8 +618,8 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task GetAllAsync_FiltersSoftDeletedEntities()
     {
         // Arrange
-        var activeRental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
-        var deletedRental = CreateRentalAgreement(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7));
+        var activeRental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
+        var deletedRental = CreateSlipReservation(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7));
         deletedRental.IsDeleted = true;
 
         await _repository.AddAsync(activeRental);
@@ -639,10 +639,10 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task FindAsync_FiltersSoftDeletedEntities()
     {
         // Arrange
-        var activeRental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active, 100);
-        var deletedRental = CreateRentalAgreement(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active, 100);
+        var activeRental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active, 100);
+        var deletedRental = CreateSlipReservation(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active, 100);
         deletedRental.IsDeleted = true;
-        var pendingRental = CreateRentalAgreement(3, 3, 3, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Pending, 100);
+        var pendingRental = CreateSlipReservation(3, 3, 3, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Pending, 100);
 
         await _repository.AddAsync(activeRental);
         await _repository.AddAsync(deletedRental);
@@ -662,10 +662,10 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task GetByStatusAsync_FiltersSoftDeletedEntities()
     {
         // Arrange
-        var activeRental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
-        var deletedRental = CreateRentalAgreement(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
+        var activeRental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
+        var deletedRental = CreateSlipReservation(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
         deletedRental.IsDeleted = true;
-        var anotherActiveRental = CreateRentalAgreement(3, 3, 3, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
+        var anotherActiveRental = CreateSlipReservation(3, 3, 3, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
 
         await _repository.AddAsync(activeRental);
         await _repository.AddAsync(deletedRental);
@@ -685,8 +685,8 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task GetActiveAsync_FiltersSoftDeletedEntities()
     {
         // Arrange
-        var activeRental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
-        var deletedRental = CreateRentalAgreement(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
+        var activeRental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
+        var deletedRental = CreateSlipReservation(2, 2, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
         deletedRental.IsDeleted = true;
 
         await _repository.AddAsync(activeRental);
@@ -706,8 +706,8 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task GetBySlipIdAsync_FiltersSoftDeletedEntities()
     {
         // Arrange
-        var activeRental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
-        var deletedRental = CreateRentalAgreement(2, 1, 2, DateTime.Today, DateTime.Today.AddDays(7));
+        var activeRental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
+        var deletedRental = CreateSlipReservation(2, 1, 2, DateTime.Today, DateTime.Today.AddDays(7));
         deletedRental.IsDeleted = true;
 
         await _repository.AddAsync(activeRental);
@@ -727,8 +727,8 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task GetByVesselIdAsync_FiltersSoftDeletedEntities()
     {
         // Arrange
-        var activeRental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
-        var deletedRental = CreateRentalAgreement(2, 2, 1, DateTime.Today, DateTime.Today.AddDays(7));
+        var activeRental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
+        var deletedRental = CreateSlipReservation(2, 2, 1, DateTime.Today, DateTime.Today.AddDays(7));
         deletedRental.IsDeleted = true;
 
         await _repository.AddAsync(activeRental);
@@ -748,8 +748,8 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task HasConflictAsync_FiltersSoftDeletedEntities()
     {
         // Arrange
-        var activeRental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
-        var deletedRental = CreateRentalAgreement(2, 1, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
+        var activeRental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
+        var deletedRental = CreateSlipReservation(2, 1, 2, DateTime.Today, DateTime.Today.AddDays(7), RentalStatus.Active);
         deletedRental.IsDeleted = true;
 
         await _repository.AddAsync(activeRental);
@@ -767,7 +767,7 @@ public class RentalAgreementRepositoryTests : RepositoryTestBase<RentalAgreement
     public async Task ExistsAsync_SoftDeletedEntity_ReturnsFalse()
     {
         // Arrange
-        var rental = CreateRentalAgreement(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
+        var rental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
         rental.IsDeleted = true;
         await _repository.AddAsync(rental);
         await _repository.SaveChangesAsync();

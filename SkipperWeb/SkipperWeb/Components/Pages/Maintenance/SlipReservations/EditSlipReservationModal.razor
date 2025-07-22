@@ -1,0 +1,15 @@
+@using SkipperModels.InputModels
+@using SkipperWeb.Components.Pages.Maintenance.SlipReservations.Forms
+@using Web.Shared.Maintenance.Entities
+
+@implements Web.Shared.Maintenance.Entities.IEditModal<SlipReservationInputModel>
+
+<EditModelModal TModel="SlipReservationInputModel"
+                Model="Model">
+    <EditSlipReservationForm Model="Model" />
+</EditModelModal>
+
+@code {
+    [Parameter]
+    public required SlipReservationInputModel Model { get; set; }
+} 

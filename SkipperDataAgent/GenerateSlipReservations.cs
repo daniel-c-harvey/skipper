@@ -7,7 +7,7 @@ using SkipperModels.Entities;
 
 namespace SkipperDataAgent;
 
-public static class GenerateRentalAgreements
+public static class GenerateSlipReservations
 {
     // RentalStatus values with realistic distribution weights for 20-year backlog
     private static readonly (RentalStatus Status, int Weight)[] StatusDistribution =
@@ -38,11 +38,11 @@ public static class GenerateRentalAgreements
         (31, 90, 5)      // Extended stays (1-3 months)
     ];
 
-    public static async Task GenerateAsync(SkipperContext dbContext, ILogger<RentalAgreementRepository> logger, int totalRecords = 50000, int batchSize = 1000)
+    public static async Task GenerateAsync(SkipperContext dbContext, ILogger<SlipReservationRepository> logger, int totalRecords = 50000, int batchSize = 1000)
     {
         logger.LogInformation("Starting rental agreement generation: {TotalRecords} records in batches of {BatchSize}", totalRecords, batchSize);
         
-        var repository = new RentalAgreementRepository(dbContext, logger);
+        var repository = new SlipReservationRepository(dbContext, logger);
         var random = new Random(42); // Fixed seed for reproducible results
         
         // Query existing data from database
@@ -73,22 +73,22 @@ public static class GenerateRentalAgreements
             var recordsInBatch = Math.Min(batchSize, totalRecords - (batch - 1) * batchSize);
             logger.LogInformation("Generating batch {Batch}/{TotalBatches}: {RecordsInBatch} records", batch, totalBatches, recordsInBatch);
             
-            var rentalAgreements = new List<RentalAgreementEntity>();
+            var slipReservationEntities = new List<SlipReservationEntity>();
             
             for (int i = 0; i < recordsInBatch; i++)
             {
-                var rentalAgreement = GenerateRentalAgreement(random, compatibleMatches, slipClassifications);
-                rentalAgreements.Add(rentalAgreement);
+                var rentalAgreement = GenerateSlipReservation(random, compatibleMatches, slipClassifications);
+                slipReservationEntities.Add(rentalAgreement);
             }
             
             // Insert batch
-            foreach (var rental in rentalAgreements)
+            foreach (var rental in slipReservationEntities)
             {
                 await repository.AddAsync(rental);
             }
             await repository.SaveChangesAsync();
             
-            logger.LogInformation("Batch {Batch} completed: {RecordsInserted} rental agreements inserted", batch, rentalAgreements.Count);
+            logger.LogInformation("Batch {Batch} completed: {RecordsInserted} rental agreements inserted", batch, slipReservationEntities.Count);
         }
         
         logger.LogInformation("Rental agreement generation completed: {TotalRecords} agreements generated", totalRecords);
@@ -149,7 +149,7 @@ public static class GenerateRentalAgreements
         return matches;
     }
 
-    private static RentalAgreementEntity GenerateRentalAgreement(
+    private static SlipReservationEntity GenerateSlipReservation(
         Random random, 
         List<(long VesselId, long SlipId, long ClassificationId)> compatibleMatches,
         IEnumerable<SlipClassificationEntity> classifications)
@@ -162,7 +162,7 @@ public static class GenerateRentalAgreements
         var (priceRate, priceUnit) = GeneratePriceRate(random, classification);
         var (createdAt, updatedAt) = GenerateTimestamps(random, startDate);
 
-        return new RentalAgreementEntity
+        return new SlipReservationEntity
         {
             SlipId = slipId,
             VesselId = vesselId,

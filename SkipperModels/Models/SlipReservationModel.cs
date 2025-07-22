@@ -1,9 +1,9 @@
-﻿using Models.Shared.Models;
+using Models.Shared.Models;
 
 namespace SkipperModels.Models;
 
 
-public class RentalAgreementModel : BaseModel, IModel
+public class SlipReservationModel : BaseModel, IModel
 {
     public SlipModel Slip { get; set; }
     public VesselModel Vessel { get; set; }
@@ -12,4 +12,4 @@ public class RentalAgreementModel : BaseModel, IModel
     public decimal PriceRate { get; set; }
     public PriceUnit PriceUnit { get; set; }
     public RentalStatus Status { get; set; }
-}
+} 

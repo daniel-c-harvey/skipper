@@ -13,7 +13,7 @@ public static class RepositoryRegistration
         services.AddScoped<SlipRepository>();
         services.AddScoped<VesselRepository>();
         services.AddScoped<SlipClassificationRepository>();
-        services.AddScoped<RentalAgreementRepository>();
+        services.AddScoped<SlipReservationRepository>();
         
         return services;
     }

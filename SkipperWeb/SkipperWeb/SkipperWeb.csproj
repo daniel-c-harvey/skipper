@@ -18,6 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Components\Pages\SlipReservations\" />
       <Folder Include="Middleware\" />
       <Folder Include="wwwroot\lib\" />
     </ItemGroup>

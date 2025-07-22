@@ -11,10 +11,10 @@ public class SkipperContext : DbContext
     public DbSet<SlipEntity> Slips { get; set; }
     public DbSet<SlipClassificationEntity> SlipClassifications { get; set; }
     public DbSet<VesselEntity> Vessels { get; set; }
-    public DbSet<RentalAgreementEntity> RentalAgreements { get; set; }
+    // public DbSet<SlipReservationEntity> SlipReservations { get; set; }
     
-    // Order entities
-    public DbSet<OrderEntity> Orders { get; set; }
+    // Order entities - TEMPORARILY COMMENTED OUT FOR MIGRATION
+    // public DbSet<OrderEntity> Orders { get; set; }
     
     // Customer entities
     public DbSet<CustomerEntity> Customers { get; set; }
@@ -43,10 +43,11 @@ public class SkipperContext : DbContext
         modelBuilder.ApplyConfiguration(new SlipConfiguration());
         modelBuilder.ApplyConfiguration(new SlipClassificationConfiguration());
         modelBuilder.ApplyConfiguration(new VesselConfiguration());
-        modelBuilder.ApplyConfiguration(new RentalAgreementConfiguration());
+        // modelBuilder.ApplyConfiguration(new RentalAgreementConfiguration());
+        modelBuilder.ApplyConfiguration(new SlipReservationConfiguration());
         
-        // Order configurations
-        modelBuilder.ApplyConfiguration(new OrderConfiguration());
+        // Order configurations - TEMPORARILY COMMENTED OUT FOR MIGRATION
+        // modelBuilder.ApplyConfiguration(new OrderConfiguration());
         
         // Customer configurations
         modelBuilder.ApplyConfiguration(new CustomerConfiguration());

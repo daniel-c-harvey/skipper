@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Models.Shared.Common;
 using MudBlazor;
 using NetBlocks.Models;
@@ -7,7 +7,7 @@ using SkipperModels.InputModels;
 using SkipperModels.Models;
 using SkipperWeb.ApiClients;
 
-namespace SkipperWeb.Components.Pages.Maintenance.RentalAgreements.Forms;
+namespace SkipperWeb.Components.Pages.Maintenance.SlipReservations.Forms;
 
 public partial class ChooseVessel : ComponentBase
 {
@@ -114,4 +114,4 @@ public partial class ChooseVessel : ComponentBase
             }
         }
     }
-}
+} 

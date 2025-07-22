@@ -6,11 +6,11 @@ using SkipperModels.Entities;
 
 namespace SkipperData.Data.Repositories;
 
-public class RentalAgreementRepository : Repository<SkipperContext, RentalAgreementEntity>
+public class SlipReservationRepository : Repository<SkipperContext, SlipReservationEntity>
 {
-    public RentalAgreementRepository(SkipperContext context, ILogger<RentalAgreementRepository> logger) : base(context, logger) { }
+    public SlipReservationRepository(SkipperContext context, ILogger<SlipReservationRepository> logger) : base(context, logger) { }
     
-    protected override void UpdateModel(RentalAgreementEntity target, RentalAgreementEntity source)
+    protected override void UpdateModel(SlipReservationEntity target, SlipReservationEntity source)
     {
         base.UpdateModel(target, source);
         target.EndDate = source.EndDate;
@@ -22,42 +22,42 @@ public class RentalAgreementRepository : Repository<SkipperContext, RentalAgreem
         target.PriceRate = source.PriceRate;
     }
 
-    public async Task<IEnumerable<RentalAgreementEntity>> GetByStatusAsync(RentalStatus status)
+    public async Task<IEnumerable<SlipReservationEntity>> GetByStatusAsync(RentalStatus status)
     {
         return await FindAsync(ra => ra.Status == status);
     }
 
-    public async Task<PagedResult<RentalAgreementEntity>> GetByStatusPagedAsync(RentalStatus status, PagingParameters<RentalAgreementEntity> pagingParameters)
+    public async Task<PagedResult<SlipReservationEntity>> GetByStatusPagedAsync(RentalStatus status, PagingParameters<SlipReservationEntity> pagingParameters)
     {
         return await GetPagedAsync(ra => ra.Status == status, pagingParameters);
     }
 
-    public async Task<IEnumerable<RentalAgreementEntity>> GetActiveAsync()
+    public async Task<IEnumerable<SlipReservationEntity>> GetActiveAsync()
     {
         return await GetByStatusAsync(RentalStatus.Active);
     }
 
-    public async Task<PagedResult<RentalAgreementEntity>> GetActivePagedAsync(PagingParameters<RentalAgreementEntity> pagingParameters)
+    public async Task<PagedResult<SlipReservationEntity>> GetActivePagedAsync(PagingParameters<SlipReservationEntity> pagingParameters)
     {
         return await GetByStatusPagedAsync(RentalStatus.Active, pagingParameters);
     }
 
-    public async Task<IEnumerable<RentalAgreementEntity>> GetBySlipIdAsync(long slipId)
+    public async Task<IEnumerable<SlipReservationEntity>> GetBySlipIdAsync(long slipId)
     {
         return await FindAsync(ra => ra.SlipId == slipId);
     }
 
-    public async Task<PagedResult<RentalAgreementEntity>> GetBySlipIdPagedAsync(long slipId, PagingParameters<RentalAgreementEntity> pagingParameters)
+    public async Task<PagedResult<SlipReservationEntity>> GetBySlipIdPagedAsync(long slipId, PagingParameters<SlipReservationEntity> pagingParameters)
     {
         return await GetPagedAsync(ra => ra.SlipId == slipId, pagingParameters);
     }
 
-    public async Task<IEnumerable<RentalAgreementEntity>> GetByVesselIdAsync(long vesselId)
+    public async Task<IEnumerable<SlipReservationEntity>> GetByVesselIdAsync(long vesselId)
     {
         return await FindAsync(ra => ra.VesselId == vesselId);
     }
 
-    public async Task<PagedResult<RentalAgreementEntity>> GetByVesselIdPagedAsync(long vesselId, PagingParameters<RentalAgreementEntity> pagingParameters)
+    public async Task<PagedResult<SlipReservationEntity>> GetByVesselIdPagedAsync(long vesselId, PagingParameters<SlipReservationEntity> pagingParameters)
     {
         return await GetPagedAsync(ra => ra.VesselId == vesselId, pagingParameters);
     }

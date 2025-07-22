@@ -85,12 +85,12 @@ public static class DatabaseHelper
             
         using var dbContext = new SkipperContext(options);
         using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-        var logger = loggerFactory.CreateLogger<RentalAgreementRepository>();
+        var logger = loggerFactory.CreateLogger<SlipReservationRepository>();
         
         try
         {
             await dbContext.Database.EnsureCreatedAsync();
-            await GenerateRentalAgreements.GenerateAsync(dbContext, logger, totalRecords, batchSize);
+            await GenerateSlipReservations.GenerateAsync(dbContext, logger, totalRecords, batchSize);
             Console.WriteLine($"Successfully generated {totalRecords} rental agreements!");
         }
         catch (Exception ex)

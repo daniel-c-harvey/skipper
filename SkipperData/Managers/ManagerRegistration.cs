@@ -12,7 +12,7 @@ public static class ManagerRegistration
         services.AddScoped<VesselManager>();
         services.AddScoped<SlipManager>();
         services.AddScoped<SlipClassificationManager>();
-        services.AddScoped<RentalAgreementManager>();
+        services.AddScoped<SlipReservationManager>();
         
         return services;
     }
