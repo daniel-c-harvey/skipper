@@ -38,7 +38,7 @@ namespace SkipperModels.Converters
         }
     }
 
-    public class ContactModelToInputModelConverter : IModelToInputConverter<ContactModel, ContactInputModel>
+    public class ContactModelToInputConverter : IModelToInputConverter<ContactModel, ContactInputModel>
     {
         public static ContactInputModel Convert(ContactModel model)
         {
