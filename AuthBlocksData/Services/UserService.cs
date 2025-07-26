@@ -13,7 +13,7 @@ using NetBlocks.Utilities;
 
 namespace AuthBlocksData.Services;
 
-public class UserService : ManagerBase<ApplicationUser, UserModel, IUserRepository, UserEntityToModelConverter>, IUserService
+public class UserService : Manager<ApplicationUser, UserModel, IUserRepository, UserEntityToModelConverter>, IUserService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IRoleRepository _roleRepository;
@@ -66,16 +66,22 @@ public class UserService : ManagerBase<ApplicationUser, UserModel, IUserReposito
         return true; // cleared all role relationships for delete
     }
 
-    public override async Task<Result> Add(UserModel model)
+    public override async Task<ResultContainer<UserModel>> Add(UserModel model)
     {
         try
         {
-            var identityResult = await _userManager.CreateAsync(UserEntityToModelConverter.Convert(model));
-            return identityResult.Succeeded ? Result.CreatePassResult() : Result.CreateFailResult(identityResult.Errors.Select(error => error.Description).ToArray());
+            var entity = UserEntityToModelConverter.Convert(model);
+            var identityResult = await _userManager.CreateAsync(entity);
+            
+            return identityResult.Succeeded 
+                ? (await Repository.GetByUsernameAsync(model.UserName) is ApplicationUser newUser) 
+                    ? ResultContainer<UserModel>.CreatePassResult(UserEntityToModelConverter.Convert(newUser))
+                    : ResultContainer<UserModel>.CreateFailResult("User not found") 
+                : ResultContainer<UserModel>.CreateFailResult(identityResult.Errors.Select(error => error.Description).ToArray());
         }
         catch (Exception ex)
         {
-            return Result.CreateFailResult(ex.Message);
+            return ResultContainer<UserModel>.CreateFailResult(ex.Message);
         }
     }
     

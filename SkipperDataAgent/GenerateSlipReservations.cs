@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using SkipperData.Data;
 using SkipperData.Data.Repositories;
 using SkipperModels;
+using SkipperModels.Composites;
 using SkipperModels.Entities;
 
 namespace SkipperDataAgent;
@@ -38,33 +39,47 @@ public static class GenerateSlipReservations
         (31, 90, 5)      // Extended stays (1-3 months)
     ];
 
-    public static async Task GenerateAsync(SkipperContext dbContext, ILogger<SlipReservationRepository> logger, int totalRecords = 50000, int batchSize = 1000)
+    // Order notes templates for variety
+    private static readonly string[] OrderNotesTemplates =
+    [
+        "Standard slip reservation",
+        "Repeat customer booking",
+        "Seasonal rental agreement", 
+        "Special event booking",
+        "Corporate charter arrangement",
+        "Holiday weekend reservation",
+        null, // Some orders have no notes
+        null,
+        null
+    ];
+
+    public static async Task GenerateAsync(SkipperContext dbContext, ILogger<SlipReservationOrderRepository> logger, int totalRecords = 50000, int batchSize = 1000)
     {
-        logger.LogInformation("Starting rental agreement generation: {TotalRecords} records in batches of {BatchSize}", totalRecords, batchSize);
+        logger.LogInformation("Starting slip reservation order generation: {TotalRecords} records in batches of {BatchSize}", totalRecords, batchSize);
         
-        var repository = new SlipReservationRepository(dbContext, logger);
+        var repository = new SlipReservationOrderRepository(dbContext, logger);
         var random = new Random(42); // Fixed seed for reproducible results
         
         // Query existing data from database
-        var (slips, vessels, slipClassifications) = await GetExistingDataAsync(dbContext, logger);
-        if (!slips.Any() || !vessels.Any() || !slipClassifications.Any())
+        var (slips, vesselOwnerCustomers, slipClassifications) = await GetExistingDataAsync(dbContext, logger);
+        if (!slips.Any() || !vesselOwnerCustomers.Any() || !slipClassifications.Any())
         {
-            logger.LogError("Missing required data. Please ensure slips, vessels, and slip classifications exist in database.");
+            logger.LogError("Missing required data. Please ensure slips, vessel owner customers with vessels, and slip classifications exist in database.");
             return;
         }
         
-        logger.LogInformation("Found {SlipCount} slips, {VesselCount} vessels, {ClassificationCount} classifications", 
-            slips.Count(), vessels.Count(), slipClassifications.Count());
+        logger.LogInformation("Found {SlipCount} slips, {CustomerCount} vessel owner customers, {ClassificationCount} classifications", 
+            slips.Count(), vesselOwnerCustomers.Count(), slipClassifications.Count());
         
-        // Find compatible vessel-slip matches
-        var compatibleMatches = FindCompatibleMatches(slips, vessels, slipClassifications);
+        // Find compatible customer-vessel-slip matches
+        var compatibleMatches = FindCompatibleMatches(slips, vesselOwnerCustomers, slipClassifications, logger);
         if (!compatibleMatches.Any())
         {
-            logger.LogError("No compatible vessel-slip matches found. Check vessel dimensions vs slip classification constraints.");
+            logger.LogError("No compatible customer-vessel-slip matches found. Check vessel dimensions vs slip classification constraints.");
             return;
         }
         
-        logger.LogInformation("Found {MatchCount} compatible vessel-slip combinations", compatibleMatches.Count());
+        logger.LogInformation("Found {MatchCount} compatible customer-vessel-slip combinations", compatibleMatches.Count());
         
         var totalBatches = (int)Math.Ceiling((double)totalRecords / batchSize);
         
@@ -73,28 +88,27 @@ public static class GenerateSlipReservations
             var recordsInBatch = Math.Min(batchSize, totalRecords - (batch - 1) * batchSize);
             logger.LogInformation("Generating batch {Batch}/{TotalBatches}: {RecordsInBatch} records", batch, totalBatches, recordsInBatch);
             
-            var slipReservationEntities = new List<SlipReservationEntity>();
+            var slipReservationEntities = new List<SlipReservationOrderCompositeEntity>();
             
             for (int i = 0; i < recordsInBatch; i++)
             {
-                var rentalAgreement = GenerateSlipReservation(random, compatibleMatches, slipClassifications);
-                slipReservationEntities.Add(rentalAgreement);
+                var slipReservationOrder = GenerateSlipReservationOrder(random, compatibleMatches, slipClassifications, batch, i);
+                slipReservationEntities.Add(slipReservationOrder);
             }
             
             // Insert batch
-            foreach (var rental in slipReservationEntities)
+            foreach (var reservation in slipReservationEntities)
             {
-                await repository.AddAsync(rental);
+                await repository.AddAsync(reservation);
             }
-            await repository.SaveChangesAsync();
             
-            logger.LogInformation("Batch {Batch} completed: {RecordsInserted} rental agreements inserted", batch, slipReservationEntities.Count);
+            logger.LogInformation("Batch {Batch} completed: {RecordsInserted} slip reservation orders inserted", batch, slipReservationEntities.Count);
         }
         
-        logger.LogInformation("Rental agreement generation completed: {TotalRecords} agreements generated", totalRecords);
+        logger.LogInformation("Slip reservation order generation completed: {TotalRecords} orders generated", totalRecords);
     }
 
-    private static async Task<(IEnumerable<SlipEntity> Slips, IEnumerable<VesselEntity> Vessels, IEnumerable<SlipClassificationEntity> Classifications)> 
+    private static async Task<(IEnumerable<SlipEntity> Slips, IEnumerable<VesselOwnerCustomerEntity> VesselOwnerCustomers, IEnumerable<SlipClassificationEntity> Classifications)> 
         GetExistingDataAsync(SkipperContext dbContext, ILogger logger)
     {
         try
@@ -103,77 +117,163 @@ public static class GenerateSlipReservations
                 .Where(s => !s.IsDeleted && (s.Status == SlipStatus.Available || s.Status == SlipStatus.Booked || s.Status == SlipStatus.InUse))
                 .ToListAsync();
             
-            var vessels = await dbContext.Vessels
-                .Where(v => !v.IsDeleted)
+            var vesselOwnerCustomers = await dbContext.Customers
+                .Include(c => c.CustomerProfile)
+                    .ThenInclude(p => p.Contact)
+                        .ThenInclude(c => c.Address)
+                .Include(c => c.CustomerProfile)
+                    .ThenInclude(p => p.VesselOwnerVessels)
+                        .ThenInclude(vov => vov.Vessel)
+                .Where(c => !c.IsDeleted && c.CustomerProfile.VesselOwnerVessels.Any(vov => !vov.IsDeleted && !vov.Vessel.IsDeleted))
                 .ToListAsync();
             
             var classifications = await dbContext.SlipClassifications
                 .Where(sc => !sc.IsDeleted)
                 .ToListAsync();
             
-            logger.LogInformation("Retrieved {SlipCount} active slips, {VesselCount} vessels, {ClassificationCount} classifications from database", 
-                slips.Count, vessels.Count, classifications.Count);
+            logger.LogInformation("Retrieved {SlipCount} active slips, {CustomerCount} vessel owner customers, {ClassificationCount} classifications from database", 
+                slips.Count, vesselOwnerCustomers.Count, classifications.Count);
             
-            return (slips, vessels, classifications);
+            return (slips, vesselOwnerCustomers, classifications);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error retrieving data from database");
-            return (Enumerable.Empty<SlipEntity>(), Enumerable.Empty<VesselEntity>(), Enumerable.Empty<SlipClassificationEntity>());
+            return (Enumerable.Empty<SlipEntity>(), Enumerable.Empty<VesselOwnerCustomerEntity>(), Enumerable.Empty<SlipClassificationEntity>());
         }
     }
 
-    private static List<(long VesselId, long SlipId, long ClassificationId)> FindCompatibleMatches(
+    private static List<(VesselOwnerCustomerEntity Customer, VesselEntity Vessel, SlipEntity Slip, SlipClassificationEntity Classification)> FindCompatibleMatches(
         IEnumerable<SlipEntity> slips, 
-        IEnumerable<VesselEntity> vessels, 
-        IEnumerable<SlipClassificationEntity> classifications)
+        IEnumerable<VesselOwnerCustomerEntity> vesselOwnerCustomers, 
+        IEnumerable<SlipClassificationEntity> classifications,
+        ILogger logger)
     {
-        var matches = new List<(long VesselId, long SlipId, long ClassificationId)>();
+        var matches = new List<(VesselOwnerCustomerEntity Customer, VesselEntity Vessel, SlipEntity Slip, SlipClassificationEntity Classification)>();
         var classificationDict = classifications.ToDictionary(c => c.Id);
         
-        foreach (var vessel in vessels)
+        foreach (var customer in vesselOwnerCustomers)
         {
-            foreach (var slip in slips)
+            foreach (var vesselOwnerVessel in customer.CustomerProfile.VesselOwnerVessels.Where(vov => !vov.IsDeleted))
             {
-                if (classificationDict.TryGetValue(slip.SlipClassificationId, out var classification))
+                var vessel = vesselOwnerVessel.Vessel;
+                if (vessel.IsDeleted) continue;
+                
+                foreach (var slip in slips)
                 {
-                    // Check if vessel can fit in slip based on dimensions
-                    if (vessel.Length <= classification.MaxLength && vessel.Beam <= classification.MaxBeam)
+                    if (classificationDict.TryGetValue(slip.SlipClassificationId, out var classification))
                     {
-                        matches.Add((vessel.Id, slip.Id, slip.SlipClassificationId));
+                        // Check if vessel can fit in slip based on dimensions
+                        if (vessel.Length <= classification.MaxLength && vessel.Beam <= classification.MaxBeam)
+                        {
+                            matches.Add((customer, vessel, slip, classification));
+                        }
                     }
                 }
             }
         }
         
+        logger.LogInformation("Found {MatchCount} compatible customer-vessel-slip matches across {CustomerCount} customers", 
+            matches.Count, vesselOwnerCustomers.Count());
+        
         return matches;
     }
 
-    private static SlipReservationEntity GenerateSlipReservation(
+    private static SlipReservationOrderCompositeEntity GenerateSlipReservationOrder(
         Random random, 
-        List<(long VesselId, long SlipId, long ClassificationId)> compatibleMatches,
-        IEnumerable<SlipClassificationEntity> classifications)
+        List<(VesselOwnerCustomerEntity Customer, VesselEntity Vessel, SlipEntity Slip, SlipClassificationEntity Classification)> compatibleMatches,
+        IEnumerable<SlipClassificationEntity> classifications,
+        int batchNumber,
+        int recordIndex)
     {
-        var (vesselId, slipId, classificationId) = compatibleMatches[random.Next(compatibleMatches.Count)];
-        var classification = classifications.First(c => c.Id == classificationId);
+        var (customer, vessel, slip, classification) = compatibleMatches[random.Next(compatibleMatches.Count)];
         
         var (startDate, endDate) = GenerateDateRange(random);
-        var status = GetWeightedStatus(random, startDate, endDate);
+        var rentalStatus = GetWeightedRentalStatus(random, startDate, endDate);
+        var orderStatus = MapRentalStatusToOrderStatus(rentalStatus);
         var (priceRate, priceUnit) = GeneratePriceRate(random, classification);
         var (createdAt, updatedAt) = GenerateTimestamps(random, startDate);
+        var orderDate = GenerateOrderDate(random, startDate, createdAt);
+        var orderNumber = GenerateOrderNumber(batchNumber, recordIndex, orderDate);
+        var totalAmount = CalculateTotalAmount(priceRate, priceUnit, startDate, endDate);
+        var notes = OrderNotesTemplates[random.Next(OrderNotesTemplates.Length)];
 
-        return new SlipReservationEntity
+        return new SlipReservationOrderCompositeEntity()
         {
-            SlipId = slipId,
-            VesselId = vesselId,
-            StartDate = startDate,
-            EndDate = endDate,
-            PriceRate = priceRate,
-            PriceUnit = priceUnit,
-            Status = status,
-            CreatedAt = createdAt,
-            UpdatedAt = updatedAt,
-            IsDeleted = false
+            Order = new VesselOwnerOrderEntity
+            {
+                OrderNumber = orderNumber,
+                CustomerId = customer.Id,
+                Customer = customer.CustomerProfile,
+                OrderDate = orderDate,
+                OrderType = OrderType.SlipReservation,
+                // OrderTypeId will be set to match the SlipReservationEntity.Id
+                TotalAmount = totalAmount,
+                Notes = notes,
+                Status = orderStatus,
+                CreatedAt = createdAt,
+                UpdatedAt = updatedAt,
+                IsDeleted = false
+            },
+            OrderInfo = new SlipReservationEntity
+            {
+                SlipId = slip.Id,
+                VesselId = vessel.Id,
+                StartDate = startDate,
+                EndDate = endDate,
+                PriceRate = priceRate,
+                PriceUnit = priceUnit,
+                Status = rentalStatus,
+                CreatedAt = createdAt,
+                UpdatedAt = updatedAt,
+                IsDeleted = false
+            }
+        };
+    }
+
+    private static string GenerateOrderNumber(int batchNumber, int recordIndex, DateTime orderDate)
+    {
+        // Format: SR-YYYYMM-BBBB-RRRR (SlipReservation-YearMonth-Batch-Record)
+        return $"SR-{orderDate:yyyyMM}-{batchNumber:D4}-{recordIndex + 1:D4}";
+    }
+
+    private static DateTime GenerateOrderDate(Random random, DateTime startDate, DateTime createdAt)
+    {
+        // Order date should be between creation and start date, or close to creation for past orders
+        var minOrderDate = createdAt;
+        var maxOrderDate = startDate > createdAt ? startDate : createdAt.AddDays(1);
+        
+        var daysDiff = (maxOrderDate - minOrderDate).Days;
+        if (daysDiff <= 0) return createdAt;
+        
+        return minOrderDate.AddDays(random.Next(daysDiff + 1));
+    }
+
+    private static int CalculateTotalAmount(int priceRate, PriceUnit priceUnit, DateTime startDate, DateTime endDate)
+    {
+        var duration = (endDate - startDate).Days;
+        if (duration <= 0) return priceRate; // Minimum one unit
+        
+        return priceUnit switch
+        {
+            PriceUnit.PerDay => priceRate * duration,
+            PriceUnit.PerWeek => priceRate * (int)Math.Ceiling(duration / 7.0),
+            PriceUnit.PerMonth => priceRate * (int)Math.Ceiling(duration / 30.0),
+            PriceUnit.PerYear => priceRate * (int)Math.Ceiling(duration / 365.0),
+            _ => priceRate * duration
+        };
+    }
+
+    private static OrderStatus MapRentalStatusToOrderStatus(RentalStatus rentalStatus)
+    {
+        return rentalStatus switch
+        {
+            RentalStatus.Quoted => OrderStatus.Quoted,
+            RentalStatus.Pending => OrderStatus.Pending,
+            RentalStatus.Active => OrderStatus.InProgress,
+            RentalStatus.Expired => OrderStatus.Completed,
+            RentalStatus.Cancelled => OrderStatus.Cancelled,
+            _ => OrderStatus.Confirmed
         };
     }
 
@@ -195,7 +295,7 @@ public static class GenerateSlipReservations
         return (startDate, endDate);
     }
 
-    private static RentalStatus GetWeightedStatus(Random random, DateTime startDate, DateTime endDate)
+    private static RentalStatus GetWeightedRentalStatus(Random random, DateTime startDate, DateTime endDate)
     {
         var now = DateTime.UtcNow;
         

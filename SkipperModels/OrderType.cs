@@ -5,7 +5,7 @@ namespace SkipperModels
     /// </summary>
     public enum OrderType
     {
-        RentalAgreement,         // Links to RentalAgreementEntity
+        SlipReservation,         // Links to SlipReservationEntity
         ServiceOrder,            // Links to ServiceOrderEntity (future)
         PurchaseOrder,           // Links to PurchaseOrderEntity (future)
         StorageOrder             // Links to StorageOrderEntity (future)

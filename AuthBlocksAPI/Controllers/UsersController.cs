@@ -17,7 +17,7 @@ namespace AuthBlocksAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class UsersController : BaseModelController<ApplicationUser, UserModel, IUserService>
+public class UsersController : ModelController<ApplicationUser, UserModel, IUserService>
 {
     private readonly IHierarchicalRoleService _authRoleService;
 

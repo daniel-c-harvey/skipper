@@ -8,7 +8,7 @@ using NetBlocks.Models;
 
 namespace AuthBlocksData.Services;
 
-public class RoleService : ManagerBase<ApplicationRole, RoleModel, IRoleRepository, RoleEntityToModelConverter>, IRoleService
+public class RoleService : Manager<ApplicationRole, RoleModel, IRoleRepository, RoleEntityToModelConverter>, IRoleService
 {
     private readonly RoleManager<ApplicationRole> _roleManager;
 
@@ -17,23 +17,23 @@ public class RoleService : ManagerBase<ApplicationRole, RoleModel, IRoleReposito
         _roleManager = roleManager;
     }
 
-    public override async Task<Result> Add(RoleModel model)
+    public override async Task<ResultContainer<RoleModel>> Add(RoleModel model)
     {
         try
         {
             var identityResult = await _roleManager.CreateAsync(RoleEntityToModelConverter.Convert(model));
             if (identityResult.Succeeded)
             {
-                return Result.CreatePassResult();
+                return (await Repository.GetByNameAsync(model.NormalizedName)) is ApplicationRole newRole 
+                    ? ResultContainer<RoleModel>.CreatePassResult(RoleEntityToModelConverter.Convert(newRole)) 
+                    : ResultContainer<RoleModel>.CreateFailResult("Role not found");
             }
-            else
-            {
-                return Result.CreateFailResult(identityResult.Errors.Select(error => error.Description).ToArray());
-            }
+            
+            return ResultContainer<RoleModel>.CreateFailResult(identityResult.Errors.Select(error => error.Description).ToArray());
         }
         catch (Exception ex)
         {
-            return Result.CreateFailResult(ex.Message);
+            return ResultContainer<RoleModel>.CreateFailResult(ex.Message);
         }
     }
 

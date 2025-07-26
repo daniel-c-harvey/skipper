@@ -1,18 +1,19 @@
 using Data.Shared.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Models.Shared.Entities;
 using SkipperModels.Entities;
 using SkipperModels;
 
 namespace SkipperData.Data.Configurations
 {
-    public class OrderConfiguration : BaseEntityConfiguration<OrderEntity>
+    public abstract class OrderConfiguration<TCustomerProfile, TOrderEntity> : BaseLinkageEntityConfiguration<TOrderEntity>
+    where TCustomerProfile : CustomerProfileBaseEntity
+    where TOrderEntity : OrderEntity<TCustomerProfile>
     {
-        public override void Configure(EntityTypeBuilder<OrderEntity> builder)
+        public override void Configure(EntityTypeBuilder<TOrderEntity> builder)
         {
             base.Configure(builder);
-
-            builder.ToTable("orders");
 
             builder.Property(x => x.OrderNumber)
                 .IsRequired()
@@ -28,6 +29,8 @@ namespace SkipperData.Data.Configurations
             builder.Property(x => x.OrderTypeId)
                 .IsRequired();
 
+            builder.HasKey(x => new { x.OrderTypeId, x.OrderType });
+            
             builder.Property(x => x.TotalAmount)
                 .IsRequired();
 
@@ -50,9 +53,6 @@ namespace SkipperData.Data.Configurations
 
             // Index for efficient querying by customer
             builder.HasIndex(x => x.CustomerId);
-
-            // Index for efficient querying by order type
-            builder.HasIndex(x => new { x.OrderTypeId, x.OrderType });
 
             // Index for efficient querying by status and date
             builder.HasIndex(x => new { x.Status, x.OrderDate });

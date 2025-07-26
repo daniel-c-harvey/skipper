@@ -38,7 +38,7 @@ public class Program
 
         builder.Services.Configure<JsonSerializerOptions>(options =>
         {
-            options.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+            options.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
             options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         });
         

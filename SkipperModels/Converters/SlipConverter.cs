@@ -20,20 +20,6 @@ public class SlipEntityToModelConverter : IEntityToModelConverter<SlipEntity, Sl
             UpdatedAt = entity.UpdatedAt,
         };
     }
-    
-    public static SlipModel Convert(SlipEntity entity, SlipClassificationModel slipClassification)
-    {
-        return new SlipModel()
-        {
-            Id = entity.Id,
-            SlipClassification = slipClassification,
-            SlipNumber = entity.SlipNumber,
-            LocationCode = entity.LocationCode,
-            Status = entity.Status,
-            CreatedAt = entity.CreatedAt,
-            UpdatedAt = entity.UpdatedAt,
-        };
-    }
 
     public static SlipEntity Convert(SlipModel model)
     {
@@ -42,22 +28,6 @@ public class SlipEntityToModelConverter : IEntityToModelConverter<SlipEntity, Sl
             Id = model.Id,
             SlipClassificationId = model.SlipClassification?.Id ?? 0,
             // SlipClassificationEntity = SlipClassificationModel.CreateEntity(model.SlipClassification),
-            SlipNumber = model.SlipNumber,
-            LocationCode = model.LocationCode,
-            Status = model.Status,
-            CreatedAt = model.CreatedAt,
-            UpdatedAt = model.UpdatedAt,
-        };
-    }
-    
-    // Depth-controlled method
-    public static SlipEntity Convert(SlipModel model, SlipClassificationEntity slipClassification)
-    {
-        return new SlipEntity()
-        {
-            Id = model.Id,
-            SlipClassificationId = model.SlipClassification?.Id ?? 0,
-            // SlipClassificationEntity = slipClassification,
             SlipNumber = model.SlipNumber,
             LocationCode = model.LocationCode,
             Status = model.Status,

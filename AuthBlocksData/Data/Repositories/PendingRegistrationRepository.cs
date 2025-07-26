@@ -72,6 +72,6 @@ public class PendingRegistrationRepository : Repository<AuthDbContext, PendingRe
     private void PopulatePendingRegistrationRoles(PendingRegistration? pendingRegistration)
     {
         if (pendingRegistration is { RoleIds: not null })
-            pendingRegistration.Roles = _context.Roles.Where(r => pendingRegistration.RoleIds.Contains(r.Id)).ToList();
+            pendingRegistration.Roles = Context.Roles.Where(r => pendingRegistration.RoleIds.Contains(r.Id)).ToList();
     }
 }

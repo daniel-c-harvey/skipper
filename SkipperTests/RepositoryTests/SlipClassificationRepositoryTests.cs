@@ -42,7 +42,6 @@ public class SlipClassificationRepositoryTests : RepositoryTestBase<SlipClassifi
         {
             await _repository.AddAsync(classification);
         }
-        await _repository.SaveChangesAsync();
     }
 
     #endregion
@@ -478,7 +477,6 @@ public class SlipClassificationRepositoryTests : RepositoryTestBase<SlipClassifi
 
         // Act
         var result = await _repository.AddAsync(classification);
-        await _repository.SaveChangesAsync();
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -501,7 +499,6 @@ public class SlipClassificationRepositoryTests : RepositoryTestBase<SlipClassifi
         classification.BasePrice = 60;
         classification.UpdatedAt = DateTime.UtcNow.AddHours(1);
         await _repository.UpdateAsync(classification);
-        await _repository.SaveChangesAsync();
 
         // Assert
         var updatedClassification = await _repository.GetByIdAsync(1);
@@ -519,7 +516,6 @@ public class SlipClassificationRepositoryTests : RepositoryTestBase<SlipClassifi
 
         // Act
         await _repository.DeleteAsync(1);
-        await _repository.SaveChangesAsync();
 
         // Assert - Repository methods should not return the soft deleted entity
         var deletedClassification = await _repository.GetByIdAsync(1);
@@ -591,7 +587,6 @@ public class SlipClassificationRepositoryTests : RepositoryTestBase<SlipClassifi
         var classification = CreateSlipClassification(1, "Deleted Slip", 25.0m, 8.0m, 50);
         classification.IsDeleted = true;
         await _repository.AddAsync(classification);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetByIdAsync(1);
@@ -610,7 +605,6 @@ public class SlipClassificationRepositoryTests : RepositoryTestBase<SlipClassifi
 
         await _repository.AddAsync(activeClassification);
         await _repository.AddAsync(deletedClassification);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetAllAsync();
@@ -633,7 +627,6 @@ public class SlipClassificationRepositoryTests : RepositoryTestBase<SlipClassifi
         await _repository.AddAsync(smallSlip);
         await _repository.AddAsync(deletedSlip);
         await _repository.AddAsync(mediumSlip);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.FindAsync(c => c.Name.Contains("Small"));
@@ -656,7 +649,6 @@ public class SlipClassificationRepositoryTests : RepositoryTestBase<SlipClassifi
         await _repository.AddAsync(smallSlip);
         await _repository.AddAsync(deletedSlip);
         await _repository.AddAsync(premiumSlip);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.SearchByNameAsync("Small");
@@ -679,7 +671,6 @@ public class SlipClassificationRepositoryTests : RepositoryTestBase<SlipClassifi
         await _repository.AddAsync(budgetSlip);
         await _repository.AddAsync(deletedSlip);
         await _repository.AddAsync(standardSlip);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetByPriceRangeAsync(40, 80);
@@ -700,7 +691,6 @@ public class SlipClassificationRepositoryTests : RepositoryTestBase<SlipClassifi
 
         await _repository.AddAsync(activeSlip);
         await _repository.AddAsync(deletedSlip);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetCompatibleForVesselAsync(20.0m, 6.0m);
@@ -718,7 +708,6 @@ public class SlipClassificationRepositoryTests : RepositoryTestBase<SlipClassifi
         var classification = CreateSlipClassification(1, "Deleted Slip", 25.0m, 8.0m, 50);
         classification.IsDeleted = true;
         await _repository.AddAsync(classification);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.ExistsAsync(1);

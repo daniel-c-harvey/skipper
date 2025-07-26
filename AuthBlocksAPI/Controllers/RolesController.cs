@@ -17,7 +17,7 @@ namespace AuthBlocksAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class RolesController : BaseModelController<ApplicationRole, RoleModel, IRoleService>
+public class RolesController : ModelController<ApplicationRole, RoleModel, IRoleService>
 {
     public RolesController(IRoleService roleService) : base(roleService)
     {

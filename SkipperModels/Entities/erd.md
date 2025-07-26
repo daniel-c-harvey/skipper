@@ -149,3 +149,4 @@ erDiagram
     VESSEL ||--o{ RENTAL_AGREEMENT : "rented_through"
     CUSTOMER ||--o{ ORDER : "places"
     ORDER ||--|| RENTAL_AGREEMENT : "polymorphic_link"
+```

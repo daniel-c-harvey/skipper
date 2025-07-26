@@ -96,7 +96,6 @@ public static class GenerateSlipClassifications
         // Add all slip classifications in parallel
         Task[] classificationTasks = slipClassifications.Select(Task (slipClassification) => repository.AddAsync(slipClassification)).ToArray();
         Task.WaitAll(classificationTasks);
-        await repository.SaveChangesAsync();
         
         logger.LogInformation("Slip classification generation completed: {TotalRecords} classifications inserted", totalRecords);
     }

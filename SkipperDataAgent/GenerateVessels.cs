@@ -126,7 +126,6 @@ public static class GenerateVessels
             
             Task[] vesselTasks = vessels.Select(Task (vessel) => repository.AddAsync(vessel)).ToArray();
             Task.WaitAll(vesselTasks);
-            await repository.SaveChangesAsync();
             
             logger.LogInformation("Batch {Batch} completed: {RecordsInserted} vessels inserted", batch, vessels.Count);
         }

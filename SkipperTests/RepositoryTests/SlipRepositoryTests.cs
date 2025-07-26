@@ -42,7 +42,6 @@ public class SlipRepositoryTests : RepositoryTestBase<SlipEntity>
         {
             await _repository.AddAsync(slip);
         }
-        await _repository.SaveChangesAsync();
     }
 
     #endregion
@@ -305,7 +304,6 @@ public class SlipRepositoryTests : RepositoryTestBase<SlipEntity>
 
         // Act
         var result = await _repository.AddAsync(slip);
-        await _repository.SaveChangesAsync();
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -327,7 +325,6 @@ public class SlipRepositoryTests : RepositoryTestBase<SlipEntity>
         slip.Status = SlipStatus.Booked;
         slip.UpdatedAt = DateTime.UtcNow.AddHours(1);
         await _repository.UpdateAsync(slip);
-        await _repository.SaveChangesAsync();
 
         // Assert
         var updatedSlip = await _repository.GetByIdAsync(1);
@@ -344,7 +341,6 @@ public class SlipRepositoryTests : RepositoryTestBase<SlipEntity>
 
         // Act
         await _repository.DeleteAsync(1);
-        await _repository.SaveChangesAsync();
 
         // Assert - Repository methods should not return the soft deleted entity
         var deletedSlip = await _repository.GetByIdAsync(1);
@@ -416,7 +412,6 @@ public class SlipRepositoryTests : RepositoryTestBase<SlipEntity>
         var slip = CreateSlip(1, SlipStatus.Available, "A1");
         slip.IsDeleted = true;
         await _repository.AddAsync(slip);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetByIdAsync(1);
@@ -435,7 +430,6 @@ public class SlipRepositoryTests : RepositoryTestBase<SlipEntity>
 
         await _repository.AddAsync(activeSlip);
         await _repository.AddAsync(deletedSlip);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetAllAsync();
@@ -458,7 +452,6 @@ public class SlipRepositoryTests : RepositoryTestBase<SlipEntity>
         await _repository.AddAsync(activeSlip);
         await _repository.AddAsync(deletedSlip);
         await _repository.AddAsync(anotherActiveSlip);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.FindAsync(s => s.LocationCode == "LOC1");
@@ -481,7 +474,6 @@ public class SlipRepositoryTests : RepositoryTestBase<SlipEntity>
         await _repository.AddAsync(activeSlip);
         await _repository.AddAsync(deletedSlip);
         await _repository.AddAsync(anotherActiveSlip);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetByStatusAsync(SlipStatus.Available);
@@ -502,7 +494,6 @@ public class SlipRepositoryTests : RepositoryTestBase<SlipEntity>
 
         await _repository.AddAsync(activeSlip);
         await _repository.AddAsync(deletedSlip);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetAvailableAsync();
@@ -523,7 +514,6 @@ public class SlipRepositoryTests : RepositoryTestBase<SlipEntity>
 
         await _repository.AddAsync(activeSlip);
         await _repository.AddAsync(deletedSlip);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetBySlipNumberAsync("A1");
@@ -541,7 +531,6 @@ public class SlipRepositoryTests : RepositoryTestBase<SlipEntity>
         var deletedSlip = CreateSlip(1, SlipStatus.Available, "A1");
         deletedSlip.IsDeleted = true;
         await _repository.AddAsync(deletedSlip);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetBySlipNumberAsync("A1");
@@ -557,7 +546,6 @@ public class SlipRepositoryTests : RepositoryTestBase<SlipEntity>
         var slip = CreateSlip(1, SlipStatus.Available, "A1");
         slip.IsDeleted = true;
         await _repository.AddAsync(slip);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.ExistsAsync(1);

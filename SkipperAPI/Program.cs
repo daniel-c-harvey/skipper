@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetBlocks.Models.Environment;
 using NetBlocks.Utilities.Environment;
+using Scalar.AspNetCore;
 using SkipperData.Data;
 using SkipperData.Managers;
 
@@ -23,13 +24,13 @@ public class Program
 
         builder.Services.ConfigureHttpJsonOptions(options =>
         {
-            options.SerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+            options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         });
         
         builder.Services.Configure<JsonOptions>(options =>
         {
-            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         });
         
@@ -55,6 +56,7 @@ public class Program
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
+            app.MapScalarApiReference();
             app.UseDeveloperExceptionPage();
             app.UseHttpLogging();
             // Add this to see model binding errors
@@ -87,10 +89,6 @@ public class Program
         
                 // Limit processing to prevent abuse
                 options.ForwardLimit = 2;
-        
-                // For APIs: restrict allowed hosts for security
-                options.AllowedHosts.Add("api.example.com");
-                options.AllowedHosts.Add("*.example.com");
             });
         }
     }

@@ -11,13 +11,13 @@ public class SkipperContext : DbContext
     public DbSet<SlipEntity> Slips { get; set; }
     public DbSet<SlipClassificationEntity> SlipClassifications { get; set; }
     public DbSet<VesselEntity> Vessels { get; set; }
-    // public DbSet<SlipReservationEntity> SlipReservations { get; set; }
+    public DbSet<SlipReservationEntity> SlipReservations { get; set; }
     
-    // Order entities - TEMPORARILY COMMENTED OUT FOR MIGRATION
-    // public DbSet<OrderEntity> Orders { get; set; }
+    // Order entities
+    public DbSet<VesselOwnerOrderEntity> Orders { get; set; }
     
     // Customer entities
-    public DbSet<CustomerEntity> Customers { get; set; }
+    public DbSet<VesselOwnerCustomerEntity> Customers { get; set; }
     public DbSet<VesselOwnerProfileEntity> VesselOwnerProfiles { get; set; }
     public DbSet<IndividualCustomerProfileEntity> IndividualCustomerProfiles { get; set; }
     public DbSet<BusinessCustomerProfileEntity> BusinessCustomerProfiles { get; set; }
@@ -46,11 +46,11 @@ public class SkipperContext : DbContext
         // modelBuilder.ApplyConfiguration(new RentalAgreementConfiguration());
         modelBuilder.ApplyConfiguration(new SlipReservationConfiguration());
         
-        // Order configurations - TEMPORARILY COMMENTED OUT FOR MIGRATION
-        // modelBuilder.ApplyConfiguration(new OrderConfiguration());
+        // Order configurations
+        modelBuilder.ApplyConfiguration(new VesselOwnerOrderConfiguration());
         
         // Customer configurations
-        modelBuilder.ApplyConfiguration(new CustomerConfiguration());
+        modelBuilder.ApplyConfiguration(new VesselOwnerCustomerConfiguration());
         modelBuilder.ApplyConfiguration(new VesselOwnerProfileConfiguration());
         modelBuilder.ApplyConfiguration(new IndividualCustomerProfileConfiguration());
         modelBuilder.ApplyConfiguration(new BusinessCustomerProfileConfiguration());

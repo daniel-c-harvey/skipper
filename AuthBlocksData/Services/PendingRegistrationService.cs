@@ -7,7 +7,7 @@ using NetBlocks.Models;
 
 namespace AuthBlocksData.Services;
 
-public class PendingRegistrationService : ManagerBase<PendingRegistration, PendingRegistrationModel, IPendingRegistrationRepository, PendingRegistrationEntityToModelConverter>, IPendingRegistrationService
+public class PendingRegistrationService : Manager<PendingRegistration, PendingRegistrationModel, IPendingRegistrationRepository, PendingRegistrationEntityToModelConverter>, IPendingRegistrationService
 {
     public PendingRegistrationService(IPendingRegistrationRepository repository) : base(repository)
     {
@@ -42,7 +42,7 @@ public class PendingRegistrationService : ManagerBase<PendingRegistration, Pendi
             var entity = PendingRegistrationEntityToModelConverter.Convert(model);
             entity.TokenHash = tokenHash;
             await Repository.AddAsync(entity);
-            return await Repository.SaveChangesAsync();
+            return Result.CreatePassResult();
         }
         catch (Exception ex)
         {

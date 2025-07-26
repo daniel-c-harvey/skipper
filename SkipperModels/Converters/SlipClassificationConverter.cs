@@ -20,7 +20,6 @@ public class SlipClassificationEntityToModelConverter : IEntityToModelConverter<
             CreatedAt = entity.CreatedAt,
             UpdatedAt = entity.UpdatedAt,
         };
-        model.Slips = entity.Slips.Select(slip => SlipEntityToModelConverter.Convert(slip, model)).ToList();
         return model;
     }
 
@@ -37,8 +36,6 @@ public class SlipClassificationEntityToModelConverter : IEntityToModelConverter<
             CreatedAt = model.CreatedAt,
             UpdatedAt = model.UpdatedAt,
         };
-        // Do not set the navigation properties when creating entities.
-        // entity.Slips = model.Slips?.Select(slip => SlipModel.CreateEntity(slip, entity))?.ToList() ?? [];
         return entity;
     }
 }

@@ -2,7 +2,7 @@ using Models.Shared.Models;
 
 namespace SkipperModels.Models
 {
-    public class OrderModel : BaseModel, IModel
+    public class OrderModel : BaseModel, ICompositeModelRoot<OrderType>
     {
         public string OrderNumber { get; set; }
         public long CustomerId { get; set; }
@@ -13,5 +13,11 @@ namespace SkipperModels.Models
         public int TotalAmount { get; set; }
         public string? Notes { get; set; }
         public OrderStatus Status { get; set; }
+
+        public OrderType Discriminator
+        {
+            get => OrderType;
+            set => OrderType = value;
+        }
     }
 } 

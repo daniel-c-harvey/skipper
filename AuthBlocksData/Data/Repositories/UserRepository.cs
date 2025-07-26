@@ -26,14 +26,14 @@ public class UserRepository : Repository<AuthDbContext, ApplicationUser>, IUserR
     }
 
     // Identity-specific methods
-    public async Task<ApplicationUser?> GetByUsernameAsync(string normalizedUsername)
+    public async Task<ApplicationUser?> GetByUsernameAsync(string username)
     {
-        return await _context.Users.FirstOrDefaultAsync(u => u.NormalizedUserName == normalizedUsername && !u.IsDeleted);
+        return await Context.Users.FirstOrDefaultAsync(u => u.UserName == username && !u.IsDeleted);
     }
 
-    public async Task<ApplicationUser?> GetByEmailAsync(string normalizedEmail)
+    public async Task<ApplicationUser?> GetByEmailAsync(string email)
     {
-        return await _context.Users.FirstOrDefaultAsync(u => u.NormalizedEmail == normalizedEmail && !u.IsDeleted);
+        return await Context.Users.FirstOrDefaultAsync(u => u.Email == email && !u.IsDeleted);
     }
 
     

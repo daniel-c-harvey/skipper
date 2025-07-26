@@ -1,11 +1,11 @@
-using Models.Shared.Entities;
+using Models.Shared;
 using SkipperData.Data;
 
 namespace SkipperTests.RepositoryTests;
 
 [TestFixture]
 public abstract class RepositoryTestBase<TEntity> 
-where TEntity : class, IEntity
+where TEntity : class, IKeyed
 {
     protected SkipperContext Context;
     

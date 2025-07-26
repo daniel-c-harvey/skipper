@@ -1,14 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Models.Shared.Common;
-using Models.Shared.Entities;
-using Models.Shared.Models;
 using NetBlocks.Models;
 
 namespace API.Shared.Controllers;
 
-public interface IBaseModelController<TEntity, TModel> 
-where TEntity : class, IEntity, new() 
-where TModel : class, IModel, new()
+public interface IModelControllerBase<TModel>
 {
     Task<ActionResult<ApiResultDto<TModel>>> Get(long id);
     Task<ActionResult<ApiResultDto<IEnumerable<TModel>>>> GetAll();

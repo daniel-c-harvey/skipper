@@ -41,7 +41,6 @@ namespace SkipperData.Data.Migrations
                         .UseCollation("en-US-x-icu");
 
                     b.Property<string>("Address2")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .UseCollation("en-US-x-icu");
@@ -220,56 +219,6 @@ namespace SkipperData.Data.Migrations
                     b.HasIndex("IsDeleted");
 
                     b.ToTable("contacts", "skipper");
-                });
-
-            modelBuilder.Entity("SkipperModels.Entities.CustomerEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("AccountNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .UseCollation("en-US-x-icu");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("CustomerProfileId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("CustomerProfileType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .UseCollation("en-US-x-icu");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountNumber")
-                        .IsUnique();
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("CustomerProfileId", "CustomerProfileType");
-
-                    b.ToTable("customers", "skipper");
                 });
 
             modelBuilder.Entity("SkipperModels.Entities.IndividualCustomerProfileEntity", b =>
@@ -567,6 +516,128 @@ namespace SkipperData.Data.Migrations
                     b.ToTable("vessels", "skipper");
                 });
 
+            modelBuilder.Entity("SkipperModels.Entities.VesselOwnerCustomerEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("AccountNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .UseCollation("en-US-x-icu");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("CustomerProfileId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("CustomerProfileType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime>("LicenseExpiryDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LicenseNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .UseCollation("en-US-x-icu");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .UseCollation("en-US-x-icu");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountNumber")
+                        .IsUnique();
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("CustomerProfileId", "CustomerProfileType");
+
+                    b.ToTable("vessel_owner_customers", "skipper");
+                });
+
+            modelBuilder.Entity("SkipperModels.Entities.VesselOwnerOrderEntity", b =>
+                {
+                    b.Property<long>("OrderTypeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("OrderType")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("CustomerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Discriminator")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .UseCollation("en-US-x-icu");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("OrderNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .UseCollation("en-US-x-icu");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TotalAmount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("OrderTypeId", "OrderType");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("OrderNumber")
+                        .IsUnique();
+
+                    b.HasIndex("Status", "OrderDate");
+
+                    b.ToTable("vessel_owner_orders", "skipper");
+                });
+
             modelBuilder.Entity("SkipperModels.Entities.VesselOwnerProfileEntity", b =>
                 {
                     b.Property<long>("Id")
@@ -687,7 +758,7 @@ namespace SkipperData.Data.Migrations
             modelBuilder.Entity("SkipperModels.Entities.SlipEntity", b =>
                 {
                     b.HasOne("SkipperModels.Entities.SlipClassificationEntity", "SlipClassificationEntity")
-                        .WithMany("Slips")
+                        .WithMany()
                         .HasForeignKey("SlipClassificationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -712,6 +783,28 @@ namespace SkipperData.Data.Migrations
                     b.Navigation("SlipEntity");
 
                     b.Navigation("VesselEntity");
+                });
+
+            modelBuilder.Entity("SkipperModels.Entities.VesselOwnerCustomerEntity", b =>
+                {
+                    b.HasOne("SkipperModels.Entities.VesselOwnerProfileEntity", "CustomerProfile")
+                        .WithMany()
+                        .HasForeignKey("CustomerProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CustomerProfile");
+                });
+
+            modelBuilder.Entity("SkipperModels.Entities.VesselOwnerOrderEntity", b =>
+                {
+                    b.HasOne("SkipperModels.Entities.VesselOwnerProfileEntity", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("SkipperModels.Entities.VesselOwnerProfileEntity", b =>
@@ -747,11 +840,6 @@ namespace SkipperData.Data.Migrations
             modelBuilder.Entity("SkipperModels.Entities.BusinessCustomerProfileEntity", b =>
                 {
                     b.Navigation("BusinessCustomerContacts");
-                });
-
-            modelBuilder.Entity("SkipperModels.Entities.SlipClassificationEntity", b =>
-                {
-                    b.Navigation("Slips");
                 });
 
             modelBuilder.Entity("SkipperModels.Entities.VesselOwnerProfileEntity", b =>

@@ -13,6 +13,7 @@ public static class ManagerRegistration
         services.AddScoped<SlipManager>();
         services.AddScoped<SlipClassificationManager>();
         services.AddScoped<SlipReservationManager>();
+        services.AddScoped<SlipReservationOrderManager>();
         
         return services;
     }

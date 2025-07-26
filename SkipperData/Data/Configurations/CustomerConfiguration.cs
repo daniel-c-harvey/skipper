@@ -6,13 +6,13 @@ using SkipperModels;
 
 namespace SkipperData.Data.Configurations
 {
-    public class CustomerConfiguration : BaseEntityConfiguration<CustomerEntity>
+    public abstract class CustomerConfiguration<TCustomer, TCustomerProfile> : BaseEntityConfiguration<TCustomer>
+        where TCustomer : CustomerEntity<TCustomerProfile>
+        where TCustomerProfile : CustomerProfileBaseEntity
     {
-        public override void Configure(EntityTypeBuilder<CustomerEntity> builder)
+        public override void Configure(EntityTypeBuilder<TCustomer> builder)
         {
             base.Configure(builder);
-
-            builder.ToTable("customers");
 
             builder.Property(x => x.AccountNumber)
                 .IsRequired()

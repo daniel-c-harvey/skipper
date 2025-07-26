@@ -93,7 +93,6 @@ public class RegistrationTokenService : IRegistrationTokenService
         registrationToken.ConsumedAt = DateTime.UtcNow;
         
         await _repository.UpdateAsync(registrationToken);
-        await _repository.SaveChangesAsync();
         
         _logger.LogInformation("Registration token consumed for pending user {PendingUserEmail}", registrationToken.PendingUserEmail);
         

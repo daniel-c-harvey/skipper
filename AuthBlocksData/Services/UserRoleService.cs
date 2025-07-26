@@ -7,7 +7,7 @@ using NetBlocks.Models;
 
 namespace AuthBlocksData.Services;
 
-public class UserRoleService : ManagerBase<ApplicationUserRole, UserRoleModel, IUserRoleRepository, UserRoleEntityToModelConverter>, IUserRoleService
+public class UserRoleService : Manager<ApplicationUserRole, UserRoleModel, IUserRoleRepository, UserRoleEntityToModelConverter>, IUserRoleService
 {
     public UserRoleService(IUserRoleRepository repository) : base(repository)
     {

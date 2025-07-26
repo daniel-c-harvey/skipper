@@ -6,6 +6,6 @@ namespace AuthBlocksData.Data.Repositories;
 public interface IUserRepository : IRepository<ApplicationUser>
 {
     // Identity-specific methods
-    Task<ApplicationUser?> GetByUsernameAsync(string normalizedUsername);
-    Task<ApplicationUser?> GetByEmailAsync(string normalizedEmail);
+    Task<ApplicationUser?> GetByUsernameAsync(string username);
+    Task<ApplicationUser?> GetByEmailAsync(string email);
 } 

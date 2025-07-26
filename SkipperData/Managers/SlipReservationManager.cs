@@ -6,7 +6,7 @@ using SkipperModels.Models;
 
 namespace SkipperData.Managers;
 
-public class SlipReservationManager : ManagerBase<SlipReservationEntity, SlipReservationModel, SlipReservationRepository, SlipReservationEntityToModelConverter>
+public class SlipReservationManager : Manager<SlipReservationEntity, SlipReservationModel, SlipReservationRepository, SlipReservationEntityToModelConverter>
 {
     public SlipReservationManager(SlipReservationRepository repository) : base(repository) { }
 } 

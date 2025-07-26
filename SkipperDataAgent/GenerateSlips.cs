@@ -63,7 +63,6 @@ public static class GenerateSlips
             
             Task[] slipTasks = slips.Select(Task (slip) => repository.AddAsync(slip)).ToArray();
             Task.WaitAll(slipTasks);
-            await repository.SaveChangesAsync();
             
             logger.LogInformation("Batch {Batch} completed: {RecordsInserted} slips inserted", batch, slips.Count);
         }

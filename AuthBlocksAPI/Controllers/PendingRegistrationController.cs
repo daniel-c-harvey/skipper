@@ -16,7 +16,7 @@ namespace AuthBlocksAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [HierarchicalRoleAuthorize(SystemRoleConstants.UserAdmin)]
-public class PendingRegistrationController : BaseModelController<PendingRegistration, PendingRegistrationModel, IPendingRegistrationService>
+public class PendingRegistrationController : ModelController<PendingRegistration, PendingRegistrationModel, IPendingRegistrationService>
 {
     private readonly IRegistrationTokenService _tokenService;
     private readonly IUserService _userService;

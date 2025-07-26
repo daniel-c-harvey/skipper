@@ -43,7 +43,6 @@ public class VesselRepositoryTests : RepositoryTestBase<VesselEntity>
         {
             await _repository.AddAsync(vessel);
         }
-        await _repository.SaveChangesAsync();
     }
 
     #endregion
@@ -344,7 +343,6 @@ public class VesselRepositoryTests : RepositoryTestBase<VesselEntity>
 
         // Act
         var result = await _repository.AddAsync(vessel);
-        await _repository.SaveChangesAsync();
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -367,7 +365,6 @@ public class VesselRepositoryTests : RepositoryTestBase<VesselEntity>
         vessel.Length = 30.0m;
         vessel.UpdatedAt = DateTime.UtcNow.AddHours(1);
         await _repository.UpdateAsync(vessel);
-        await _repository.SaveChangesAsync();
 
         // Assert
         var updatedVessel = await _repository.GetByIdAsync(1);
@@ -385,7 +382,6 @@ public class VesselRepositoryTests : RepositoryTestBase<VesselEntity>
 
         // Act
         await _repository.DeleteAsync(1);
-        await _repository.SaveChangesAsync();
 
         // Assert - Repository methods should not return the soft deleted entity
         var deletedVessel = await _repository.GetByIdAsync(1);
@@ -457,7 +453,6 @@ public class VesselRepositoryTests : RepositoryTestBase<VesselEntity>
         var vessel = CreateVessel(1, "Sea Breeze", "REG001");
         vessel.IsDeleted = true;
         await _repository.AddAsync(vessel);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetByIdAsync(1);
@@ -476,7 +471,6 @@ public class VesselRepositoryTests : RepositoryTestBase<VesselEntity>
 
         await _repository.AddAsync(activeVessel);
         await _repository.AddAsync(deletedVessel);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetAllAsync();
@@ -499,7 +493,6 @@ public class VesselRepositoryTests : RepositoryTestBase<VesselEntity>
         await _repository.AddAsync(activeVessel);
         await _repository.AddAsync(deletedVessel);
         await _repository.AddAsync(anotherActiveVessel);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.FindAsync(v => v.Length >= 25.0m);
@@ -520,7 +513,6 @@ public class VesselRepositoryTests : RepositoryTestBase<VesselEntity>
 
         await _repository.AddAsync(activeVessel);
         await _repository.AddAsync(deletedVessel);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetByRegistrationNumberAsync("REG001");
@@ -538,7 +530,6 @@ public class VesselRepositoryTests : RepositoryTestBase<VesselEntity>
         var deletedVessel = CreateVessel(1, "Sea Breeze", "REG001");
         deletedVessel.IsDeleted = true;
         await _repository.AddAsync(deletedVessel);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetByRegistrationNumberAsync("REG001");
@@ -559,7 +550,6 @@ public class VesselRepositoryTests : RepositoryTestBase<VesselEntity>
         await _repository.AddAsync(activeVessel);
         await _repository.AddAsync(deletedVessel);
         await _repository.AddAsync(anotherActiveVessel);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetByTypeAsync(VesselType.Sailboat);
@@ -582,7 +572,6 @@ public class VesselRepositoryTests : RepositoryTestBase<VesselEntity>
         await _repository.AddAsync(activeVessel);
         await _repository.AddAsync(deletedVessel);
         await _repository.AddAsync(anotherActiveVessel);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.SearchByNameAsync("Sea");
@@ -600,7 +589,6 @@ public class VesselRepositoryTests : RepositoryTestBase<VesselEntity>
         var vessel = CreateVessel(1, "Sea Breeze", "REG001");
         vessel.IsDeleted = true;
         await _repository.AddAsync(vessel);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.ExistsAsync(1);

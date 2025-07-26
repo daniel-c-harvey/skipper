@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Models.Shared.Converters;
 using SkipperModels.Entities;
 using SkipperModels.InputModels;
@@ -9,9 +5,11 @@ using SkipperModels.Models;
 
 namespace SkipperModels.Converters
 {
-    public class CustomerEntityToModelConverter : IEntityToModelConverter<CustomerEntity, CustomerModel>
+    public class CustomerEntityToModelConverter<TCustomerProfile, TCustomer> : IEntityToModelConverter<TCustomer, CustomerModel>
+    where TCustomerProfile : CustomerProfileBaseEntity
+    where TCustomer : CustomerEntity<TCustomerProfile>, new()
     {
-        public static CustomerModel Convert(CustomerEntity entity)
+        public static CustomerModel Convert(TCustomer entity)
         {
             return new CustomerModel
             {
@@ -25,9 +23,9 @@ namespace SkipperModels.Converters
             };
         }
 
-        public static CustomerEntity Convert(CustomerModel model)
+        public static TCustomer Convert(CustomerModel model)
         {
-            return new CustomerEntity
+            return new TCustomer
             {
                 Id = model.Id,
                 AccountNumber = model.AccountNumber,

@@ -27,7 +27,7 @@ public class SlipConfiguration : BaseEntityConfiguration<SlipEntity>
         
         // Foreign key relationship with SlipClassification
         builder.HasOne(e => e.SlipClassificationEntity)
-            .WithMany(e => e.Slips)
+            .WithMany()
             .HasForeignKey(e => e.SlipClassificationId);
         
         // Indexes for better query performance

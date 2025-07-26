@@ -19,7 +19,7 @@ public class RoleRepository : Repository<AuthDbContext, ApplicationRole>, IRoleR
     
     public async Task<ApplicationRole?> GetByNameAsync(string normalizedName)
     {
-        return await _context.Roles
+        return await Context.Roles
             .Include(r => r.ParentRole)
             .Include(r => r.ChildRoles)
             .FirstOrDefaultAsync(r => r.NormalizedName == normalizedName && !r.IsDeleted);
@@ -28,7 +28,7 @@ public class RoleRepository : Repository<AuthDbContext, ApplicationRole>, IRoleR
     // Simple hierarchy methods
     public async Task<IEnumerable<ApplicationRole>> GetRootRolesAsync()
     {
-        return await _context.Roles
+        return await Context.Roles
             .Include(r => r.ChildRoles)
             .Where(r => r.ParentRoleId == null && !r.IsDeleted)
             .ToListAsync();
@@ -36,7 +36,7 @@ public class RoleRepository : Repository<AuthDbContext, ApplicationRole>, IRoleR
     
     public async Task<IEnumerable<ApplicationRole>> GetChildRolesAsync(long parentRoleId)
     {
-        return await _context.Roles
+        return await Context.Roles
             .Include(r => r.ChildRoles)
             .Where(r => r.ParentRoleId == parentRoleId && !r.IsDeleted)
             .ToListAsync();
@@ -45,7 +45,7 @@ public class RoleRepository : Repository<AuthDbContext, ApplicationRole>, IRoleR
     public async Task<IEnumerable<ApplicationRole>> GetAncestorsAsync(long roleId)
     {
         var ancestors = new List<ApplicationRole>();
-        var currentRole = await _context.Roles
+        var currentRole = await Context.Roles
             .Include(r => r.ParentRole)
             .FirstOrDefaultAsync(r => r.Id == roleId && !r.IsDeleted);
             

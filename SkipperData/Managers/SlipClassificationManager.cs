@@ -6,7 +6,7 @@ using SkipperModels.Models;
 
 namespace SkipperData.Managers;
 
-public class SlipClassificationManager : ManagerBase<SlipClassificationEntity, SlipClassificationModel, SlipClassificationRepository, SlipClassificationEntityToModelConverter>
+public class SlipClassificationManager : Manager<SlipClassificationEntity, SlipClassificationModel, SlipClassificationRepository, SlipClassificationEntityToModelConverter>
 {
     public SlipClassificationManager(SlipClassificationRepository repository) : base(repository) { }
 }

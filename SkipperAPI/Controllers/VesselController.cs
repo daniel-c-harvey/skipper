@@ -10,7 +10,7 @@ using SkipperModels.Models;
 namespace SkipperAPI.Controllers
 {
     [Route("api/[controller]")]
-    public class VesselController : BaseModelController<VesselEntity, VesselModel, VesselManager>
+    public class VesselController : ModelController<VesselEntity, VesselModel, VesselManager>
     {
         public VesselController(VesselManager manager) : base(manager)
         {

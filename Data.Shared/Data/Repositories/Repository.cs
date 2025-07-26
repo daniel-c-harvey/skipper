@@ -8,19 +8,15 @@ using NetBlocks.Models;
 
 namespace Data.Shared.Data.Repositories;
 
-public class Repository<TContext, TEntity> : IRepository<TEntity>
+public class Repository<TContext, TEntity> : RepositoryBase<TContext, TEntity>, IRepository<TEntity>
 where TContext : DbContext
 where TEntity : class, IEntity
 {
-    protected readonly TContext _context;
     protected readonly DbSet<TEntity> _dbSet;
-    protected readonly ILogger<Repository<TContext, TEntity>> _logger;
 
-    public Repository(TContext context, ILogger<Repository<TContext, TEntity>> logger)
+    public Repository(TContext context, ILogger<Repository<TContext, TEntity>> logger) : base(context, logger)
     {
-        _context = context;
         _dbSet = context.Set<TEntity>();
-        _logger = logger;
     }
 
     public virtual async Task<TEntity?> GetByIdAsync(long id)
@@ -61,38 +57,12 @@ where TEntity : class, IEntity
         return await ExecutePagedQueryAsync(query, pagingParameters);
     }
 
-    private async Task<PagedResult<TEntity>> ExecutePagedQueryAsync(IQueryable<TEntity> query, PagingParameters<TEntity> pagingParameters)
-    {
-        // Apply ordering
-        if (pagingParameters.OrderBy != null)
-        {
-            query = pagingParameters.IsDescending 
-                ? query.OrderByDescending(pagingParameters.OrderBy)
-                : query.OrderBy(pagingParameters.OrderBy);
-        }
-        else
-        {
-            // Default ordering by Id if no ordering specified
-            query = query.OrderBy(e => e.Id);
-        }
-
-        // Get total count before paging
-        var totalCount = await query.CountAsync();
-
-        // Apply paging
-        var items = await query
-            .Skip(pagingParameters.Skip)
-            .Take(pagingParameters.PageSize)
-            .ToListAsync();
-
-        return new PagedResult<TEntity>(items, totalCount, pagingParameters.Page, pagingParameters.PageSize);
-    }
-
     public virtual async Task<TEntity> AddAsync(TEntity entity)
     {
         entity.CreatedAt = DateTime.UtcNow;
         entity.UpdatedAt = DateTime.UtcNow;
         await _dbSet.AddAsync(entity);
+        await SaveChangesAsync();
         return entity;
     }
 
@@ -106,7 +76,7 @@ where TEntity : class, IEntity
         {
             UpdateModel(dbentity, entity);
         }
-        await Task.CompletedTask;
+        await SaveChangesAsync();
     }
 
     protected virtual void UpdateModel(TEntity target, TEntity source)
@@ -124,27 +94,12 @@ where TEntity : class, IEntity
             entity.IsDeleted = true;
             entity.UpdatedAt = DateTime.UtcNow;
             await UpdateAsync(entity);
+            await SaveChangesAsync();
         }
     }
 
     public async Task<bool> ExistsAsync(long id)
     {
         return await _dbSet.AnyAsync(e => e.Id == id && !e.IsDeleted);
-    }
-
-    public async Task<Result> SaveChangesAsync()
-    {
-        try
-        {
-            await _context.SaveChangesAsync();
-            return Result.CreatePassResult();
-        }
-        catch (Exception ex)
-        {
-            
-            _context.ChangeTracker.Clear();
-            _logger.LogError(ex, ex.Message);
-            return Result.CreateFailResult("A database error occured while saving changes.");
-        }
     }
 }

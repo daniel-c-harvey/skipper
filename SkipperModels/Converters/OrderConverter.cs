@@ -1,13 +1,18 @@
 using Models.Shared.Converters;
+using Models.Shared.Entities;
+using Models.Shared.Models;
+using SkipperModels.Composites;
 using SkipperModels.Entities;
 using SkipperModels.InputModels;
 using SkipperModels.Models;
 
 namespace SkipperModels.Converters
 {
-    public class OrderEntityToModelConverter : IEntityToModelConverter<OrderEntity, OrderModel>
+    public class OrderEntityToModelConverter<TCustomerProfile, TOrderEntity> : IEntityToModelConverter<TOrderEntity, OrderModel>
+        where TCustomerProfile : CustomerProfileBaseEntity
+        where TOrderEntity : OrderEntity<TCustomerProfile>, new()
     {
-        public static OrderModel Convert(OrderEntity entity)
+        public static OrderModel Convert(TOrderEntity entity)
         {
             return new OrderModel
             {
@@ -25,9 +30,9 @@ namespace SkipperModels.Converters
             };
         }
 
-        public static OrderEntity Convert(OrderModel model)
+        public static TOrderEntity Convert(OrderModel model)
         {
-            return new OrderEntity
+            return new TOrderEntity
             {
                 Id = model.Id,
                 OrderNumber = model.OrderNumber,
@@ -40,6 +45,38 @@ namespace SkipperModels.Converters
                 Status = model.Status,
                 CreatedAt = model.CreatedAt,
                 UpdatedAt = model.UpdatedAt,
+            };
+        }
+    }
+    
+    public class OrderEntityToModelConverter<TCustomerProfile, TOrderCompositeEntity, TOrderEntity, TOrderInfoEntity, TOrderCompositeModel, TOrderInfoModel, TInfoConverter>
+        : ICompositeEntityToModelConverter<TOrderCompositeEntity, TOrderEntity, TOrderInfoEntity, TOrderCompositeModel, OrderModel, TOrderInfoModel, OrderType>
+        where TCustomerProfile : CustomerProfileBaseEntity
+        where TOrderCompositeEntity : class, IOrderCompositeEntity<TCustomerProfile, TOrderEntity, TOrderInfoEntity>, new()
+        where TOrderEntity : OrderEntity<TCustomerProfile>, new()
+        where TOrderInfoEntity : class, IEntity, new()
+        where TOrderCompositeModel : class, IOrderCompositeModel<TOrderInfoModel>, new()
+        where TOrderInfoModel : class, IModel, new()
+        where TInfoConverter : IEntityToModelConverter<TOrderInfoEntity, TOrderInfoModel>
+    
+    {
+        public static TOrderCompositeModel Convert(TOrderCompositeEntity entity)
+        {
+            return new TOrderCompositeModel
+            {
+                Id = entity.Id,
+                Root = OrderEntityToModelConverter<TCustomerProfile, TOrderEntity>.Convert(entity.Root),
+                Info = TInfoConverter.Convert(entity.Info),
+            };
+        }
+
+        public static TOrderCompositeEntity Convert(TOrderCompositeModel model)
+        {
+            return new TOrderCompositeEntity
+            {
+                Id = model.Id,
+                Root = OrderEntityToModelConverter<TCustomerProfile, TOrderEntity>.Convert(model.Root),
+                Info = TInfoConverter.Convert(model.Info),
             };
         }
     }

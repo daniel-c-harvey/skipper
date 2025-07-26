@@ -45,7 +45,6 @@ public class SlipReservationRepositoryTests : RepositoryTestBase<SlipReservation
         {
             await _repository.AddAsync(rental);
         }
-        await _repository.SaveChangesAsync();
     }
 
     #endregion
@@ -492,7 +491,6 @@ public class SlipReservationRepositoryTests : RepositoryTestBase<SlipReservation
 
         // Act
         var result = await _repository.AddAsync(rental);
-        await _repository.SaveChangesAsync();
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -515,7 +513,6 @@ public class SlipReservationRepositoryTests : RepositoryTestBase<SlipReservation
         rental.PriceRate = 150;
         rental.UpdatedAt = DateTime.UtcNow.AddHours(1);
         await _repository.UpdateAsync(rental);
-        await _repository.SaveChangesAsync();
 
         // Assert
         var updatedRental = await _repository.GetByIdAsync(1);
@@ -533,7 +530,6 @@ public class SlipReservationRepositoryTests : RepositoryTestBase<SlipReservation
 
         // Act
         await _repository.DeleteAsync(1);
-        await _repository.SaveChangesAsync();
 
         // Assert - Repository methods should not return the soft deleted entity
         var deletedRental = await _repository.GetByIdAsync(1);
@@ -605,7 +601,6 @@ public class SlipReservationRepositoryTests : RepositoryTestBase<SlipReservation
         var rental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
         rental.IsDeleted = true;
         await _repository.AddAsync(rental);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetByIdAsync(1);
@@ -624,7 +619,6 @@ public class SlipReservationRepositoryTests : RepositoryTestBase<SlipReservation
 
         await _repository.AddAsync(activeRental);
         await _repository.AddAsync(deletedRental);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetAllAsync();
@@ -647,7 +641,6 @@ public class SlipReservationRepositoryTests : RepositoryTestBase<SlipReservation
         await _repository.AddAsync(activeRental);
         await _repository.AddAsync(deletedRental);
         await _repository.AddAsync(pendingRental);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.FindAsync(r => r.PriceRate == 100);
@@ -670,7 +663,6 @@ public class SlipReservationRepositoryTests : RepositoryTestBase<SlipReservation
         await _repository.AddAsync(activeRental);
         await _repository.AddAsync(deletedRental);
         await _repository.AddAsync(anotherActiveRental);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetByStatusAsync(RentalStatus.Active);
@@ -691,7 +683,6 @@ public class SlipReservationRepositoryTests : RepositoryTestBase<SlipReservation
 
         await _repository.AddAsync(activeRental);
         await _repository.AddAsync(deletedRental);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetActiveAsync();
@@ -712,7 +703,6 @@ public class SlipReservationRepositoryTests : RepositoryTestBase<SlipReservation
 
         await _repository.AddAsync(activeRental);
         await _repository.AddAsync(deletedRental);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetBySlipIdAsync(1);
@@ -733,7 +723,6 @@ public class SlipReservationRepositoryTests : RepositoryTestBase<SlipReservation
 
         await _repository.AddAsync(activeRental);
         await _repository.AddAsync(deletedRental);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetByVesselIdAsync(1);
@@ -754,7 +743,6 @@ public class SlipReservationRepositoryTests : RepositoryTestBase<SlipReservation
 
         await _repository.AddAsync(activeRental);
         await _repository.AddAsync(deletedRental);
-        await _repository.SaveChangesAsync();
 
         // Act - Should conflict with active rental but not deleted one
         var result = await _repository.HasConflictAsync(1, DateTime.Today, DateTime.Today.AddDays(7));
@@ -770,7 +758,6 @@ public class SlipReservationRepositoryTests : RepositoryTestBase<SlipReservation
         var rental = CreateSlipReservation(1, 1, 1, DateTime.Today, DateTime.Today.AddDays(7));
         rental.IsDeleted = true;
         await _repository.AddAsync(rental);
-        await _repository.SaveChangesAsync();
 
         // Act
         var result = await _repository.ExistsAsync(1);

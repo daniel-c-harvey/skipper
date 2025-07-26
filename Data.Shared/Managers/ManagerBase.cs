@@ -1,18 +1,16 @@
 ﻿using System.Linq.Expressions;
 using Data.Shared.Data.Repositories;
+using Models.Shared;
 using Models.Shared.Common;
 using Models.Shared.Converters;
-using Models.Shared.Entities;
-using Models.Shared.Models;
 using NetBlocks.Models;
 
 namespace Data.Shared.Managers;
 
-public abstract class ManagerBase<TEntity, TModel, TRepository, TConverter> : IManager<TEntity, TModel>
-where TEntity : class, IEntity
-where TModel : class, IModel, new()
-where TRepository : IRepository<TEntity>
-where TConverter : IEntityToModelConverter<TEntity, TModel>
+public abstract class ManagerBase<TEntity, TModel, TRepository, TConverter> : IManagerBase<TEntity, TModel>
+where TRepository : ICrudRepository<TEntity>
+where TConverter : IConverter<TEntity, TModel>
+where TModel : class, IKeyed, new()
 {
     protected TRepository Repository;
 
@@ -100,16 +98,16 @@ where TConverter : IEntityToModelConverter<TEntity, TModel>
         }
     }
 
-    public virtual async Task<Result> Add(TModel entity)
+    public virtual async Task<ResultContainer<TModel>> Add(TModel entity)
     {
         try
         {
-            await Repository.AddAsync(TConverter.Convert(entity));
-            return await Repository.SaveChangesAsync();
+            var newEntity = await Repository.AddAsync(TConverter.Convert(entity));
+            return ResultContainer<TModel>.CreatePassResult(TConverter.Convert(newEntity));
         }
         catch (Exception ex)
         {
-            return Result.CreateFailResult(ex.Message);
+            return ResultContainer<TModel>.CreateFailResult(ex.Message);
         }
     }
 
@@ -118,7 +116,7 @@ where TConverter : IEntityToModelConverter<TEntity, TModel>
         try
         {
             await Repository.UpdateAsync(TConverter.Convert(entity));
-            return await Repository.SaveChangesAsync();
+            return Result.CreatePassResult();
         }
         catch (Exception ex)
         {
@@ -131,7 +129,7 @@ where TConverter : IEntityToModelConverter<TEntity, TModel>
         try
         {
             await Repository.DeleteAsync(id);
-            return await Repository.SaveChangesAsync();
+            return Result.CreatePassResult();
         }
         catch (Exception ex)
         {

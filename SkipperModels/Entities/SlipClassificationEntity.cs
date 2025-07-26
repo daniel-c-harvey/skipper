@@ -9,6 +9,4 @@ public class SlipClassificationEntity : BaseEntity, IEntity
     public decimal MaxBeam { get; set; }
     public int BasePrice { get; set; }
     public string Description { get; set; }
-    public virtual ICollection<SlipEntity> Slips { get; set; }
-    
 }
