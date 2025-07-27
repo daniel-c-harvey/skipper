@@ -1,31 +1,45 @@
 ﻿using Data.Shared.Managers;
 using Models.Shared.Converters;
-using Models.Shared.Entities;
-using Models.Shared.Models;
 using SkipperData.Data.Repositories;
 using SkipperModels;
-using SkipperModels.Composites;
-using SkipperModels.Converters;
 using SkipperModels.Entities;
 using SkipperModels.Models;
 
 namespace SkipperData.Managers;
 
-public abstract class OrderManager<TCustomerProfile, TCompositeOrderEntity, TOrderEntity, TOrderInfoEntity, TCompositeOrderModel, TOrderInfoModel, TRepository, TCompositeConverter, TInfoConverter> 
-    : CompositeManager<TCompositeOrderEntity, TOrderEntity, TOrderInfoEntity, 
-                       TCompositeOrderModel, OrderModel, TOrderInfoModel,
-                       OrderType, TRepository, TCompositeConverter>
-    where TCustomerProfile : CustomerProfileBaseEntity
-    where TCompositeOrderEntity : class, IOrderCompositeEntity<TCustomerProfile, TOrderEntity, TOrderInfoEntity>, new()
-    where TOrderEntity : OrderEntity<TCustomerProfile>, new()
-    where TOrderInfoEntity : class, IEntity, new()
-    where TCompositeOrderModel : class, IOrderCompositeModel<TOrderInfoModel>, new()
-    where TOrderInfoModel : class, IModel, new()
-    where TRepository : IOrderRepository<TCustomerProfile, TCompositeOrderEntity, TOrderEntity, TOrderInfoEntity>
-    where TCompositeConverter : OrderEntityToModelConverter<TCustomerProfile, TCompositeOrderEntity, TOrderEntity, TOrderInfoEntity, TCompositeOrderModel, TOrderInfoModel, TInfoConverter>
-    where TInfoConverter : IEntityToModelConverter<TOrderInfoEntity, TOrderInfoModel>
+public class OrderManager<TOrderEntity, TOrderModel, TRepository, TConverter> 
+    : Manager<TOrderEntity, TOrderModel, TRepository, TConverter>
+    where TOrderEntity : OrderEntity, new()
+    where TOrderModel : OrderModel, new()
+    where TRepository : IOrderRepository<TOrderEntity>
+    where TConverter : IEntityToModelConverter<TOrderEntity, TOrderModel>
 {
     protected OrderManager(TRepository repository) : base(repository)
     {
+    }
+
+    // Type-specific business logic methods (only methods available in IOrderRepository<TOrderEntity>)
+    public virtual async Task<IEnumerable<TOrderModel>> GetOrdersByCustomerAsync(long customerId)
+    {
+        var entities = await Repository.GetOrdersByCustomerAsync(customerId);
+        return entities.Select(TConverter.Convert);
+    }
+
+    public virtual async Task<IEnumerable<TOrderModel>> GetOrdersByStatusAsync(OrderStatus status)
+    {
+        var entities = await Repository.GetOrdersByStatusAsync(status);
+        return entities.Select(TConverter.Convert);
+    }
+
+    public virtual async Task<IEnumerable<TOrderModel>> GetActiveOrdersAsync()
+    {
+        var entities = await Repository.GetActiveOrdersAsync();
+        return entities.Select(TConverter.Convert);
+    }
+
+    public virtual async Task<IEnumerable<TOrderModel>> GetOverdueOrdersAsync()
+    {
+        var entities = await Repository.GetOverdueOrdersAsync();
+        return entities.Select(TConverter.Convert);
     }
 }

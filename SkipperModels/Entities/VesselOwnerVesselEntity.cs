@@ -8,8 +8,8 @@ namespace SkipperModels.Entities
 {
     public class VesselOwnerVesselEntity : BaseLinkageEntity
     {
-        public long VesselOwnerProfileId { get; set; }
-        public virtual VesselOwnerProfileEntity VesselOwnerProfile { get; set; }
+        public long VesselOwnerCustomerId { get; set; }
+        public virtual VesselOwnerCustomerEntity VesselOwnerCustomer { get; set; }
         public long VesselId { get; set; }
         public virtual VesselEntity Vessel { get; set; }
     }

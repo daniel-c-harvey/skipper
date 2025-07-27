@@ -12,8 +12,8 @@ using SkipperData.Data;
 namespace SkipperData.Data.Migrations
 {
     [DbContext(typeof(SkipperContext))]
-    [Migration("20250725074808_Orders-Customers")]
-    partial class OrdersCustomers
+    [Migration("20250727161640_Orders-Customers-TPH")]
+    partial class OrdersCustomersTPH
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,7 +44,6 @@ namespace SkipperData.Data.Migrations
                         .UseCollation("en-US-x-icu");
 
                     b.Property<string>("Address2")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .UseCollation("en-US-x-icu");
@@ -93,13 +92,10 @@ namespace SkipperData.Data.Migrations
 
             modelBuilder.Entity("SkipperModels.Entities.BusinessCustomerContactsEntity", b =>
                 {
-                    b.Property<long>("BusinessCustomerProfileId")
+                    b.Property<long>("BusinessCustomerId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("ContactId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("BusinessCustomerProfileEntityId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreatedAt")
@@ -123,52 +119,13 @@ namespace SkipperData.Data.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("BusinessCustomerProfileId", "ContactId");
-
-                    b.HasIndex("BusinessCustomerProfileEntityId");
+                    b.HasKey("BusinessCustomerId", "ContactId");
 
                     b.HasIndex("ContactId");
 
                     b.HasIndex("IsDeleted");
 
                     b.ToTable("business_customer_contacts", "skipper");
-                });
-
-            modelBuilder.Entity("SkipperModels.Entities.BusinessCustomerProfileEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("BusinessName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .UseCollation("en-US-x-icu");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("TaxId")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .UseCollation("en-US-x-icu");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.ToTable("business_customer_profiles", "skipper");
                 });
 
             modelBuilder.Entity("SkipperModels.Entities.ContactEntity", b =>
@@ -225,7 +182,7 @@ namespace SkipperData.Data.Migrations
                     b.ToTable("contacts", "skipper");
                 });
 
-            modelBuilder.Entity("SkipperModels.Entities.IndividualCustomerProfileEntity", b =>
+            modelBuilder.Entity("SkipperModels.Entities.CustomerEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -233,75 +190,111 @@ namespace SkipperData.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long>("ContactId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ContactId");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.ToTable("individual_customer_profiles", "skipper");
-                });
-
-            modelBuilder.Entity("SkipperModels.Entities.MemberCustomerProfileEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("ContactId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime?>("MembershipEndDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("MembershipLevel")
+                    b.Property<string>("AccountNumber")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .UseCollation("en-US-x-icu");
 
-                    b.Property<DateTime?>("MembershipStartDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CustomerProfileType")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .UseCollation("en-US-x-icu");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ContactId");
+                    b.HasIndex("AccountNumber")
+                        .IsUnique();
 
                     b.HasIndex("IsDeleted");
 
-                    b.HasIndex("MembershipEndDate");
+                    b.ToTable("customers", "skipper");
 
-                    b.HasIndex("MembershipLevel");
+                    b.HasDiscriminator<int>("CustomerProfileType");
 
-                    b.HasIndex("MembershipStartDate");
+                    b.UseTphMappingStrategy();
+                });
 
-                    b.ToTable("MemberCustomerProfiles", "skipper");
+            modelBuilder.Entity("SkipperModels.Entities.OrderEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("CustomerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .UseCollation("en-US-x-icu");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("OrderNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .UseCollation("en-US-x-icu");
+
+                    b.Property<string>("OrderType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TotalAmount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("OrderNumber")
+                        .IsUnique();
+
+                    b.HasIndex("OrderType");
+
+                    b.HasIndex("Status", "OrderDate");
+
+                    b.ToTable("orders", "skipper");
+
+                    b.HasDiscriminator<string>("OrderType");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("SkipperModels.Entities.SlipClassificationEntity", b =>
@@ -408,61 +401,6 @@ namespace SkipperData.Data.Migrations
                     b.ToTable("slips", "skipper");
                 });
 
-            modelBuilder.Entity("SkipperModels.Entities.SlipReservationEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<int>("PriceRate")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("PriceUnit")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<long>("SlipId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("VesselId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("SlipId");
-
-                    b.HasIndex("Status");
-
-                    b.HasIndex("VesselId");
-
-                    b.ToTable("slip_reservations", "skipper");
-                });
-
             modelBuilder.Entity("SkipperModels.Entities.VesselEntity", b =>
                 {
                     b.Property<long>("Id")
@@ -520,162 +458,9 @@ namespace SkipperData.Data.Migrations
                     b.ToTable("vessels", "skipper");
                 });
 
-            modelBuilder.Entity("SkipperModels.Entities.VesselOwnerCustomerEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("AccountNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .UseCollation("en-US-x-icu");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("CustomerProfileId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("CustomerProfileType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime>("LicenseExpiryDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LicenseNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .UseCollation("en-US-x-icu");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .UseCollation("en-US-x-icu");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountNumber")
-                        .IsUnique();
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("CustomerProfileId", "CustomerProfileType");
-
-                    b.ToTable("vessel_owner_customers", "skipper");
-                });
-
-            modelBuilder.Entity("SkipperModels.Entities.VesselOwnerOrderEntity", b =>
-                {
-                    b.Property<long>("OrderTypeId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("OrderType")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("CustomerId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Discriminator")
-                        .HasColumnType("integer");
-
-                    b.Property<long>("Id")
-                        .HasColumnType("bigint");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .UseCollation("en-US-x-icu");
-
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("OrderNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .UseCollation("en-US-x-icu");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("TotalAmount")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("OrderTypeId", "OrderType");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("OrderNumber")
-                        .IsUnique();
-
-                    b.HasIndex("Status", "OrderDate");
-
-                    b.ToTable("vessel_owner_orders", "skipper");
-                });
-
-            modelBuilder.Entity("SkipperModels.Entities.VesselOwnerProfileEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("ContactId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ContactId");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.ToTable("vessel_owner_profiles", "skipper");
-                });
-
             modelBuilder.Entity("SkipperModels.Entities.VesselOwnerVesselEntity", b =>
                 {
-                    b.Property<long>("VesselOwnerProfileId")
+                    b.Property<long>("VesselOwnerCustomerId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("VesselId")
@@ -692,7 +477,7 @@ namespace SkipperData.Data.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("VesselOwnerProfileId", "VesselId");
+                    b.HasKey("VesselOwnerCustomerId", "VesselId");
 
                     b.HasIndex("IsDeleted");
 
@@ -702,18 +487,124 @@ namespace SkipperData.Data.Migrations
                     b.ToTable("vessel_owner_vessels", "skipper");
                 });
 
+            modelBuilder.Entity("SkipperModels.Entities.BusinessCustomerEntity", b =>
+                {
+                    b.HasBaseType("SkipperModels.Entities.CustomerEntity");
+
+                    b.Property<string>("BusinessName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .UseCollation("en-US-x-icu");
+
+                    b.Property<string>("TaxId")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .UseCollation("en-US-x-icu");
+
+                    b.HasDiscriminator().HasValue(2);
+                });
+
+            modelBuilder.Entity("SkipperModels.Entities.IndividualCustomerEntity", b =>
+                {
+                    b.HasBaseType("SkipperModels.Entities.CustomerEntity");
+
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PreferredContactMethod")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .UseCollation("en-US-x-icu");
+
+                    b.HasDiscriminator().HasValue(1);
+                });
+
+            modelBuilder.Entity("SkipperModels.Entities.MemberCustomerEntity", b =>
+                {
+                    b.HasBaseType("SkipperModels.Entities.CustomerEntity");
+
+                    b.Property<DateTime?>("MemberSince")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("MembershipLevel")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .UseCollation("en-US-x-icu");
+
+                    b.Property<string>("MembershipNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .UseCollation("en-US-x-icu");
+
+                    b.HasDiscriminator().HasValue(3);
+                });
+
+            modelBuilder.Entity("SkipperModels.Entities.VesselOwnerCustomerEntity", b =>
+                {
+                    b.HasBaseType("SkipperModels.Entities.CustomerEntity");
+
+                    b.Property<long>("ContactId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("LicenseExpiryDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LicenseNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .UseCollation("en-US-x-icu");
+
+                    b.HasIndex("ContactId");
+
+                    b.HasDiscriminator().HasValue(0);
+                });
+
+            modelBuilder.Entity("SkipperModels.Entities.SlipReservationOrderEntity", b =>
+                {
+                    b.HasBaseType("SkipperModels.Entities.OrderEntity");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("PriceRate")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PriceUnit")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RentalStatus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("SlipId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("VesselId")
+                        .HasColumnType("bigint");
+
+                    b.HasIndex("RentalStatus");
+
+                    b.HasIndex("SlipId");
+
+                    b.HasIndex("VesselId");
+
+                    b.HasIndex("SlipId", "StartDate", "EndDate");
+
+                    b.HasDiscriminator().HasValue("SlipReservation");
+                });
+
             modelBuilder.Entity("SkipperModels.Entities.BusinessCustomerContactsEntity", b =>
                 {
-                    b.HasOne("SkipperModels.Entities.BusinessCustomerProfileEntity", null)
+                    b.HasOne("SkipperModels.Entities.BusinessCustomerEntity", "BusinessCustomer")
                         .WithMany("BusinessCustomerContacts")
-                        .HasForeignKey("BusinessCustomerProfileEntityId");
-
-                    b.HasOne("SkipperModels.Entities.BusinessCustomerProfileEntity", "BusinessCustomerProfile")
-                        .WithMany()
-                        .HasForeignKey("BusinessCustomerProfileId")
+                        .HasForeignKey("BusinessCustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_business_customer_contacts_business_customer_profiles_Busi~1");
+                        .IsRequired();
 
                     b.HasOne("SkipperModels.Entities.ContactEntity", "Contact")
                         .WithMany()
@@ -721,7 +612,7 @@ namespace SkipperData.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("BusinessCustomerProfile");
+                    b.Navigation("BusinessCustomer");
 
                     b.Navigation("Contact");
                 });
@@ -737,26 +628,15 @@ namespace SkipperData.Data.Migrations
                     b.Navigation("Address");
                 });
 
-            modelBuilder.Entity("SkipperModels.Entities.IndividualCustomerProfileEntity", b =>
+            modelBuilder.Entity("SkipperModels.Entities.OrderEntity", b =>
                 {
-                    b.HasOne("SkipperModels.Entities.ContactEntity", "Contact")
+                    b.HasOne("SkipperModels.Entities.CustomerEntity", "Customer")
                         .WithMany()
-                        .HasForeignKey("ContactId")
+                        .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Contact");
-                });
-
-            modelBuilder.Entity("SkipperModels.Entities.MemberCustomerProfileEntity", b =>
-                {
-                    b.HasOne("SkipperModels.Entities.ContactEntity", "Contact")
-                        .WithMany()
-                        .HasForeignKey("ContactId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Contact");
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("SkipperModels.Entities.SlipEntity", b =>
@@ -770,7 +650,37 @@ namespace SkipperData.Data.Migrations
                     b.Navigation("SlipClassificationEntity");
                 });
 
-            modelBuilder.Entity("SkipperModels.Entities.SlipReservationEntity", b =>
+            modelBuilder.Entity("SkipperModels.Entities.VesselOwnerVesselEntity", b =>
+                {
+                    b.HasOne("SkipperModels.Entities.VesselEntity", "Vessel")
+                        .WithOne()
+                        .HasForeignKey("SkipperModels.Entities.VesselOwnerVesselEntity", "VesselId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SkipperModels.Entities.VesselOwnerCustomerEntity", "VesselOwnerCustomer")
+                        .WithMany("VesselOwnerVessels")
+                        .HasForeignKey("VesselOwnerCustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Vessel");
+
+                    b.Navigation("VesselOwnerCustomer");
+                });
+
+            modelBuilder.Entity("SkipperModels.Entities.VesselOwnerCustomerEntity", b =>
+                {
+                    b.HasOne("SkipperModels.Entities.ContactEntity", "Contact")
+                        .WithMany()
+                        .HasForeignKey("ContactId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Contact");
+                });
+
+            modelBuilder.Entity("SkipperModels.Entities.SlipReservationOrderEntity", b =>
                 {
                     b.HasOne("SkipperModels.Entities.SlipEntity", "SlipEntity")
                         .WithMany()
@@ -789,64 +699,12 @@ namespace SkipperData.Data.Migrations
                     b.Navigation("VesselEntity");
                 });
 
-            modelBuilder.Entity("SkipperModels.Entities.VesselOwnerCustomerEntity", b =>
-                {
-                    b.HasOne("SkipperModels.Entities.VesselOwnerProfileEntity", "CustomerProfile")
-                        .WithMany()
-                        .HasForeignKey("CustomerProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CustomerProfile");
-                });
-
-            modelBuilder.Entity("SkipperModels.Entities.VesselOwnerOrderEntity", b =>
-                {
-                    b.HasOne("SkipperModels.Entities.VesselOwnerProfileEntity", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("SkipperModels.Entities.VesselOwnerProfileEntity", b =>
-                {
-                    b.HasOne("SkipperModels.Entities.ContactEntity", "Contact")
-                        .WithMany()
-                        .HasForeignKey("ContactId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Contact");
-                });
-
-            modelBuilder.Entity("SkipperModels.Entities.VesselOwnerVesselEntity", b =>
-                {
-                    b.HasOne("SkipperModels.Entities.VesselEntity", "Vessel")
-                        .WithOne()
-                        .HasForeignKey("SkipperModels.Entities.VesselOwnerVesselEntity", "VesselId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SkipperModels.Entities.VesselOwnerProfileEntity", "VesselOwnerProfile")
-                        .WithMany("VesselOwnerVessels")
-                        .HasForeignKey("VesselOwnerProfileId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Vessel");
-
-                    b.Navigation("VesselOwnerProfile");
-                });
-
-            modelBuilder.Entity("SkipperModels.Entities.BusinessCustomerProfileEntity", b =>
+            modelBuilder.Entity("SkipperModels.Entities.BusinessCustomerEntity", b =>
                 {
                     b.Navigation("BusinessCustomerContacts");
                 });
 
-            modelBuilder.Entity("SkipperModels.Entities.VesselOwnerProfileEntity", b =>
+            modelBuilder.Entity("SkipperModels.Entities.VesselOwnerCustomerEntity", b =>
                 {
                     b.Navigation("VesselOwnerVessels");
                 });

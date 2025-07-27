@@ -8,6 +8,5 @@ namespace SkipperModels.InputModels
         public string AccountNumber { get; set; }
         public string Name { get; set; }
         public CustomerProfileType CustomerProfileType { get; set; }
-        public long CustomerProfileId { get; set; }
     }
 } 

@@ -4,19 +4,25 @@ using SkipperModels.Entities;
 
 namespace SkipperData.Data.Configurations;
 
-public class VesselOwnerCustomerConfiguration : CustomerConfiguration<VesselOwnerCustomerEntity, VesselOwnerProfileEntity>
+public class VesselOwnerCustomerConfiguration : IEntityTypeConfiguration<VesselOwnerCustomerEntity>
 {
-    public override void Configure(EntityTypeBuilder<VesselOwnerCustomerEntity> builder)
+    public void Configure(EntityTypeBuilder<VesselOwnerCustomerEntity> builder)
     {
-        builder.ToTable("vessel_owner_customers");
-        
-        base.Configure(builder);
-        
+        // Vessel owner specific properties
         builder.Property(x => x.LicenseNumber)
-            .HasMaxLength(50)
-            .IsRequired();
+            .HasMaxLength(50);
         
-        builder.Property(x=> x.LicenseExpiryDate)
+        builder.Property(x => x.LicenseExpiryDate);
+
+        // Contact relationship
+        builder.Property(x => x.ContactId)
             .IsRequired();
+
+        builder.HasOne(x => x.Contact)
+            .WithMany()
+            .HasForeignKey(x => x.ContactId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // VesselOwnerVessels relationship will be configured in VesselOwnerVesselConfiguration
     }
 }

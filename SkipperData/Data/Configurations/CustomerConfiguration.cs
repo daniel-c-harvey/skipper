@@ -6,14 +6,23 @@ using SkipperModels;
 
 namespace SkipperData.Data.Configurations
 {
-    public abstract class CustomerConfiguration<TCustomer, TCustomerProfile> : BaseEntityConfiguration<TCustomer>
-        where TCustomer : CustomerEntity<TCustomerProfile>
-        where TCustomerProfile : CustomerProfileBaseEntity
+    public class CustomerConfiguration : BaseEntityConfiguration<CustomerEntity>
     {
-        public override void Configure(EntityTypeBuilder<TCustomer> builder)
+        public override void Configure(EntityTypeBuilder<CustomerEntity> builder)
         {
             base.Configure(builder);
+            
+            // TPH Configuration - Single table for all customer types
+            builder.ToTable("customers");
+            
+            // Configure TPH discriminator
+            builder.HasDiscriminator(x => x.CustomerProfileType)
+                .HasValue<VesselOwnerCustomerEntity>(CustomerProfileType.VesselOwnerProfile)
+                .HasValue<BusinessCustomerEntity>(CustomerProfileType.BusinessCustomerProfile)
+                .HasValue<IndividualCustomerEntity>(CustomerProfileType.IndividualCustomerProfile)
+                .HasValue<MemberCustomerEntity>(CustomerProfileType.MemberCustomerProfile);
 
+            // Common customer properties
             builder.Property(x => x.AccountNumber)
                 .IsRequired()
                 .HasMaxLength(50);
@@ -22,19 +31,9 @@ namespace SkipperData.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(200);
 
-            builder.Property(x => x.CustomerProfileType)
-                .IsRequired()
-                .HasConversion<string>();
-
-            builder.Property(x => x.CustomerProfileId)
-                .IsRequired();
-
-            // Index for efficient querying by account number
+            // Indexes for efficient querying
             builder.HasIndex(x => x.AccountNumber)
                 .IsUnique();
-
-            // Index for efficient querying by customer profile
-            builder.HasIndex(x => new { x.CustomerProfileId, x.CustomerProfileType });
         }
     }
 } 

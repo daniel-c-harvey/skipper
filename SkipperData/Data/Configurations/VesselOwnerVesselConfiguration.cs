@@ -13,11 +13,11 @@ namespace SkipperData.Data.Configurations
 
             base.Configure(builder);
             
-            builder.HasKey(e => new { e.VesselOwnerProfileId, e.VesselId });
+            builder.HasKey(e => new { e.VesselOwnerCustomerId, e.VesselId });
 
-            builder.HasOne(e => e.VesselOwnerProfile)
+            builder.HasOne(e => e.VesselOwnerCustomer)
                 .WithMany(e => e.VesselOwnerVessels)
-                .HasForeignKey(e => e.VesselOwnerProfileId)
+                .HasForeignKey(e => e.VesselOwnerCustomerId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired();
 

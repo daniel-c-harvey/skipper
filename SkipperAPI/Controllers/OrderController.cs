@@ -1,66 +1,54 @@
 ﻿using API.Shared.Controllers;
+using Microsoft.AspNetCore.Mvc;
 using Models.Shared.Converters;
-using Models.Shared.Entities;
-using Models.Shared.Models;
 using SkipperData.Data.Repositories;
 using SkipperData.Managers;
 using SkipperModels;
-using SkipperModels.Composites;
-using SkipperModels.Converters;
 using SkipperModels.Entities;
 using SkipperModels.Models;
 
 namespace SkipperAPI.Controllers;
 
-
-public abstract class OrderController<
-    TCustomerProfile,
-    TOrderCompositeEntity, 
-    TOrderEntity,
-    TOrderInfoEntity, 
-    TOrderCompositeModel, 
-    TOrderInfoModel,
-    TOrderManager,
-    TOrderRepository,
-    TOrderCompositeConverter,
-    TOrderInfoConverter>  
-: CompositeController<TOrderCompositeEntity, 
-    TOrderEntity, 
-    TOrderInfoEntity, 
-    TOrderCompositeModel, 
-    OrderModel, 
-    TOrderInfoModel, 
-    OrderType, 
-    TOrderManager>
-where TCustomerProfile : CustomerProfileBaseEntity, new()
-where TOrderCompositeEntity : class, IOrderCompositeEntity<TCustomerProfile, TOrderEntity, TOrderInfoEntity>, new()
-where TOrderEntity : OrderEntity<TCustomerProfile>, new()
-where TOrderInfoEntity : class, IEntity, new()
-where TOrderCompositeModel : class, IOrderCompositeModel<TOrderInfoModel>, new()
-where TOrderInfoModel : class, IModel, new()
-where TOrderManager : OrderManager<
-                        TCustomerProfile,
-                        TOrderCompositeEntity,
-                        TOrderEntity,
-                        TOrderInfoEntity,
-                        TOrderCompositeModel,
-                        TOrderInfoModel, 
-                        TOrderRepository, 
-                        TOrderCompositeConverter,
-                        TOrderInfoConverter>
-where TOrderRepository : OrderRepository<TCustomerProfile, TOrderCompositeEntity, TOrderEntity, TOrderInfoEntity>
-where TOrderInfoConverter : class, IEntityToModelConverter<TOrderInfoEntity, TOrderInfoModel>
-where TOrderCompositeConverter : OrderEntityToModelConverter<
-                                    TCustomerProfile,
-                                    TOrderCompositeEntity,
-                                    TOrderEntity,
-                                    TOrderInfoEntity,
-                                    TOrderCompositeModel,
-                                    TOrderInfoModel,
-                                    TOrderInfoConverter>
+public class OrderController<TOrderEntity, TOrderModel, TOrderManager, TRepository, TConverter> : ModelController<TOrderEntity, TOrderModel, TOrderManager>
+    where TOrderEntity : OrderEntity, new()
+    where TOrderModel : OrderModel, new()
+    where TOrderManager : OrderManager<TOrderEntity, TOrderModel, TRepository, TConverter>
+    where TRepository : IOrderRepository<TOrderEntity>
+    where TConverter : IEntityToModelConverter<TOrderEntity, TOrderModel>
 {
-    public OrderController(TOrderManager manager) 
-    : base(manager)
+    protected readonly TOrderManager OrderManager;
+
+    public OrderController(TOrderManager manager) : base(manager)
     {
+        OrderManager = manager;
+    }
+
+    // Type-specific endpoints (only work with TOrderEntity)
+    [HttpGet("by-customer/{customerId}")]
+    public virtual async Task<ActionResult<IEnumerable<TOrderModel>>> GetByCustomer(long customerId)
+    {
+        var results = await OrderManager.GetOrdersByCustomerAsync(customerId);
+        return Ok(results);
+    }
+
+    [HttpGet("by-status/{status}")]
+    public virtual async Task<ActionResult<IEnumerable<TOrderModel>>> GetByStatus(OrderStatus status)
+    {
+        var results = await OrderManager.GetOrdersByStatusAsync(status);
+        return Ok(results);
+    }
+
+    [HttpGet("active")]
+    public virtual async Task<ActionResult<IEnumerable<TOrderModel>>> GetActiveOrders()
+    {
+        var results = await OrderManager.GetActiveOrdersAsync();
+        return Ok(results);
+    }
+
+    [HttpGet("overdue")]
+    public virtual async Task<ActionResult<IEnumerable<TOrderModel>>> GetOverdueOrders()
+    {
+        var results = await OrderManager.GetOverdueOrdersAsync();
+        return Ok(results);
     }
 }

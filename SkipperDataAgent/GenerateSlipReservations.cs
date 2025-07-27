@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using SkipperData.Data;
 using SkipperData.Data.Repositories;
 using SkipperModels;
-using SkipperModels.Composites;
 using SkipperModels.Entities;
 
 namespace SkipperDataAgent;
@@ -88,7 +87,7 @@ public static class GenerateSlipReservations
             var recordsInBatch = Math.Min(batchSize, totalRecords - (batch - 1) * batchSize);
             logger.LogInformation("Generating batch {Batch}/{TotalBatches}: {RecordsInBatch} records", batch, totalBatches, recordsInBatch);
             
-            var slipReservationEntities = new List<SlipReservationOrderCompositeEntity>();
+            var slipReservationEntities = new List<SlipReservationOrderEntity>();
             
             for (int i = 0; i < recordsInBatch; i++)
             {
@@ -118,13 +117,12 @@ public static class GenerateSlipReservations
                 .ToListAsync();
             
             var vesselOwnerCustomers = await dbContext.Customers
-                .Include(c => c.CustomerProfile)
-                    .ThenInclude(p => p.Contact)
-                        .ThenInclude(c => c.Address)
-                .Include(c => c.CustomerProfile)
-                    .ThenInclude(p => p.VesselOwnerVessels)
-                        .ThenInclude(vov => vov.Vessel)
-                .Where(c => !c.IsDeleted && c.CustomerProfile.VesselOwnerVessels.Any(vov => !vov.IsDeleted && !vov.Vessel.IsDeleted))
+                .OfType<VesselOwnerCustomerEntity>()
+                .Include(c => c.Contact)
+                    .ThenInclude(contact => contact.Address)
+                .Include(c => c.VesselOwnerVessels)
+                    .ThenInclude(vov => vov.Vessel)
+                .Where(c => !c.IsDeleted && c.VesselOwnerVessels.Any(vov => !vov.IsDeleted && !vov.Vessel.IsDeleted))
                 .ToListAsync();
             
             var classifications = await dbContext.SlipClassifications
@@ -154,7 +152,7 @@ public static class GenerateSlipReservations
         
         foreach (var customer in vesselOwnerCustomers)
         {
-            foreach (var vesselOwnerVessel in customer.CustomerProfile.VesselOwnerVessels.Where(vov => !vov.IsDeleted))
+            foreach (var vesselOwnerVessel in customer.VesselOwnerVessels.Where(vov => !vov.IsDeleted))
             {
                 var vessel = vesselOwnerVessel.Vessel;
                 if (vessel.IsDeleted) continue;
@@ -179,7 +177,7 @@ public static class GenerateSlipReservations
         return matches;
     }
 
-    private static SlipReservationOrderCompositeEntity GenerateSlipReservationOrder(
+    private static SlipReservationOrderEntity GenerateSlipReservationOrder(
         Random random, 
         List<(VesselOwnerCustomerEntity Customer, VesselEntity Vessel, SlipEntity Slip, SlipClassificationEntity Classification)> compatibleMatches,
         IEnumerable<SlipClassificationEntity> classifications,
@@ -198,36 +196,32 @@ public static class GenerateSlipReservations
         var totalAmount = CalculateTotalAmount(priceRate, priceUnit, startDate, endDate);
         var notes = OrderNotesTemplates[random.Next(OrderNotesTemplates.Length)];
 
-        return new SlipReservationOrderCompositeEntity()
+        // Create TPH SlipReservationOrderEntity with flattened structure
+        return new SlipReservationOrderEntity
         {
-            Order = new VesselOwnerOrderEntity
-            {
-                OrderNumber = orderNumber,
-                CustomerId = customer.Id,
-                Customer = customer.CustomerProfile,
-                OrderDate = orderDate,
-                OrderType = OrderType.SlipReservation,
-                // OrderTypeId will be set to match the SlipReservationEntity.Id
-                TotalAmount = totalAmount,
-                Notes = notes,
-                Status = orderStatus,
-                CreatedAt = createdAt,
-                UpdatedAt = updatedAt,
-                IsDeleted = false
-            },
-            OrderInfo = new SlipReservationEntity
-            {
-                SlipId = slip.Id,
-                VesselId = vessel.Id,
-                StartDate = startDate,
-                EndDate = endDate,
-                PriceRate = priceRate,
-                PriceUnit = priceUnit,
-                Status = rentalStatus,
-                CreatedAt = createdAt,
-                UpdatedAt = updatedAt,
-                IsDeleted = false
-            }
+            // Base order properties
+            OrderNumber = orderNumber,
+            CustomerId = customer.Id,
+            Customer = customer,
+            OrderDate = orderDate,
+            OrderType = OrderType.SlipReservation, // TPH discriminator
+            TotalAmount = totalAmount,
+            Notes = notes,
+            Status = orderStatus,
+            
+            // Slip-specific properties (flattened from old composite)
+            SlipId = slip.Id,
+            VesselId = vessel.Id,
+            StartDate = startDate,
+            EndDate = endDate,
+            PriceRate = priceRate,
+            PriceUnit = priceUnit,
+            RentalStatus = rentalStatus,
+            
+            // Timestamps
+            CreatedAt = createdAt,
+            UpdatedAt = updatedAt,
+            IsDeleted = false
         };
     }
 

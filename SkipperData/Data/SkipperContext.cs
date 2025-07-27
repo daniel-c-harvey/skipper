@@ -11,17 +11,17 @@ public class SkipperContext : DbContext
     public DbSet<SlipEntity> Slips { get; set; }
     public DbSet<SlipClassificationEntity> SlipClassifications { get; set; }
     public DbSet<VesselEntity> Vessels { get; set; }
-    public DbSet<SlipReservationEntity> SlipReservations { get; set; }
     
-    // Order entities
-    public DbSet<VesselOwnerOrderEntity> Orders { get; set; }
+    // Order entities - TPH unified approach
+    public DbSet<OrderEntity> Orders { get; set; }
+    public DbSet<SlipReservationOrderEntity> SlipReservationOrders { get; set; }
     
-    // Customer entities
-    public DbSet<VesselOwnerCustomerEntity> Customers { get; set; }
-    public DbSet<VesselOwnerProfileEntity> VesselOwnerProfiles { get; set; }
-    public DbSet<IndividualCustomerProfileEntity> IndividualCustomerProfiles { get; set; }
-    public DbSet<BusinessCustomerProfileEntity> BusinessCustomerProfiles { get; set; }
-    public DbSet<MemberCustomerProfileEntity> MemberCustomerProfiles { get; set; }
+    // Customer entities - TPH unified approach
+    public DbSet<CustomerEntity> Customers { get; set; }
+    public DbSet<VesselOwnerCustomerEntity> VesselOwnerCustomers { get; set; }
+    public DbSet<BusinessCustomerEntity> BusinessCustomers { get; set; }
+    public DbSet<IndividualCustomerEntity> IndividualCustomers { get; set; }
+    public DbSet<MemberCustomerEntity> MemberCustomers { get; set; }
     
     // Supporting entities  
     public DbSet<ContactEntity> Contacts { get; set; }
@@ -43,18 +43,17 @@ public class SkipperContext : DbContext
         modelBuilder.ApplyConfiguration(new SlipConfiguration());
         modelBuilder.ApplyConfiguration(new SlipClassificationConfiguration());
         modelBuilder.ApplyConfiguration(new VesselConfiguration());
-        // modelBuilder.ApplyConfiguration(new RentalAgreementConfiguration());
-        modelBuilder.ApplyConfiguration(new SlipReservationConfiguration());
         
-        // Order configurations
-        modelBuilder.ApplyConfiguration(new VesselOwnerOrderConfiguration());
+        // Order configurations - TPH unified approach
+        modelBuilder.ApplyConfiguration(new OrderConfiguration());
+        modelBuilder.ApplyConfiguration(new SlipReservationOrderConfiguration());
         
-        // Customer configurations
+        // Customer configurations - TPH unified approach
+        modelBuilder.ApplyConfiguration(new CustomerConfiguration());
         modelBuilder.ApplyConfiguration(new VesselOwnerCustomerConfiguration());
-        modelBuilder.ApplyConfiguration(new VesselOwnerProfileConfiguration());
-        modelBuilder.ApplyConfiguration(new IndividualCustomerProfileConfiguration());
-        modelBuilder.ApplyConfiguration(new BusinessCustomerProfileConfiguration());
-        modelBuilder.ApplyConfiguration(new MemberCustomerProfileConfiguration());
+        modelBuilder.ApplyConfiguration(new BusinessCustomerConfiguration());
+        modelBuilder.ApplyConfiguration(new IndividualCustomerEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new MemberCustomerEntityConfiguration());
         
         // Supporting configurations
         modelBuilder.ApplyConfiguration(new AddressConfiguration());

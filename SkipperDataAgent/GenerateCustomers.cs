@@ -202,42 +202,37 @@ public static class GenerateCustomers
             IsDeleted = false
         };
 
+        // Create the TPH customer entity with all properties directly
+        var vesselOwnerCustomer = new VesselOwnerCustomerEntity
+        {
+            AccountNumber = accountNumber,
+            Name = customerName,
+            CustomerProfileType = CustomerProfileType.VesselOwnerProfile,
+            LicenseNumber = licenseNumber,
+            LicenseExpiryDate = licenseExpiryDate,
+            ContactId = contactEntity.Id, // Will be set after contact is saved
+            Contact = contactEntity,
+            CreatedAt = createdAt,
+            UpdatedAt = updatedAt,
+            IsDeleted = false
+        };
+
+        // Create vessel relationships pointing to customer (not profile)
         var vesselOwnerVessels = customerVessels.Select(vessel => new VesselOwnerVesselEntity
         {
             VesselId = vessel.Id,
             Vessel = vessel,
+            VesselOwnerCustomerId = vesselOwnerCustomer.Id, // Will be set after customer is saved
+            VesselOwnerCustomer = vesselOwnerCustomer,
             CreatedAt = createdAt,
             UpdatedAt = updatedAt,
             IsDeleted = false
         }).ToList();
 
-        var profileEntity = new VesselOwnerProfileEntity
-        {
-            Contact = contactEntity,
-            VesselOwnerVessels = vesselOwnerVessels,
-            CreatedAt = createdAt,
-            UpdatedAt = updatedAt,
-            IsDeleted = false
-        };
+        // Set the vessels collection on the customer
+        vesselOwnerCustomer.VesselOwnerVessels = vesselOwnerVessels;
 
-        // Set the back-reference
-        foreach (var vesselOwnerVessel in vesselOwnerVessels)
-        {
-            vesselOwnerVessel.VesselOwnerProfile = profileEntity;
-        }
-
-        return new VesselOwnerCustomerEntity
-        {
-            AccountNumber = accountNumber,
-            Name = customerName,
-            CustomerProfileType = CustomerProfileType.VesselOwnerProfile,
-            CustomerProfile = profileEntity,
-            LicenseNumber = licenseNumber,
-            LicenseExpiryDate = licenseExpiryDate,
-            CreatedAt = createdAt,
-            UpdatedAt = updatedAt,
-            IsDeleted = false
-        };
+        return vesselOwnerCustomer;
     }
 
     private static string GenerateAccountNumber(int batchNumber, int customerIndex)

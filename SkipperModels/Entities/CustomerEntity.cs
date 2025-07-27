@@ -1,14 +1,12 @@
 using Models.Shared.Entities;
+using Models.Shared;
 
 namespace SkipperModels.Entities
 {
-    public abstract class CustomerEntity<TCustomerProfile> : BaseEntity, IEntity
-    where TCustomerProfile : CustomerProfileBaseEntity
+    public abstract class CustomerEntity : BaseEntity, IEntity
     {
         public string AccountNumber { get; set; }
         public string Name { get; set; }
-        public CustomerProfileType CustomerProfileType { get; set; }
-        public long CustomerProfileId { get; set; }
-        public virtual TCustomerProfile CustomerProfile { get; set; }
+        public CustomerProfileType CustomerProfileType { get; set; } // TPH Discriminator
     }
 }

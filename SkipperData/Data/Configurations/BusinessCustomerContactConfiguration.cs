@@ -13,7 +13,7 @@ public class BusinessCustomerContactConfiguration : BaseLinkageEntityConfigurati
         
         base.Configure(builder);
         
-        builder.HasKey(e => new { e.BusinessCustomerProfileId, e.ContactId });
+        builder.HasKey(e => new { e.BusinessCustomerId, e.ContactId });
         
         builder.Property(e => e.IsPrimary)
             .HasDefaultValue(false)
@@ -23,9 +23,9 @@ public class BusinessCustomerContactConfiguration : BaseLinkageEntityConfigurati
             .HasDefaultValue(false)
             .IsRequired();
         
-        builder.HasOne(e => e.BusinessCustomerProfile)
-            .WithMany()
-            .HasForeignKey(e => e.BusinessCustomerProfileId)
+        builder.HasOne(e => e.BusinessCustomer)
+            .WithMany(e => e.BusinessCustomerContacts)
+            .HasForeignKey(e => e.BusinessCustomerId)
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
 

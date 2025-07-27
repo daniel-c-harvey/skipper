@@ -1,0 +1,61 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using SkipperModels.Entities;
+
+namespace SkipperData.Data.Repositories;
+
+public interface IBusinessCustomerRepository : ICustomerRepository<BusinessCustomerEntity>
+{
+    // Business customer specific methods
+    Task<IEnumerable<BusinessCustomerEntity>> GetBusinessCustomersByNameAsync(string businessName);
+    Task<BusinessCustomerEntity?> GetByTaxIdAsync(string taxId);
+    Task<IEnumerable<BusinessCustomerEntity>> GetBusinessCustomersWithContactsAsync();
+}
+
+public class BusinessCustomerRepository : CustomerRepository<BusinessCustomerEntity>, IBusinessCustomerRepository
+{
+    public BusinessCustomerRepository(SkipperContext context, ILogger<BusinessCustomerRepository> logger) 
+        : base(context, logger)
+    {
+    }
+
+    // Override SearchCustomersAsync to include BusinessName in search
+    public override async Task<IEnumerable<BusinessCustomerEntity>> SearchCustomersAsync(string searchTerm)
+    {
+        return await Context.Customers
+            .OfType<BusinessCustomerEntity>()
+            .Where(c => !c.IsDeleted && 
+                (c.Name.Contains(searchTerm) || 
+                 c.AccountNumber.Contains(searchTerm) ||
+                 c.BusinessName.Contains(searchTerm)))
+            .ToListAsync();
+    }
+
+    public virtual async Task<IEnumerable<BusinessCustomerEntity>> GetBusinessCustomersByNameAsync(string businessName)
+    {
+        return await Context.Customers
+            .OfType<BusinessCustomerEntity>()
+            .Where(b => b.BusinessName.Contains(businessName) && !b.IsDeleted)
+            .ToListAsync();
+    }
+
+    public virtual async Task<BusinessCustomerEntity?> GetByTaxIdAsync(string taxId)
+    {
+        return await Context.Customers
+            .OfType<BusinessCustomerEntity>()
+            .Where(b => b.TaxId == taxId && !b.IsDeleted)
+            .FirstOrDefaultAsync();
+    }
+
+    public virtual async Task<IEnumerable<BusinessCustomerEntity>> GetBusinessCustomersWithContactsAsync()
+    {
+        return await Context.Customers
+            .OfType<BusinessCustomerEntity>()
+            .Where(b => !b.IsDeleted)
+            .Include(b => b.BusinessCustomerContacts)
+                .ThenInclude(bc => bc.Contact)
+                    .ThenInclude(c => c.Address)
+            .Where(b => b.BusinessCustomerContacts.Any())
+            .ToListAsync();
+    }
+} 
