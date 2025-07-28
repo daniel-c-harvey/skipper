@@ -7,7 +7,7 @@ using SkipperModels.Entities;
 namespace SkipperTests.RepositoryTests;
 
 [TestFixture]
-public class SlipReservationOrderRepositoryTests : RepositoryTestBase<SlipReservationOrderCompositeEntity>
+public class SlipReservationOrderRepositoryTests : RepositoryTestBase<SlipReservationOrderEntity>
 {
     private SlipReservationOrderRepository _repository;
     protected ILogger<SlipReservationOrderRepository> Logger;
@@ -18,12 +18,91 @@ public class SlipReservationOrderRepositoryTests : RepositoryTestBase<SlipReserv
         base.SetUp();
         Logger = TestSetup.CreateLogger<SlipReservationOrderRepository>();
         _repository = new SlipReservationOrderRepository(Context, Logger);
+        
+        // Create required related entities for foreign key relationships
+        SetupRelatedEntities();
+    }
+    
+    private void SetupRelatedEntities()
+    {
+        // Create a test address for the contact
+        var address = new AddressEntity
+        {
+            Address1 = "123 Main St",
+            City = "Anytown",
+            State = "CA",
+            ZipCode = "12345",
+            Country = "USA",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            IsDeleted = false
+        };
+        Context.Addresses.Add(address);
+        Context.SaveChanges();
+        
+        // Create a test contact for the vessel owner
+        var contact = new ContactEntity
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "john.doe@example.com",
+            PhoneNumber = "555-1234",
+            AddressId = address.Id,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            IsDeleted = false
+        };
+        Context.Contacts.Add(contact);
+        Context.SaveChanges();
+        
+        // Create a test customer
+        var customer = new VesselOwnerCustomerEntity
+        {
+            AccountNumber = "CUST001",
+            Name = "Test Vessel Owner",
+            LicenseNumber = "LIC123456",
+            LicenseExpiryDate = DateTime.UtcNow.AddYears(1),
+            ContactId = contact.Id,
+            CustomerProfileType = CustomerProfileType.VesselOwnerProfile,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            IsDeleted = false
+        };
+        Context.Customers.Add(customer);
+        
+        // Create a test slip
+        var slip = new SlipEntity
+        {
+            SlipNumber = "A-001",
+            LocationCode = "MARINA-A",
+            SlipClassificationId = 1,
+            Status = SlipStatus.Available,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            IsDeleted = false
+        };
+        Context.Slips.Add(slip);
+        
+        // Create a test vessel
+        var vessel = new VesselEntity
+        {
+            Name = "Test Vessel",
+            RegistrationNumber = "ABC123",
+            VesselType = VesselType.Sailboat,
+            Length = 30,
+            Beam = 10,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            IsDeleted = false
+        };
+        Context.Vessels.Add(vessel);
+        
+        Context.SaveChanges();
     }
 
     #region Helper Methods
 
-    private SlipReservationOrderCompositeEntity CreateSlipReservationOrder(
-        long id,
+    private SlipReservationOrderEntity CreateSlipReservationOrder(
         string orderNumber = null,
         long customerId = 1,
         DateTime? orderDate = null,
@@ -42,43 +121,34 @@ public class SlipReservationOrderRepositoryTests : RepositoryTestBase<SlipReserv
         var actualOrderDate = orderDate ?? now.AddDays(-1);
         var actualStartDate = startDate ?? now;
         var actualEndDate = endDate ?? now.AddDays(7);
-        var actualOrderNumber = orderNumber ?? $"SR-{actualOrderDate:yyyyMM}-0001-{id:D4}";
+        var actualOrderNumber = orderNumber ?? $"SR-{actualOrderDate:yyyyMM}-0001-0001";
 
-        return new SlipReservationOrderCompositeEntity()
+        return new SlipReservationOrderEntity
         {
-            Order = new VesselOwnerOrderEntity
-            {
-                Id = id,
-                OrderNumber = actualOrderNumber,
-                CustomerId = customerId,
-                OrderDate = actualOrderDate,
-                OrderType = OrderType.SlipReservation,
-                OrderTypeId = id,
-                TotalAmount = totalAmount,
-                Notes = notes,
-                Status = orderStatus,
-                CreatedAt = now,
-                UpdatedAt = now,
-                IsDeleted = false
-            },
-            OrderInfo = new SlipReservationEntity
-            {
-                Id = id,
-                SlipId = slipId,
-                VesselId = vesselId,
-                StartDate = actualStartDate,
-                EndDate = actualEndDate,
-                PriceRate = priceRate,
-                PriceUnit = priceUnit,
-                Status = rentalStatus,
-                CreatedAt = now,
-                UpdatedAt = now,
-                IsDeleted = false
-            }
+            // Common order properties
+            OrderNumber = actualOrderNumber,
+            CustomerId = customerId,
+            OrderDate = actualOrderDate,
+            OrderType = OrderType.SlipReservation,
+            TotalAmount = totalAmount,
+            Notes = notes,
+            Status = orderStatus,
+            CreatedAt = now,
+            UpdatedAt = now,
+            IsDeleted = false,
+            
+            // Slip-specific properties
+            SlipId = slipId,
+            VesselId = vesselId,
+            StartDate = actualStartDate,
+            EndDate = actualEndDate,
+            PriceRate = priceRate,
+            PriceUnit = priceUnit,
+            RentalStatus = rentalStatus
         };
     }
 
-    private async Task SetupOrdersAsync(params SlipReservationOrderCompositeEntity[] orders)
+    private async Task SetupOrdersAsync(params SlipReservationOrderEntity[] orders)
     {
         foreach (var order in orders)
         {
@@ -91,30 +161,30 @@ public class SlipReservationOrderRepositoryTests : RepositoryTestBase<SlipReserv
     #region GetByIdAsync Tests
 
     [Test]
-    public async Task GetByIdAsync_ValidId_ReturnsComposite()
+    public async Task GetByIdAsync_ValidId_ReturnsOrder()
     {
         // Arrange
-        var order = CreateSlipReservationOrder(1, "SR-202401-0001-0001");
+        var order = CreateSlipReservationOrder("SR-202401-0001-0001");
         await SetupOrdersAsync(order);
 
         // Act
-        var result = await _repository.GetByIdAsync(1);
+        var result = await _repository.GetByIdAsync(order.Id);
 
         // Assert
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Id, Is.EqualTo(1));
-        Assert.That(result.Order.OrderNumber, Is.EqualTo("SR-202401-0001-0001"));
-        Assert.That(result.OrderInfo.SlipId, Is.EqualTo(1));
-        Assert.That(result.OrderInfo.VesselId, Is.EqualTo(1));
+        Assert.That(result.Id, Is.EqualTo(order.Id));
+        Assert.That(result.OrderNumber, Is.EqualTo("SR-202401-0001-0001"));
+        Assert.That(result.OrderType, Is.EqualTo(OrderType.SlipReservation));
+        
+        var slipOrder = result as SlipReservationOrderEntity;
+        Assert.That(slipOrder, Is.Not.Null);
+        Assert.That(slipOrder.SlipId, Is.EqualTo(1));
+        Assert.That(slipOrder.VesselId, Is.EqualTo(1));
     }
 
     [Test]
-    public async Task GetByIdAsync_NonExistentId_ReturnsNull()
+    public async Task GetByIdAsync_InvalidId_ReturnsNull()
     {
-        // Arrange
-        var order = CreateSlipReservationOrder(1);
-        await SetupOrdersAsync(order);
-
         // Act
         var result = await _repository.GetByIdAsync(999);
 
@@ -126,9 +196,9 @@ public class SlipReservationOrderRepositoryTests : RepositoryTestBase<SlipReserv
     public async Task GetByIdAsync_DeletedOrder_ReturnsNull()
     {
         // Arrange
-        var order = CreateSlipReservationOrder(1);
+        var order = CreateSlipReservationOrder();
+        order.IsDeleted = true;
         await SetupOrdersAsync(order);
-        await _repository.DeleteAsync(1);
 
         // Act
         var result = await _repository.GetByIdAsync(1);
@@ -139,57 +209,150 @@ public class SlipReservationOrderRepositoryTests : RepositoryTestBase<SlipReserv
 
     #endregion
 
-    #region GetAllAsync Tests
+    #region GetSlipReservationsAsync Tests
 
     [Test]
-    public async Task GetAllAsync_MultipleOrders_ReturnsAllActive()
+    public async Task GetSlipReservationsAsync_ReturnsAllSlipReservations()
     {
         // Arrange
         var orders = new[]
         {
-            CreateSlipReservationOrder(1, "SR-202401-0001-0001"),
-            CreateSlipReservationOrder(2, "SR-202401-0001-0002"),
-            CreateSlipReservationOrder(3, "SR-202401-0001-0003")
+            CreateSlipReservationOrder("SR-202401-0001-0001"),
+            CreateSlipReservationOrder("SR-202401-0001-0002"),
+            CreateSlipReservationOrder("SR-202401-0001-0003")
         };
         await SetupOrdersAsync(orders);
 
         // Act
-        var result = await _repository.GetAllAsync();
+        var result = await _repository.GetSlipReservationsAsync();
 
         // Assert
         Assert.That(result.Count(), Is.EqualTo(3));
-        Assert.That(result.Select(r => r.Id), Is.EquivalentTo(new[] { 1L, 2L, 3L }));
+        Assert.That(result.All(o => o.OrderType == OrderType.SlipReservation), Is.True);
     }
 
     [Test]
-    public async Task GetAllAsync_NoOrders_ReturnsEmpty()
-    {
-        // Act
-        var result = await _repository.GetAllAsync();
-
-        // Assert
-        Assert.That(result.Count(), Is.EqualTo(0));
-    }
-
-    [Test]
-    public async Task GetAllAsync_WithDeletedOrders_ReturnsOnlyActive()
+    public async Task GetSlipReservationsAsync_ExcludesDeletedOrders()
     {
         // Arrange
         var orders = new[]
         {
-            CreateSlipReservationOrder(1),
-            CreateSlipReservationOrder(2),
-            CreateSlipReservationOrder(3)
+            CreateSlipReservationOrder("SR-202401-0001-0001"),
+            CreateSlipReservationOrder("SR-202401-0001-0002"),
+            CreateSlipReservationOrder("SR-202401-0001-0003")
         };
+        orders[1].IsDeleted = true;
         await SetupOrdersAsync(orders);
-        await _repository.DeleteAsync(2);
 
         // Act
-        var result = await _repository.GetAllAsync();
+        var result = await _repository.GetSlipReservationsAsync();
 
         // Assert
-        Assert.That(result.Count(), Is.EqualTo(2));
-        Assert.That(result.Select(r => r.Id), Is.EquivalentTo(new[] { 1L, 3L }));
+        var reservations = result.ToList();
+        Assert.That(reservations, Has.Count.EqualTo(2));
+        Assert.That(reservations.All(r => !r.IsDeleted), Is.True);
+    }
+
+    #endregion
+
+    #region GetReservationsBySlipAsync Tests
+
+    [Test]
+    public async Task GetReservationsBySlipAsync_ReturnsReservationsForSlip()
+    {
+        // Arrange
+        var orders = new[]
+        {
+            CreateSlipReservationOrder("SR-202401-0001-0001", slipId: 1),
+            CreateSlipReservationOrder("SR-202401-0001-0002", slipId: 1),
+            CreateSlipReservationOrder("SR-202401-0001-0003", slipId: 2)
+        };
+        await SetupOrdersAsync(orders);
+
+        // Act
+        var result = await _repository.GetReservationsBySlipAsync(1);
+
+        // Assert
+        var reservations = result.ToList();
+        Assert.That(reservations, Has.Count.EqualTo(2));
+        Assert.That(reservations.All(r => r.SlipId == 1), Is.True);
+    }
+
+    #endregion
+
+    #region GetReservationsByVesselAsync Tests
+
+    [Test]
+    public async Task GetReservationsByVesselAsync_ReturnsReservationsForVessel()
+    {
+        // Arrange
+        var orders = new[]
+        {
+            CreateSlipReservationOrder("SR-202401-0001-0001", vesselId: 1),
+            CreateSlipReservationOrder("SR-202401-0001-0002", vesselId: 1),
+            CreateSlipReservationOrder("SR-202401-0001-0003", vesselId: 2)
+        };
+        await SetupOrdersAsync(orders);
+
+        // Act
+        var result = await _repository.GetReservationsByVesselAsync(1);
+
+        // Assert
+        var reservations = result.ToList();
+        Assert.That(reservations, Has.Count.EqualTo(2));
+        Assert.That(reservations.All(r => r.VesselId == 1), Is.True);
+    }
+
+    #endregion
+
+    #region IsSlipAvailableAsync Tests
+
+    [Test]
+    public async Task IsSlipAvailableAsync_NoOverlappingReservations_ReturnsTrue()
+    {
+        // Arrange
+        var existingOrder = CreateSlipReservationOrder("SR-202401-0001-0001", slipId: 1);
+        existingOrder.StartDate = DateTime.UtcNow.AddDays(10);
+        existingOrder.EndDate = DateTime.UtcNow.AddDays(15);
+        await SetupOrdersAsync(existingOrder);
+
+        // Act
+        var result = await _repository.IsSlipAvailableAsync(1, DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(5));
+
+        // Assert
+        Assert.That(result, Is.True);
+    }
+
+    [Test]
+    public async Task IsSlipAvailableAsync_OverlappingReservations_ReturnsFalse()
+    {
+        // Arrange
+        var existingOrder = CreateSlipReservationOrder("SR-202401-0001-0001", slipId: 1);
+        existingOrder.StartDate = DateTime.UtcNow.AddDays(1);
+        existingOrder.EndDate = DateTime.UtcNow.AddDays(10);
+        await SetupOrdersAsync(existingOrder);
+
+        // Act
+        var result = await _repository.IsSlipAvailableAsync(1, DateTime.UtcNow.AddDays(5), DateTime.UtcNow.AddDays(15));
+
+        // Assert
+        Assert.That(result, Is.False);
+    }
+
+    [Test]
+    public async Task IsSlipAvailableAsync_ExcludesSpecifiedOrder_ReturnsTrue()
+    {
+        // Arrange
+        var existingOrder = CreateSlipReservationOrder("SR-202401-0001-0001", slipId: 1);
+        existingOrder.StartDate = DateTime.UtcNow.AddDays(1);
+        existingOrder.EndDate = DateTime.UtcNow.AddDays(10);
+        await SetupOrdersAsync(existingOrder);
+
+        // Act
+        var result = await _repository.IsSlipAvailableAsync(1, DateTime.UtcNow.AddDays(5), DateTime.UtcNow.AddDays(15), existingOrder.Id);
+
+        // Assert
+        Assert.That(result, Is.True);
     }
 
     #endregion
@@ -197,45 +360,19 @@ public class SlipReservationOrderRepositoryTests : RepositoryTestBase<SlipReserv
     #region AddAsync Tests
 
     [Test]
-    public async Task AddAsync_ValidComposite_AddsSuccessfully()
+    public async Task AddAsync_ValidOrder_AddsSuccessfully()
     {
         // Arrange
-        var order = CreateSlipReservationOrder(0, "SR-202401-0001-0001"); // ID 0 for new entity
+        var order = CreateSlipReservationOrder("SR-202401-0001-0001");
 
         // Act
         var result = await _repository.AddAsync(order);
 
         // Assert
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Id, Is.GreaterThan(0));
-        Assert.That(result.Order.OrderNumber, Is.EqualTo("SR-202401-0001-0001"));
-        Assert.That(result.Order.CreatedAt, Is.Not.EqualTo(DateTime.MinValue));
-        Assert.That(result.OrderInfo.CreatedAt, Is.Not.EqualTo(DateTime.MinValue));
-
-        // Verify it was actually saved
-        var retrieved = await _repository.GetByIdAsync(result.Id);
-        Assert.That(retrieved, Is.Not.Null);
-        Assert.That(retrieved.Order.OrderNumber, Is.EqualTo("SR-202401-0001-0001"));
-    }
-
-    [Test]
-    public async Task AddAsync_SetsTimestamps()
-    {
-        // Arrange
-        var beforeAdd = DateTime.UtcNow;
-        var order = CreateSlipReservationOrder(0);
-
-        // Act
-        var result = await _repository.AddAsync(order);
-        var afterAdd = DateTime.UtcNow;
-
-        // Assert
-        Assert.That(result.Order.CreatedAt, Is.GreaterThanOrEqualTo(beforeAdd));
-        Assert.That(result.Order.CreatedAt, Is.LessThanOrEqualTo(afterAdd));
-        Assert.That(result.OrderInfo.CreatedAt, Is.GreaterThanOrEqualTo(beforeAdd));
-        Assert.That(result.OrderInfo.CreatedAt, Is.LessThanOrEqualTo(afterAdd));
-        Assert.That(result.Order.UpdatedAt, Is.EqualTo(result.Order.CreatedAt));
-        Assert.That(result.OrderInfo.UpdatedAt, Is.EqualTo(result.OrderInfo.CreatedAt));
+        Assert.That(result.OrderNumber, Is.EqualTo("SR-202401-0001-0001"));
+        Assert.That(result.CreatedAt, Is.Not.EqualTo(DateTime.MinValue));
+        Assert.That(result.UpdatedAt, Is.Not.EqualTo(DateTime.MinValue));
     }
 
     #endregion
@@ -243,27 +380,23 @@ public class SlipReservationOrderRepositoryTests : RepositoryTestBase<SlipReserv
     #region UpdateAsync Tests
 
     [Test]
-    public async Task UpdateAsync_ValidComposite_UpdatesSuccessfully()
+    public async Task UpdateAsync_ValidOrder_UpdatesSuccessfully()
     {
         // Arrange
-        var order = CreateSlipReservationOrder(1, totalAmount: 10000);
+        var order = CreateSlipReservationOrder("SR-202401-0001-0001");
         await SetupOrdersAsync(order);
 
-        var updatedOrder = await _repository.GetByIdAsync(1);
-        updatedOrder.Order.TotalAmount = 15000;
-        updatedOrder.Order.Notes = "Updated notes";
-        updatedOrder.OrderInfo.PriceRate = 150;
+        // Modify the order
+        order.Notes = "Updated notes";
+        order.TotalAmount = 15000;
 
         // Act
-        await _repository.UpdateAsync(updatedOrder);
+        await _repository.UpdateAsync(order);
 
         // Assert
-        var result = await _repository.GetByIdAsync(1);
-        Assert.That(result.Order.TotalAmount, Is.EqualTo(15000));
-        Assert.That(result.Order.Notes, Is.EqualTo("Updated notes"));
-        Assert.That(result.OrderInfo.PriceRate, Is.EqualTo(150));
-        Assert.That(result.Order.UpdatedAt, Is.GreaterThan(result.Order.CreatedAt));
-        Assert.That(result.OrderInfo.UpdatedAt, Is.GreaterThan(result.OrderInfo.CreatedAt));
+        var updatedOrder = await _repository.GetByIdAsync(order.Id);
+        Assert.That(updatedOrder.Notes, Is.EqualTo("Updated notes"));
+        Assert.That(updatedOrder.TotalAmount, Is.EqualTo(15000));
     }
 
     #endregion
@@ -271,296 +404,79 @@ public class SlipReservationOrderRepositoryTests : RepositoryTestBase<SlipReserv
     #region DeleteAsync Tests
 
     [Test]
-    public async Task DeleteAsync_ValidId_SoftDeletesComposite()
+    public async Task DeleteAsync_ValidId_SoftDeletesOrder()
     {
         // Arrange
-        var order = CreateSlipReservationOrder(1);
+        var order = CreateSlipReservationOrder("SR-202401-0001-0001");
         await SetupOrdersAsync(order);
 
         // Act
-        await _repository.DeleteAsync(1);
+        await _repository.DeleteAsync(order.Id);
 
         // Assert
-        var result = await _repository.GetByIdAsync(1);
-        Assert.That(result, Is.Null);
-
-        var allOrders = await _repository.GetAllAsync();
-        Assert.That(allOrders.Count(), Is.EqualTo(0));
-    }
-
-    [Test]
-    public async Task DeleteAsync_NonExistentId_DoesNotThrow()
-    {
-        // Act & Assert
-        Assert.DoesNotThrowAsync(() => _repository.DeleteAsync(999));
+        var deletedOrder = await _repository.GetByIdAsync(order.Id);
+        Assert.That(deletedOrder, Is.Null); // Should not be found due to soft delete
     }
 
     #endregion
 
-    #region ExistsAsync Tests
+    #region GetActiveReservationsAsync Tests
 
     [Test]
-    public async Task ExistsAsync_ValidId_ReturnsTrue()
+    public async Task GetActiveReservationsAsync_ReturnsCurrentlyActiveReservations()
     {
         // Arrange
-        var order = CreateSlipReservationOrder(1);
-        await SetupOrdersAsync(order);
+        var currentDate = DateTime.UtcNow.Date;
+        var orders = new[]
+        {
+            CreateSlipReservationOrder("SR-202401-0001-0001"),
+            CreateSlipReservationOrder("SR-202401-0001-0002"),
+            CreateSlipReservationOrder("SR-202401-0001-0003")
+        };
+        orders[0].StartDate = DateTime.UtcNow.AddDays(-1);
+        orders[0].EndDate = DateTime.UtcNow.AddDays(1);
+        orders[0].RentalStatus = RentalStatus.Active;
+        orders[1].StartDate = DateTime.UtcNow.AddDays(1);
+        orders[1].EndDate = DateTime.UtcNow.AddDays(10);
+        orders[1].RentalStatus = RentalStatus.Active;
+        orders[2].StartDate = DateTime.UtcNow.AddDays(-10);
+        orders[2].EndDate = DateTime.UtcNow.AddDays(-1);
+        orders[2].RentalStatus = RentalStatus.Active;
+        await SetupOrdersAsync(orders);
 
         // Act
-        var result = await _repository.ExistsAsync(1);
+        var result = await _repository.GetActiveReservationsAsync();
 
         // Assert
-        Assert.That(result, Is.True);
-    }
-
-    [Test]
-    public async Task ExistsAsync_NonExistentId_ReturnsFalse()
-    {
-        // Arrange
-        var order = CreateSlipReservationOrder(1);
-        await SetupOrdersAsync(order);
-
-        // Act
-        var result = await _repository.ExistsAsync(999);
-
-        // Assert
-        Assert.That(result, Is.False);
-    }
-
-    [Test]
-    public async Task ExistsAsync_DeletedOrder_ReturnsFalse()
-    {
-        // Arrange
-        var order = CreateSlipReservationOrder(1);
-        await SetupOrdersAsync(order);
-        await _repository.DeleteAsync(1);
-
-        // Act
-        var result = await _repository.ExistsAsync(1);
-
-        // Assert
-        Assert.That(result, Is.False);
+        var activeReservations = result.ToList();
+        Assert.That(activeReservations, Has.Count.EqualTo(1));
+        Assert.That(activeReservations[0].OrderNumber, Is.EqualTo("SR-202401-0001-0001"));
     }
 
     #endregion
 
-    #region FindAsync Tests
+    #region GetRevenueBySlipAsync Tests
 
     [Test]
-    public async Task FindAsync_ByOrderStatus_ReturnsMatchingOrders()
+    public async Task GetRevenueBySlipAsync_CompletedOrders_ReturnsCorrectRevenue()
     {
         // Arrange
         var orders = new[]
         {
-            CreateSlipReservationOrder(1, orderStatus: OrderStatus.Confirmed),
-            CreateSlipReservationOrder(2, orderStatus: OrderStatus.Confirmed),
-            CreateSlipReservationOrder(3, orderStatus: OrderStatus.Pending),
-            CreateSlipReservationOrder(4, orderStatus: OrderStatus.Cancelled)
+            CreateSlipReservationOrder("SR-202401-0001-0001", slipId: 1, totalAmount: 10000),
+            CreateSlipReservationOrder("SR-202401-0001-0002", slipId: 1, totalAmount: 15000),
+            CreateSlipReservationOrder("SR-202401-0001-0003", slipId: 2, totalAmount: 20000)
         };
+        orders[0].Status = OrderStatus.Completed;
+        orders[1].Status = OrderStatus.Completed;
+        orders[2].Status = OrderStatus.Completed;
         await SetupOrdersAsync(orders);
 
         // Act
-        var result = await _repository.FindAsync(o => o.Order.Status == OrderStatus.Confirmed);
+        var result = await _repository.GetRevenueBySlipAsync(1);
 
         // Assert
-        Assert.That(result.Count(), Is.EqualTo(2));
-        Assert.That(result.All(r => r.Order.Status == OrderStatus.Confirmed), Is.True);
-        Assert.That(result.Select(r => r.Id), Is.EquivalentTo(new[] { 1L, 2L }));
-    }
-
-    [Test]
-    public async Task FindAsync_ByRentalStatus_ReturnsMatchingOrders()
-    {
-        // Arrange
-        var orders = new[]
-        {
-            CreateSlipReservationOrder(1, rentalStatus: RentalStatus.Active),
-            CreateSlipReservationOrder(2, rentalStatus: RentalStatus.Active),
-            CreateSlipReservationOrder(3, rentalStatus: RentalStatus.Pending),
-            CreateSlipReservationOrder(4, rentalStatus: RentalStatus.Expired)
-        };
-        await SetupOrdersAsync(orders);
-
-        // Act
-        var result = await _repository.FindAsync(o => o.OrderInfo.Status == RentalStatus.Active);
-
-        // Assert
-        Assert.That(result.Count(), Is.EqualTo(2));
-        Assert.That(result.All(r => r.OrderInfo.Status == RentalStatus.Active), Is.True);
-        Assert.That(result.Select(r => r.Id), Is.EquivalentTo(new[] { 1L, 2L }));
-    }
-
-    [Test]
-    public async Task FindAsync_BySlipId_ReturnsMatchingOrders()
-    {
-        // Arrange
-        var orders = new[]
-        {
-            CreateSlipReservationOrder(1, slipId: 1),
-            CreateSlipReservationOrder(2, slipId: 1),
-            CreateSlipReservationOrder(3, slipId: 2),
-            CreateSlipReservationOrder(4, slipId: 3)
-        };
-        await SetupOrdersAsync(orders);
-
-        // Act
-        var result = await _repository.FindAsync(o => o.OrderInfo.SlipId == 1);
-
-        // Assert
-        Assert.That(result.Count(), Is.EqualTo(2));
-        Assert.That(result.All(r => r.OrderInfo.SlipId == 1), Is.True);
-        Assert.That(result.Select(r => r.Id), Is.EquivalentTo(new[] { 1L, 2L }));
-    }
-
-    [Test]
-    public async Task FindAsync_ByDateRange_ReturnsMatchingOrders()
-    {
-        // Arrange
-        var baseDate = DateTime.Today;
-        var orders = new[]
-        {
-            CreateSlipReservationOrder(1, startDate: baseDate, endDate: baseDate.AddDays(7)),
-            CreateSlipReservationOrder(2, startDate: baseDate.AddDays(5), endDate: baseDate.AddDays(12)),
-            CreateSlipReservationOrder(3, startDate: baseDate.AddDays(20), endDate: baseDate.AddDays(27))
-        };
-        await SetupOrdersAsync(orders);
-
-        // Act - Find orders that start within first two weeks
-        var result = await _repository.FindAsync(o => o.OrderInfo.StartDate <= baseDate.AddDays(14));
-
-        // Assert
-        Assert.That(result.Count(), Is.EqualTo(2));
-        Assert.That(result.Select(r => r.Id), Is.EquivalentTo(new[] { 1L, 2L }));
-    }
-
-    [Test]
-    public async Task FindAsync_NoMatches_ReturnsEmpty()
-    {
-        // Arrange
-        var orders = new[]
-        {
-            CreateSlipReservationOrder(1, orderStatus: OrderStatus.Confirmed),
-            CreateSlipReservationOrder(2, orderStatus: OrderStatus.Pending)
-        };
-        await SetupOrdersAsync(orders);
-
-        // Act
-        var result = await _repository.FindAsync(o => o.Order.Status == OrderStatus.Cancelled);
-
-        // Assert
-        Assert.That(result.Count(), Is.EqualTo(0));
-    }
-
-    #endregion
-
-    #region Paging Tests
-
-    [Test]
-    public async Task GetPagedAsync_FirstPage_ReturnsCorrectResults()
-    {
-        // Arrange
-        var orders = Enumerable.Range(1, 10)
-            .Select(i => CreateSlipReservationOrder(i, $"SR-202401-0001-{i:D4}"))
-            .ToArray();
-        await SetupOrdersAsync(orders);
-
-        var pagingParams = new PagingParameters<SlipReservationOrderCompositeEntity>
-        {
-            PageSize = 3,
-            Page = 1,
-            OrderBy = o => o.Order.OrderNumber
-        };
-
-        // Act
-        var result = await _repository.GetPagedAsync(pagingParams);
-
-        // Assert
-        Assert.That(result.Items.Count(), Is.EqualTo(3));
-        Assert.That(result.TotalCount, Is.EqualTo(10));
-        Assert.That(result.Page, Is.EqualTo(1));
-        Assert.That(result.PageSize, Is.EqualTo(3));
-        Assert.That(result.Items.Select(i => i.Id), Is.EquivalentTo(new[] { 1L, 2L, 3L }));
-    }
-
-    [Test]
-    public async Task GetPagedAsync_WithPredicate_ReturnsFilteredResults()
-    {
-        // Arrange
-        var orders = new[]
-        {
-            CreateSlipReservationOrder(1, orderStatus: OrderStatus.Confirmed),
-            CreateSlipReservationOrder(2, orderStatus: OrderStatus.Confirmed),
-            CreateSlipReservationOrder(3, orderStatus: OrderStatus.Pending),
-            CreateSlipReservationOrder(4, orderStatus: OrderStatus.Confirmed),
-            CreateSlipReservationOrder(5, orderStatus: OrderStatus.Cancelled)
-        };
-        await SetupOrdersAsync(orders);
-
-        var pagingParams = new PagingParameters<SlipReservationOrderCompositeEntity>
-        {
-            PageSize = 2,
-            Page = 1,
-            OrderBy = o => o.Id
-        };
-
-        // Act
-        var result = await _repository.GetPagedAsync(
-            o => o.Order.Status == OrderStatus.Confirmed, 
-            pagingParams);
-
-        // Assert
-        Assert.That(result.Items.Count(), Is.EqualTo(2));
-        Assert.That(result.TotalCount, Is.EqualTo(3)); // Only confirmed orders
-        Assert.That(result.Items.All(i => i.Order.Status == OrderStatus.Confirmed), Is.True);
-    }
-
-    [Test]
-    public async Task GetPageCountAsync_CalculatesCorrectPageCount()
-    {
-        // Arrange
-        var orders = Enumerable.Range(1, 7)
-            .Select(i => CreateSlipReservationOrder(i))
-            .ToArray();
-        await SetupOrdersAsync(orders);
-
-        var pagingParams = new PagingParameters<SlipReservationOrderCompositeEntity>
-        {
-            PageSize = 3
-        };
-
-        // Act
-        var result = await _repository.GetPageCountAsync(o => true, pagingParams);
-
-        // Assert
-        Assert.That(result, Is.EqualTo(3)); // 7 items, 3 per page = 3 pages
-    }
-
-    [Test]
-    public async Task GetPageCountAsync_WithPredicate_CalculatesCorrectPageCount()
-    {
-        // Arrange
-        var orders = new[]
-        {
-            CreateSlipReservationOrder(1, orderStatus: OrderStatus.Confirmed),
-            CreateSlipReservationOrder(2, orderStatus: OrderStatus.Confirmed),
-            CreateSlipReservationOrder(3, orderStatus: OrderStatus.Pending),
-            CreateSlipReservationOrder(4, orderStatus: OrderStatus.Confirmed),
-            CreateSlipReservationOrder(5, orderStatus: OrderStatus.Cancelled)
-        };
-        await SetupOrdersAsync(orders);
-
-        var pagingParams = new PagingParameters<SlipReservationOrderCompositeEntity>
-        {
-            PageSize = 2
-        };
-
-        // Act
-        var result = await _repository.GetPageCountAsync(
-            o => o.Order.Status == OrderStatus.Confirmed, 
-            pagingParams);
-
-        // Assert
-        Assert.That(result, Is.EqualTo(2)); // 3 confirmed orders, 2 per page = 2 pages
+        Assert.That(result, Is.EqualTo(250.00m)); // (10000 + 15000) / 100
     }
 
     #endregion

@@ -1,18 +1,30 @@
-// Future implementation for Purchase Orders
-// namespace SkipperModels.Entities;
-// 
-// public class PurchaseOrderEntity : OrderEntity
-// {
-//     // Purchase-specific properties
-//     public long SupplierId { get; set; }
-//     public virtual SupplierEntity Supplier { get; set; }
-//     public DateTime DeliveryDate { get; set; }
-//     public string? PurchaseOrderNumber { get; set; }
-//     public string? DeliveryAddress { get; set; }
-//     public PurchaseStatus PurchaseStatus { get; set; }
-// 
-//     public PurchaseOrderEntity()
-//     {
-//         OrderType = OrderType.PurchaseOrder;
-//     }
-// } 
+using Models.Shared.Entities;
+
+namespace SkipperModels.Entities;
+
+public class PurchaseOrderEntity : OrderEntity<BusinessCustomerEntity>
+{
+    // Purchase-specific properties
+    public string PurchaseOrderNumber { get; set; }
+    public DateTime ExpectedDeliveryDate { get; set; }
+    public string ShippingAddress { get; set; }
+    public string BillingAddress { get; set; }
+    public PurchaseOrderStatus PurchaseStatus { get; set; }
+    public string TermsAndConditions { get; set; }
+
+    public PurchaseOrderEntity()
+    {
+        OrderType = OrderType.PurchaseOrder;
+    }
+}
+
+public enum PurchaseOrderStatus
+{
+    Draft,
+    Submitted,
+    Approved,
+    Ordered,
+    Shipped,
+    Delivered,
+    Cancelled
+} 

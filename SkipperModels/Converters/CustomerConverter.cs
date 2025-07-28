@@ -5,67 +5,37 @@ using SkipperModels.Models;
 
 namespace SkipperModels.Converters
 {
-    public class CustomerEntityToModelConverter<TCustomerProfile, TCustomer> : IEntityToModelConverter<TCustomer, CustomerModel>
-    where TCustomerProfile : CustomerProfileBaseEntity
-    where TCustomer : CustomerEntity<TCustomerProfile>, new()
+    // Generic base converter for CustomerEntity and its derived types
+    public class CustomerConverter<TCustomerEntity, TCustomerModel> : IEntityToModelConverter<TCustomerEntity, TCustomerModel>
+        where TCustomerEntity : CustomerEntity, new()
+        where TCustomerModel : CustomerModel, new()
     {
-        public static CustomerModel Convert(TCustomer entity)
+        public static TCustomerModel Convert(TCustomerEntity entity)
         {
-            return new CustomerModel
+            var model = new TCustomerModel
             {
                 Id = entity.Id,
                 AccountNumber = entity.AccountNumber,
                 Name = entity.Name,
                 CustomerProfileType = entity.CustomerProfileType,
-                CustomerProfileId = entity.CustomerProfileId,
                 CreatedAt = entity.CreatedAt,
                 UpdatedAt = entity.UpdatedAt,
             };
+            return model;
         }
 
-        public static TCustomer Convert(CustomerModel model)
+        public static TCustomerEntity Convert(TCustomerModel model)
         {
-            return new TCustomer
+            var entity = new TCustomerEntity
             {
                 Id = model.Id,
                 AccountNumber = model.AccountNumber,
                 Name = model.Name,
                 CustomerProfileType = model.CustomerProfileType,
-                CustomerProfileId = model.CustomerProfileId,
                 CreatedAt = model.CreatedAt,
                 UpdatedAt = model.UpdatedAt,
             };
-        }
-    }
-
-    public class CustomerModelToInputConverter : IModelToInputConverter<CustomerModel, CustomerInputModel>
-    {
-        public static CustomerInputModel Convert(CustomerModel model)
-        {
-            return new CustomerInputModel
-            {
-                Id = model.Id,
-                AccountNumber = model.AccountNumber,
-                Name = model.Name,
-                CustomerProfileType = model.CustomerProfileType,
-                CustomerProfileId = model.CustomerProfileId,
-                CreatedAt = model.CreatedAt,
-                UpdatedAt = model.UpdatedAt,
-            };
-        }
-
-        public static CustomerModel Convert(CustomerInputModel input)
-        {
-            return new CustomerModel
-            {
-                Id = input.Id,
-                AccountNumber = input.AccountNumber,
-                Name = input.Name,
-                CustomerProfileType = input.CustomerProfileType,
-                CustomerProfileId = input.CustomerProfileId,
-                CreatedAt = input.CreatedAt,
-                UpdatedAt = input.UpdatedAt,
-            };
+            return entity;
         }
     }
 }

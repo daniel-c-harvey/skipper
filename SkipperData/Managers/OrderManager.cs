@@ -7,18 +7,20 @@ using SkipperModels.Models;
 
 namespace SkipperData.Managers;
 
-public class OrderManager<TOrderEntity, TOrderModel, TRepository, TConverter> 
+public class OrderManager<TOrderEntity, TOrderModel, TCustomer, TCustomerModel, TRepository, TConverter> 
     : Manager<TOrderEntity, TOrderModel, TRepository, TConverter>
-    where TOrderEntity : OrderEntity, new()
+    where TOrderEntity : OrderEntity<TCustomer>, new()
     where TOrderModel : OrderModel, new()
-    where TRepository : IOrderRepository<TOrderEntity>
+    where TCustomer : CustomerEntity, new()
+    where TCustomerModel : CustomerModel, new()
+    where TRepository : IOrderRepository<TOrderEntity, TCustomer>
     where TConverter : IEntityToModelConverter<TOrderEntity, TOrderModel>
 {
     protected OrderManager(TRepository repository) : base(repository)
     {
     }
 
-    // Type-specific business logic methods (only methods available in IOrderRepository<TOrderEntity>)
+    // Type-specific business logic methods (only methods available in IOrderRepository<TOrderEntity, TCustomer>)
     public virtual async Task<IEnumerable<TOrderModel>> GetOrdersByCustomerAsync(long customerId)
     {
         var entities = await Repository.GetOrdersByCustomerAsync(customerId);

@@ -6,9 +6,9 @@ using SkipperModels;
 
 namespace SkipperData.Data.Configurations;
 
-public class OrderConfiguration : BaseEntityConfiguration<OrderEntity>
+public class OrderConfiguration : BaseEntityConfiguration<OrderEntity<CustomerEntity>>
 {
-    public override void Configure(EntityTypeBuilder<OrderEntity> builder)
+    public override void Configure(EntityTypeBuilder<OrderEntity<CustomerEntity>> builder)
     {
         base.Configure(builder);
         
@@ -17,10 +17,10 @@ public class OrderConfiguration : BaseEntityConfiguration<OrderEntity>
         
         // Configure TPH discriminator
         builder.HasDiscriminator(x => x.OrderType)
-            .HasValue<SlipReservationOrderEntity>(OrderType.SlipReservation);
+            .HasValue<SlipReservationOrderEntity>(OrderType.SlipReservation)
+            .HasValue<ServiceOrderEntity>(OrderType.ServiceOrder)
+            .HasValue<PurchaseOrderEntity>(OrderType.PurchaseOrder);
             // Future order types will be added here:
-            // .HasValue<ServiceOrderEntity>(OrderType.ServiceOrder)
-            // .HasValue<PurchaseOrderEntity>(OrderType.PurchaseOrder)
             // .HasValue<StorageOrderEntity>(OrderType.StorageOrder);
 
         // Common order properties
@@ -45,17 +45,17 @@ public class OrderConfiguration : BaseEntityConfiguration<OrderEntity>
             .IsRequired()
             .HasConversion<string>();
 
-        // Customer relationship
+        // Customer relationship - works with the base CustomerEntity
         builder.HasOne(x => x.Customer)
             .WithMany()
             .HasForeignKey(x => x.CustomerId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Common indexes
+        // Indexes
+        builder.HasIndex(x => x.CustomerId);
         builder.HasIndex(x => x.OrderNumber)
             .IsUnique();
-        builder.HasIndex(x => x.CustomerId);
-        builder.HasIndex(x => new { x.Status, x.OrderDate });
         builder.HasIndex(x => x.OrderType);
+        builder.HasIndex(x => new { x.Status, x.OrderDate });
     }
 }

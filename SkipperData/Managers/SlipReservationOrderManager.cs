@@ -1,11 +1,12 @@
-﻿using SkipperData.Data.Repositories;
+﻿using Models.Shared.Common;
+using SkipperData.Data.Repositories;
 using SkipperModels.Converters;
 using SkipperModels.Entities;
 using SkipperModels.Models;
 
 namespace SkipperData.Managers;
 
-public class SlipReservationOrderManager : OrderManager<SlipReservationOrderEntity, SlipReservationOrderModel, SlipReservationOrderRepository, SlipReservationOrderConverter>
+public class SlipReservationOrderManager : OrderManager<SlipReservationOrderEntity, SlipReservationOrderModel, VesselOwnerCustomerEntity, VesselOwnerCustomerModel, SlipReservationOrderRepository, SlipReservationOrderConverter>
 {
     private readonly SlipReservationOrderRepository _repository;
 
@@ -55,9 +56,10 @@ public class SlipReservationOrderManager : OrderManager<SlipReservationOrderEnti
         return await _repository.GetRevenueBySlipAsync(slipId, startDate, endDate);
     }
 
-    public virtual async Task<IEnumerable<SlipReservationOrderModel>> GetOverlappingReservationsAsync(long slipId, DateTime startDate, DateTime endDate, long? excludeOrderId = null)
+    public virtual async Task<PagedResult<SlipReservationOrderModel>> GetSlipReservationsPagedAsync(PagingParameters<SlipReservationOrderEntity> pagingParameters)
     {
-        var entities = await _repository.GetOverlappingReservationsAsync(slipId, startDate, endDate, excludeOrderId);
-        return entities.Select(SlipReservationOrderConverter.Convert);
+        var result = await _repository.GetSlipReservationsPagedAsync(pagingParameters);
+        var models = result.Items.Select(SlipReservationOrderConverter.Convert);
+        return new PagedResult<SlipReservationOrderModel>(models, result.TotalCount, result.Page, result.PageSize);
     }
 }

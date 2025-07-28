@@ -7,7 +7,7 @@ using NetBlocks.Models;
 
 namespace SkipperData.Data.Repositories;
 
-public interface ISlipReservationOrderRepository : IOrderRepository<SlipReservationOrderEntity>
+public interface ISlipReservationOrderRepository : IOrderRepository<SlipReservationOrderEntity, VesselOwnerCustomerEntity>
 {
     // Slip reservation specific methods
     Task<IEnumerable<SlipReservationOrderEntity>> GetSlipReservationsAsync();
@@ -21,7 +21,7 @@ public interface ISlipReservationOrderRepository : IOrderRepository<SlipReservat
     Task<PagedResult<SlipReservationOrderEntity>> GetSlipReservationsPagedAsync(PagingParameters<SlipReservationOrderEntity> pagingParameters);
 }
 
-public class SlipReservationOrderRepository : OrderRepository<SlipReservationOrderEntity>, ISlipReservationOrderRepository
+public class SlipReservationOrderRepository : OrderRepository<SlipReservationOrderEntity, VesselOwnerCustomerEntity>, ISlipReservationOrderRepository
 {
     public SlipReservationOrderRepository(SkipperContext context, ILogger<SlipReservationOrderRepository> logger) 
         : base(context, logger)
