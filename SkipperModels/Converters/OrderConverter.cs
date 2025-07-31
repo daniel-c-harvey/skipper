@@ -7,7 +7,7 @@ namespace SkipperModels.Converters
 {
     // Generic base converter for OrderEntity and its derived types
     public class OrderConverter<TOrderEntity, TOrderModel, TCustomerEntity, TCustomerModel> : IEntityToModelConverter<TOrderEntity, TOrderModel>
-        where TOrderEntity : OrderEntity<TCustomerEntity>, new()
+        where TOrderEntity : OrderEntity, new()
         where TOrderModel : OrderModel, new()
         where TCustomerEntity : CustomerEntity, new()
         where TCustomerModel : CustomerModel, new()
@@ -18,7 +18,6 @@ namespace SkipperModels.Converters
             {
                 Id = entity.Id,
                 OrderNumber = entity.OrderNumber,
-                CustomerId = entity.CustomerId,
                 Customer = CustomerConverter<TCustomerEntity, TCustomerModel>.Convert(entity.Customer),
                 OrderDate = entity.OrderDate,
                 OrderType = entity.OrderType,
@@ -37,7 +36,7 @@ namespace SkipperModels.Converters
             {
                 Id = model.Id,
                 OrderNumber = model.OrderNumber,
-                CustomerId = model.CustomerId,
+                CustomerId = model.Customer.Id,
                 OrderDate = model.OrderDate,
                 OrderType = model.OrderType,
                 TotalAmount = model.TotalAmount,

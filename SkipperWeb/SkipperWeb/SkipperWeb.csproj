@@ -23,12 +23,4 @@
       <Folder Include="wwwroot\lib\" />
     </ItemGroup>
 
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="Components\Pages\Maintenance\Entities\ConfirmDeleteModal.razor" />
-      <_ContentIncludedByDefault Remove="Components\Pages\Maintenance\Entities\EditModelModal.razor" />
-      <_ContentIncludedByDefault Remove="Components\Pages\Maintenance\Entities\ModelView.razor" />
-      <_ContentIncludedByDefault Remove="Components\Pages\Maintenance\Entities\New\ModelSubmittedModal.razor" />
-      <_ContentIncludedByDefault Remove="Components\Pages\Maintenance\Entities\New\NewModelView.razor" />
-    </ItemGroup>
-
 </Project>

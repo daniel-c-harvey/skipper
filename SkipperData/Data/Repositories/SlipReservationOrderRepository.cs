@@ -7,7 +7,7 @@ using NetBlocks.Models;
 
 namespace SkipperData.Data.Repositories;
 
-public interface ISlipReservationOrderRepository : IOrderRepository<SlipReservationOrderEntity, VesselOwnerCustomerEntity>
+public interface ISlipReservationOrderRepository : IOrderRepository<SlipReservationOrderEntity>
 {
     // Slip reservation specific methods
     Task<IEnumerable<SlipReservationOrderEntity>> GetSlipReservationsAsync();

@@ -12,9 +12,9 @@ namespace SkipperAPI.Controllers;
 public class OrderController<TOrderEntity, TOrderModel, TCustomerEntity, TCustomerModel, TOrderManager, TRepository, TConverter> : ModelController<TOrderEntity, TOrderModel, TOrderManager>
     where TCustomerEntity : CustomerEntity, new()
     where TCustomerModel : CustomerModel, new()
-    where TOrderEntity : OrderEntity<TCustomerEntity>, new()
-    where TOrderModel : OrderModel<TCustomerModel>, new()
-    where TOrderManager : OrderManager<TOrderEntity, TOrderModel, TRepository, TConverter>
+    where TOrderEntity : OrderEntity, new()
+    where TOrderModel : OrderModel, new()
+    where TOrderManager : OrderManager<TOrderEntity, TOrderModel, TCustomerEntity, TCustomerModel, TRepository, TConverter>
     where TRepository : IOrderRepository<TOrderEntity>
     where TConverter : IEntityToModelConverter<TOrderEntity, TOrderModel>
 {

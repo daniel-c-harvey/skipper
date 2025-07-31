@@ -10,8 +10,8 @@ using NetBlocks.Models;
 namespace SkipperData.Data.Repositories;
 
 // Generic repository for type-specific order operations
-public class OrderRepository<TOrderEntity, TCustomer> : RepositoryBase<SkipperContext, TOrderEntity>, IOrderRepository<TOrderEntity, TCustomer>
-    where TOrderEntity : OrderEntity<TCustomer>
+public class OrderRepository<TOrderEntity, TCustomer> : RepositoryBase<SkipperContext, TOrderEntity>, IOrderRepository<TOrderEntity>
+    where TOrderEntity : OrderEntity
     where TCustomer : CustomerEntity
 {
     public OrderRepository(SkipperContext context, ILogger<OrderRepository<TOrderEntity, TCustomer>> logger) 
@@ -42,7 +42,7 @@ public class OrderRepository<TOrderEntity, TCustomer> : RepositoryBase<SkipperCo
     {
         return await Context.Orders
             .OfType<TOrderEntity>()
-            .Include(o => o.Customer)
+            .Include(o => o.Customer) // todo test acquisition of derived data
             .Where(o => !o.IsDeleted)
             .Where(predicate)
             .ToListAsync();

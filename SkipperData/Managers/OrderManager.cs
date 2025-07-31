@@ -9,11 +9,11 @@ namespace SkipperData.Managers;
 
 public class OrderManager<TOrderEntity, TOrderModel, TCustomer, TCustomerModel, TRepository, TConverter> 
     : Manager<TOrderEntity, TOrderModel, TRepository, TConverter>
-    where TOrderEntity : OrderEntity<TCustomer>, new()
+    where TOrderEntity : OrderEntity, new()
     where TOrderModel : OrderModel, new()
     where TCustomer : CustomerEntity, new()
     where TCustomerModel : CustomerModel, new()
-    where TRepository : IOrderRepository<TOrderEntity, TCustomer>
+    where TRepository : IOrderRepository<TOrderEntity>
     where TConverter : IEntityToModelConverter<TOrderEntity, TOrderModel>
 {
     protected OrderManager(TRepository repository) : base(repository)

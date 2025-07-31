@@ -14,13 +14,13 @@ public class SkipperContext : DbContext
     
     // Order entities - TPH unified approach
     // Use the base generic type for the main DbSet
-    public DbSet<OrderEntity<CustomerEntity>> Orders { get; set; }
+    public DbSet<OrderEntity> Orders { get; set; }
     public DbSet<SlipReservationOrderEntity> SlipReservationOrders { get; set; }
-    public DbSet<ServiceOrderEntity> ServiceOrders { get; set; }
-    public DbSet<PurchaseOrderEntity> PurchaseOrders { get; set; }
+    // public DbSet<ServiceOrderEntity> ServiceOrders { get; set; }
+    // public DbSet<PurchaseOrderEntity> PurchaseOrders { get; set; }
     
     // Service-related entities
-    public DbSet<ServiceTypeEntity> ServiceTypes { get; set; }
+    // public DbSet<ServiceTypeEntity> ServiceTypes { get; set; }
     
     // Customer entities - TPH unified approach
     public DbSet<CustomerEntity> Customers { get; set; }
@@ -53,11 +53,11 @@ public class SkipperContext : DbContext
         // Order configurations - TPH unified approach
         modelBuilder.ApplyConfiguration(new OrderConfiguration());
         modelBuilder.ApplyConfiguration(new SlipReservationOrderConfiguration());
-        modelBuilder.ApplyConfiguration(new ServiceOrderConfiguration());
-        modelBuilder.ApplyConfiguration(new PurchaseOrderConfiguration());
+        // modelBuilder.ApplyConfiguration(new ServiceOrderConfiguration());
+        // modelBuilder.ApplyConfiguration(new PurchaseOrderConfiguration());
         
         // Service configurations
-        modelBuilder.ApplyConfiguration(new ServiceTypeConfiguration());
+        // modelBuilder.ApplyConfiguration(new ServiceTypeConfiguration());
         
         // Customer configurations - TPH unified approach
         modelBuilder.ApplyConfiguration(new CustomerConfiguration());
