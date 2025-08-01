@@ -13,4 +13,4 @@ public abstract class OrderEntity : BaseEntity, IEntity
     public int TotalAmount { get; set; } // cents
     public string? Notes { get; set; }
     public OrderStatus Status { get; set; }
-} 
+}

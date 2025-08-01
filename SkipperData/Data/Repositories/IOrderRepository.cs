@@ -8,8 +8,9 @@ using NetBlocks.Models;
 namespace SkipperData.Data.Repositories;
 
 // Generic interface for type-specific order operations (works with specific TOrderEntity only)
-public interface IOrderRepository<TOrderEntity> : IRepository<TOrderEntity>
+public interface IOrderRepository<TOrderEntity, TCustomerEntity> : IRepository<TOrderEntity>
     where TOrderEntity : OrderEntity
+    where TCustomerEntity : CustomerEntity
 {
     // Type-specific order methods (return TOrderEntity only)
     Task<IEnumerable<TOrderEntity>> GetOrdersByCustomerAsync(long customerId);

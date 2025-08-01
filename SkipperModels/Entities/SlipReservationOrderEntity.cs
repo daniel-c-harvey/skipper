@@ -2,7 +2,7 @@ using Models.Shared.Entities;
 
 namespace SkipperModels.Entities;
 
-public class SlipReservationOrderEntity : OrderEntity
+public class SlipReservationOrderEntity : OrderEntity<VesselOwnerCustomerEntity>
 {
     // Slip-specific properties
     public long SlipId { get; set; }

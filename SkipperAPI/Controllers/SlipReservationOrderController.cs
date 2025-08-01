@@ -9,7 +9,7 @@ namespace SkipperAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SlipReservationOrderController : OrderController<SlipReservationOrderEntity, SlipReservationOrderModel, SlipReservationOrderManager, SlipReservationOrderRepository, SlipReservationOrderConverter>
+public class SlipReservationOrderController : OrderController<SlipReservationOrderEntity, SlipReservationOrderModel, VesselOwnerCustomerEntity, VesselOwnerCustomerModel, SlipReservationOrderManager, SlipReservationOrderRepository, SlipReservationOrderConverter>
 {
     private readonly SlipReservationOrderManager _manager;
 
@@ -68,10 +68,10 @@ public class SlipReservationOrderController : OrderController<SlipReservationOrd
         return Ok(revenue);
     }
 
-    [HttpGet("overlapping-reservations/{slipId}")]
-    public virtual async Task<ActionResult<IEnumerable<SlipReservationOrderModel>>> GetOverlappingReservations(long slipId, DateTime startDate, DateTime endDate, long? excludeOrderId = null)
-    {
-        var results = await _manager.GetOverlappingReservationsAsync(slipId, startDate, endDate, excludeOrderId);
-        return Ok(results);
-    }
+    // [HttpGet("overlapping-reservations/{slipId}")]
+    // public virtual async Task<ActionResult<IEnumerable<SlipReservationOrderModel>>> GetOverlappingReservations(long slipId, DateTime startDate, DateTime endDate, long? excludeOrderId = null)
+    // {
+    //     var results = await _manager.GetOverlappingReservationsAsync(slipId, startDate, endDate, excludeOrderId);
+    //     return Ok(results);
+    // }
 }

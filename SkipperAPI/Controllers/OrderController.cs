@@ -13,9 +13,9 @@ public class OrderController<TOrderEntity, TOrderModel, TCustomerEntity, TCustom
     where TCustomerEntity : CustomerEntity, new()
     where TCustomerModel : CustomerModel, new()
     where TOrderEntity : OrderEntity, new()
-    where TOrderModel : OrderModel, new()
+    where TOrderModel : OrderModel<TCustomerModel>, new()
     where TOrderManager : OrderManager<TOrderEntity, TOrderModel, TCustomerEntity, TCustomerModel, TRepository, TConverter>
-    where TRepository : IOrderRepository<TOrderEntity>
+    where TRepository : IOrderRepository<TOrderEntity, TCustomerEntity>
     where TConverter : IEntityToModelConverter<TOrderEntity, TOrderModel>
 {
     protected readonly TOrderManager OrderManager;

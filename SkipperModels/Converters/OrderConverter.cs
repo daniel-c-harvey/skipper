@@ -8,7 +8,7 @@ namespace SkipperModels.Converters
     // Generic base converter for OrderEntity and its derived types
     public class OrderConverter<TOrderEntity, TOrderModel, TCustomerEntity, TCustomerModel> : IEntityToModelConverter<TOrderEntity, TOrderModel>
         where TOrderEntity : OrderEntity, new()
-        where TOrderModel : OrderModel, new()
+        where TOrderModel : OrderModel<TCustomerModel>, new()
         where TCustomerEntity : CustomerEntity, new()
         where TCustomerModel : CustomerModel, new()
     {

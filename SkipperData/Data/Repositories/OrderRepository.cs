@@ -10,7 +10,7 @@ using NetBlocks.Models;
 namespace SkipperData.Data.Repositories;
 
 // Generic repository for type-specific order operations
-public class OrderRepository<TOrderEntity, TCustomer> : RepositoryBase<SkipperContext, TOrderEntity>, IOrderRepository<TOrderEntity>
+public class OrderRepository<TOrderEntity, TCustomer> : RepositoryBase<SkipperContext, TOrderEntity>, IOrderRepository<TOrderEntity, TCustomer>
     where TOrderEntity : OrderEntity
     where TCustomer : CustomerEntity
 {

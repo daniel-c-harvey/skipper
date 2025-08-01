@@ -2,7 +2,7 @@ using Models.Shared.Models;
 
 namespace SkipperModels.Models
 {
-    public class SlipReservationOrderModel : OrderModel
+    public class SlipReservationOrderModel : OrderModel<VesselOwnerCustomerModel>
     {
         // Slip-specific properties
         public SlipModel Slip { get; set; }

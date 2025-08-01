@@ -6,9 +6,9 @@ using SkipperModels;
 
 namespace SkipperData.Data.Configurations;
 
-public class OrderConfiguration : BaseEntityConfiguration<OrderEntity<CustomerEntity>>
+public class OrderConfiguration : BaseEntityConfiguration<OrderEntity>
 {
-    public override void Configure(EntityTypeBuilder<OrderEntity<CustomerEntity>> builder)
+    public override void Configure(EntityTypeBuilder<OrderEntity> builder)
     {
         base.Configure(builder);
         
@@ -17,9 +17,9 @@ public class OrderConfiguration : BaseEntityConfiguration<OrderEntity<CustomerEn
         
         // Configure TPH discriminator
         builder.HasDiscriminator(x => x.OrderType)
-            .HasValue<SlipReservationOrderEntity>(OrderType.SlipReservation)
-            .HasValue<ServiceOrderEntity>(OrderType.ServiceOrder)
-            .HasValue<PurchaseOrderEntity>(OrderType.PurchaseOrder);
+            .HasValue<SlipReservationOrderEntity>(OrderType.SlipReservation);
+            // .HasValue<ServiceOrderEntity>(OrderType.ServiceOrder)
+            // .HasValue<PurchaseOrderEntity>(OrderType.PurchaseOrder);
             // Future order types will be added here:
             // .HasValue<StorageOrderEntity>(OrderType.StorageOrder);
 
