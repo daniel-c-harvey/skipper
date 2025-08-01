@@ -10,7 +10,7 @@ namespace SkipperModels.Converters
         where TCustomerEntity : CustomerEntity, new()
         where TCustomerModel : CustomerModel, new()
     {
-        public static TCustomerModel Convert(TCustomerEntity entity)
+        public static TCustomerModel ConvertBase(CustomerEntity entity)
         {
             var model = new TCustomerModel
             {
@@ -22,6 +22,10 @@ namespace SkipperModels.Converters
                 UpdatedAt = entity.UpdatedAt,
             };
             return model;
+        }
+        public static TCustomerModel Convert(TCustomerEntity entity)
+        {
+            return ConvertBase(entity);
         }
 
         public static TCustomerEntity Convert(TCustomerModel model)

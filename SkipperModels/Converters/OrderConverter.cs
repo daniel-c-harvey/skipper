@@ -18,7 +18,7 @@ namespace SkipperModels.Converters
             {
                 Id = entity.Id,
                 OrderNumber = entity.OrderNumber,
-                Customer = CustomerConverter<TCustomerEntity, TCustomerModel>.Convert(entity.Customer),
+                Customer = CustomerConverter<TCustomerEntity, TCustomerModel>.ConvertBase(entity.Customer),
                 OrderDate = entity.OrderDate,
                 OrderType = entity.OrderType,
                 TotalAmount = entity.TotalAmount,
