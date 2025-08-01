@@ -55,7 +55,7 @@ public class OrderRepository<TOrderEntity, TCustomer> : RepositoryBase<SkipperCo
         
         var result = await Context.Set<TOrderEntity>().AddAsync(entity);
         await SaveChangesAsync();
-        return result.Entity;
+        return (await GetByIdAsync(result.Entity.Id))!;
     }
 
     public virtual async Task UpdateAsync(TOrderEntity entity)
