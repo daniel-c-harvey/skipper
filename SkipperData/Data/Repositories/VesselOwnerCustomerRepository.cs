@@ -22,9 +22,8 @@ public class VesselOwnerCustomerRepository : CustomerRepository<VesselOwnerCusto
     // Override SearchCustomersAsync to include LicenseNumber in search
     public override async Task<IEnumerable<VesselOwnerCustomerEntity>> SearchCustomersAsync(string searchTerm)
     {
-        return await Context.Customers
-            .OfType<VesselOwnerCustomerEntity>()
-            .Where(c => !c.IsDeleted && 
+        return await Query
+            .Where(c =>  
                 (c.Name.Contains(searchTerm) || 
                  c.AccountNumber.Contains(searchTerm) ||
                  (c.LicenseNumber != null && c.LicenseNumber.Contains(searchTerm))))
@@ -33,26 +32,22 @@ public class VesselOwnerCustomerRepository : CustomerRepository<VesselOwnerCusto
 
     public virtual async Task<IEnumerable<VesselOwnerCustomerEntity>> GetVesselOwnersByLicenseAsync(string licenseNumber)
     {
-        return await Context.Customers
-            .OfType<VesselOwnerCustomerEntity>()
-            .Where(v => v.LicenseNumber != null && v.LicenseNumber.Contains(licenseNumber) && !v.IsDeleted)
+        return await Query
+            .Where(v => v.LicenseNumber != null && v.LicenseNumber.Contains(licenseNumber))
             .ToListAsync();
     }
 
     public virtual async Task<IEnumerable<VesselOwnerCustomerEntity>> GetVesselOwnersWithExpiredLicensesAsync()
     {
         var now = DateTime.UtcNow;
-        return await Context.Customers
-            .OfType<VesselOwnerCustomerEntity>()
-            .Where(v => v.LicenseExpiryDate < now && !v.IsDeleted)
+        return await Query
+            .Where(v => v.LicenseExpiryDate < now)
             .ToListAsync();
     }
 
     public virtual async Task<IEnumerable<VesselOwnerCustomerEntity>> GetVesselOwnersWithVesselsAsync()
     {
-        return await Context.Customers
-            .OfType<VesselOwnerCustomerEntity>()
-            .Where(v => !v.IsDeleted)
+        return await Query
             .Include(v => v.VesselOwnerVessels)
                 .ThenInclude(vv => vv.Vessel)
             .Where(v => v.VesselOwnerVessels.Any(vv => !vv.Vessel.IsDeleted))

@@ -196,36 +196,6 @@ public class BusinessCustomerManagerTests
 
     #endregion
 
-    #region GetActiveCustomersAsync Tests (Inherited from base)
-
-    [Test]
-    public async Task GetActiveCustomersAsync_ActiveCustomers_ReturnsConvertedModels()
-    {
-        // Arrange
-        var entities = new[]
-        {
-            CreateBusinessCustomerEntity(1, name: "Active Business 1"),
-            CreateBusinessCustomerEntity(2, name: "Active Business 2"),
-            CreateBusinessCustomerEntity(3, name: "Deleted Business", isDeleted: true)
-        };
-
-        foreach (var entity in entities)
-        {
-            await _repository.AddAsync(entity);
-        }
-
-        // Act
-        var result = await _manager.GetActiveCustomersAsync();
-
-        // Assert
-        var models = result.ToList();
-        Assert.That(models, Has.Count.EqualTo(2));
-        Assert.That(models.All(m => m.CustomerProfileType == CustomerProfileType.BusinessCustomerProfile), Is.True);
-        Assert.That(models.All(m => m.Name.Contains("Active")), Is.True);
-    }
-
-    #endregion
-
     #region SearchCustomersAsync Tests (Inherited from base)
 
     [Test]

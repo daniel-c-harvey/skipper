@@ -206,36 +206,6 @@ public class VesselOwnerCustomerManagerTests
 
     #endregion
 
-    #region GetActiveCustomersAsync Tests (Inherited from base)
-
-    [Test]
-    public async Task GetActiveCustomersAsync_ActiveCustomers_ReturnsConvertedModels()
-    {
-        // Arrange
-        var entities = new[]
-        {
-            CreateVesselOwnerCustomerEntity(1, name: "Active Customer 1"),
-            CreateVesselOwnerCustomerEntity(2, name: "Active Customer 2"),
-            CreateVesselOwnerCustomerEntity(3, name: "Deleted Customer", isDeleted: true)
-        };
-
-        foreach (var entity in entities)
-        {
-            await _repository.AddAsync(entity);
-        }
-
-        // Act
-        var result = await _manager.GetActiveCustomersAsync();
-
-        // Assert
-        var models = result.ToList();
-        Assert.That(models, Has.Count.EqualTo(2));
-        Assert.That(models.All(m => m.CustomerProfileType == CustomerProfileType.VesselOwnerProfile), Is.True);
-        Assert.That(models.All(m => m.Name.Contains("Active")), Is.True);
-    }
-
-    #endregion
-
     #region SearchCustomersAsync Tests (Inherited from base)
 
     [Test]

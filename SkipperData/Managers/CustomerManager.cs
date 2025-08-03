@@ -18,13 +18,6 @@ public class CustomerManager<TCustomerEntity, TCustomerModel, TRepository, TConv
     {
     }
 
-    // Type-specific business logic methods (only methods available in ICustomerRepository<TCustomerEntity>)
-    public virtual async Task<IEnumerable<TCustomerModel>> GetActiveCustomersAsync()
-    {
-        var entities = await Repository.GetActiveCustomersAsync();
-        return entities.Select(TConverter.Convert);
-    }
-
     public virtual async Task<IEnumerable<TCustomerModel>> SearchCustomersAsync(string searchTerm)
     {
         var entities = await Repository.SearchCustomersAsync(searchTerm);

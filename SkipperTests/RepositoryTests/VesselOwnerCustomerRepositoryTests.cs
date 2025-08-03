@@ -183,28 +183,6 @@ public class VesselOwnerCustomerRepositoryTests : RepositoryTestBase<VesselOwner
 
     #endregion
 
-    #region GetActiveCustomersAsync Tests
-
-    [Test]
-    public async Task GetActiveCustomersAsync_ActiveCustomers_ReturnsNonDeletedCustomers()
-    {
-        // Arrange
-        var customer1 = CreateVesselOwnerCustomer(1, isDeleted: false);
-        var customer2 = CreateVesselOwnerCustomer(2, isDeleted: false);
-        var customer3 = CreateVesselOwnerCustomer(3, isDeleted: true);
-        await SetupCustomersAsync(customer1, customer2, customer3);
-
-        // Act
-        var result = await _repository.GetActiveCustomersAsync();
-
-        // Assert
-        var customers = result.ToList();
-        Assert.That(customers, Has.Count.EqualTo(2));
-        Assert.That(customers.All(c => !c.IsDeleted), Is.True);
-    }
-
-    #endregion
-
     #region SearchCustomersAsync Tests
 
     [Test]

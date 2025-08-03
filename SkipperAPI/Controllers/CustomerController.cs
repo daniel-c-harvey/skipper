@@ -23,14 +23,6 @@ public class CustomerController<TCustomerEntity, TCustomerModel, TCustomerManage
         CustomerManager = manager;
     }
 
-    // Type-specific endpoints (only work with TCustomerEntity)
-    [HttpGet("active")]
-    public virtual async Task<ActionResult<IEnumerable<TCustomerModel>>> GetActiveCustomers()
-    {
-        var results = await CustomerManager.GetActiveCustomersAsync();
-        return Ok(results);
-    }
-
     [HttpGet("search/{searchTerm}")]
     public virtual async Task<ActionResult<IEnumerable<TCustomerModel>>> SearchCustomers(string searchTerm)
     {

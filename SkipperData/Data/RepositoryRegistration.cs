@@ -17,7 +17,6 @@ public static class RepositoryRegistration
         services.AddScoped<SlipReservationOrderRepository>();
         
         // Customer repositories (TPH)
-        services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IVesselOwnerCustomerRepository, VesselOwnerCustomerRepository>();
         services.AddScoped<IBusinessCustomerRepository, BusinessCustomerRepository>();
         

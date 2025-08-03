@@ -8,7 +8,4 @@ namespace AuthBlocksData.Services;
 public interface IRoleService : IManager<ApplicationRole, RoleModel>
 {
     Task<ResultContainer<RoleModel>> FindByNameAsync(string roleName);
-    Task<ResultContainer<IEnumerable<RoleModel>>> GetRootRolesAsync();
-    Task<ResultContainer<IEnumerable<RoleModel>>> GetChildRolesAsync(long parentRoleId);
-    Task<ResultContainer<IEnumerable<RoleModel>>> GetAncestorsAsync(long roleId);
 }

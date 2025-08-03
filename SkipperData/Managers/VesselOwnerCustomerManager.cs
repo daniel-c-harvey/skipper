@@ -11,7 +11,6 @@ public class VesselOwnerCustomerManager : CustomerManager<VesselOwnerCustomerEnt
     {
     }
 
-    // Vessel owner specific business logic methods
     public virtual async Task<IEnumerable<VesselOwnerCustomerModel>> GetVesselOwnersByLicenseAsync(string licenseNumber)
     {
         var entities = await Repository.GetVesselOwnersByLicenseAsync(licenseNumber);

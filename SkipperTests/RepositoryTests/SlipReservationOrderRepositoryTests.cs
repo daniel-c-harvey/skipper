@@ -480,4 +480,4 @@ public class SlipReservationOrderRepositoryTests : RepositoryTestBase<SlipReserv
     }
 
     #endregion
-} 
+}

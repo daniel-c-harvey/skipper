@@ -4,23 +4,29 @@ using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
 using Models.Shared.Common;
 using Models.Shared.Entities;
+using NetBlocks.Models;
 
 namespace Data.Shared.Data.Repositories;
 
-public class Repository<TContext, TEntity> : RepositoryBase<TContext, TEntity>, IRepository<TEntity>
+public class Repository<TContext, TEntity> : IRepository<TEntity>
 where TContext : DbContext
 where TEntity : class, IEntity
 {
+    
+    private TContext _context;
+    protected ILogger<Repository<TContext,TEntity>> Logger;
     protected DbSet<TEntity> Set { get; private init; }
     protected IQueryable<TEntity> Query { get; init; }
 
     public Repository(TContext context, 
                       ILogger<Repository<TContext, TEntity>> logger,
-                      Func<DbSet<TEntity>, IQueryable<TEntity>>? baseQuery = null) : base(context, logger)
+                      Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryAdditions = null)
     {
+        _context = context;
+        Logger = logger;
         Set = context.Set<TEntity>();
-        Query = baseQuery != null 
-            ? baseQuery(Set).Where(e => !e.IsDeleted)
+        Query = queryAdditions != null 
+            ? queryAdditions(Set.Where(e => !e.IsDeleted))
             : Set.Where(e => !e.IsDeleted);
     }
 
@@ -109,5 +115,48 @@ where TEntity : class, IEntity
     public async Task<bool> ExistsAsync(long id)
     {
         return await Query.AnyAsync(e => e.Id == id);
+    }
+    
+    // Helpers
+    protected async Task<PagedResult<TEntity>> ExecutePagedQueryAsync(IQueryable<TEntity> query, PagingParameters<TEntity> pagingParameters)
+    {
+        // Apply ordering
+        if (pagingParameters.OrderBy != null)
+        {
+            query = pagingParameters.IsDescending 
+                ? query.OrderByDescending(pagingParameters.OrderBy)
+                : query.OrderBy(pagingParameters.OrderBy);
+        }
+        else
+        {
+            // Default ordering by Id if no ordering specified
+            query = query.OrderBy(e => e.Id);
+        }
+
+        // Get total count before paging
+        var totalCount = await query.CountAsync();
+
+        // Apply paging
+        var items = await query
+            .Skip(pagingParameters.Skip)
+            .Take(pagingParameters.PageSize)
+            .ToListAsync();
+
+        return new PagedResult<TEntity>(items, totalCount, pagingParameters.Page, pagingParameters.PageSize);
+    }
+
+    protected async Task<Result> SaveChangesAsync()
+    {
+        try
+        {
+            await _context.SaveChangesAsync();
+            return Result.CreatePassResult();
+        }
+        catch (Exception ex)
+        {
+            _context.ChangeTracker.Clear();
+            LoggerExtensions.LogError(Logger, ex, ex.Message);
+            return Result.CreateFailResult("A database error occured while saving changes.");
+        }
     }
 }

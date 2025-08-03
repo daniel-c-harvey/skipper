@@ -15,10 +15,13 @@ public class OrderRepository<TOrderEntity, TCustomer> : Repository<SkipperContex
     public OrderRepository(
         SkipperContext context, 
         ILogger<OrderRepository<TOrderEntity, TCustomer>> logger, 
-        Func<DbSet<TOrderEntity>, Expression<Func<DbSet<TOrderEntity>, IQueryable>>?, IQueryable<TOrderEntity>>? baseQuery = null) 
-    : base(context, logger, s => baseQuery is null 
-        ? s.OfType<TOrderEntity>().Include(order => order.Customer)
-        : baseQuery(s, s2 => s2.OfType<TOrderEntity>().Include(order => order.Customer)))
+        Func<IQueryable<TOrderEntity>, IQueryable<TOrderEntity>>? queryAdditions = null) 
+    : base(
+        context, 
+        logger, 
+        q => queryAdditions is null 
+        ? q.OfType<TOrderEntity>().Include(order => order.Customer)
+        : queryAdditions(q.OfType<TOrderEntity>().Include(order => order.Customer)))
     {
     }
     

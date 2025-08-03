@@ -10,8 +10,12 @@ namespace SkipperData.Data.Repositories;
 public class SlipReservationOrderRepository : OrderRepository<SlipReservationOrderEntity, VesselOwnerCustomerEntity>
 {
     public SlipReservationOrderRepository(SkipperContext context, ILogger<SlipReservationOrderRepository> logger) 
-        : base(context, logger, s => 
-            s.Where().
+        : base(
+            context,
+            logger, 
+            q => q
+                .Include(o => o.VesselEntity)
+                .Include(o => o.SlipEntity))
     {
     }
     
@@ -38,36 +42,24 @@ public class SlipReservationOrderRepository : OrderRepository<SlipReservationOrd
 
     public virtual async Task<IEnumerable<SlipReservationOrderEntity>> GetReservationsBySlipAsync(long slipId)
     {
-        return await Context.Orders
-            .OfType<SlipReservationOrderEntity>()
-            .Include(o => o.Customer)
-            .Include(o => o.SlipEntity)
-            .Include(o => o.VesselEntity)
-            .Where(o => o.SlipId == slipId && !o.IsDeleted)
+        return await Query
+            .Where(o => o.SlipId == slipId)
             .OrderBy(o => o.StartDate)
             .ToListAsync();
     }
 
     public virtual async Task<IEnumerable<SlipReservationOrderEntity>> GetReservationsByVesselAsync(long vesselId)
     {
-        return await Context.Orders
-            .OfType<SlipReservationOrderEntity>()
-            .Include(o => o.Customer)
-            .Include(o => o.SlipEntity)
-            .Include(o => o.VesselEntity)
-            .Where(o => o.VesselId == vesselId && !o.IsDeleted)
+        return await Query
+            .Where(o => o.VesselId == vesselId)
             .OrderByDescending(o => o.StartDate)
             .ToListAsync();
     }
 
     public virtual async Task<IEnumerable<SlipReservationOrderEntity>> GetReservationsByDateRangeAsync(DateTime startDate, DateTime endDate)
     {
-        return await Context.Orders
-            .OfType<SlipReservationOrderEntity>()
-            .Include(o => o.Customer)
-            .Include(o => o.SlipEntity)
-            .Include(o => o.VesselEntity)
-            .Where(o => o.StartDate <= endDate && o.EndDate >= startDate && !o.IsDeleted)
+        return await Query
+            .Where(o => o.StartDate <= endDate && o.EndDate >= startDate)
             .OrderBy(o => o.StartDate)
             .ToListAsync();
     }
@@ -76,11 +68,7 @@ public class SlipReservationOrderRepository : OrderRepository<SlipReservationOrd
     {
         var currentDate = DateTime.UtcNow.Date;
         
-        return await Context.Orders
-            .OfType<SlipReservationOrderEntity>()
-            .Include(o => o.Customer)
-            .Include(o => o.SlipEntity)
-            .Include(o => o.VesselEntity)
+        return await Query
             .Where(o => o.StartDate <= currentDate && 
                        o.EndDate >= currentDate && 
                        o.RentalStatus == RentalStatus.Active &&
@@ -91,11 +79,7 @@ public class SlipReservationOrderRepository : OrderRepository<SlipReservationOrd
     public virtual async Task<IEnumerable<SlipReservationOrderEntity>> GetOverlappingReservationsAsync(
         long slipId, DateTime startDate, DateTime endDate, long? excludeOrderId = null)
     {
-        var query = Context.Orders
-            .OfType<SlipReservationOrderEntity>()
-            .Include(o => o.Customer)
-            .Include(o => o.SlipEntity)
-            .Include(o => o.VesselEntity)
+        var query = Query
             .Where(o => o.SlipId == slipId && 
                        o.StartDate < endDate && 
                        o.EndDate > startDate &&
@@ -116,11 +100,9 @@ public class SlipReservationOrderRepository : OrderRepository<SlipReservationOrd
 
     public virtual async Task<decimal> GetRevenueBySlipAsync(long slipId, DateTime? startDate = null, DateTime? endDate = null)
     {
-        var query = Context.Orders
-            .OfType<SlipReservationOrderEntity>()
+        var query = Query
             .Where(o => o.SlipId == slipId && 
-                       o.Status == OrderStatus.Completed && 
-                       !o.IsDeleted);
+                       o.Status == OrderStatus.Completed);
 
         if (startDate.HasValue)
             query = query.Where(o => o.StartDate >= startDate.Value);
@@ -133,14 +115,7 @@ public class SlipReservationOrderRepository : OrderRepository<SlipReservationOrd
 
     public virtual async Task<PagedResult<SlipReservationOrderEntity>> GetSlipReservationsPagedAsync(PagingParameters<SlipReservationOrderEntity> pagingParameters)
     {
-        var query = Context.Orders
-            .OfType<SlipReservationOrderEntity>()
-            .Include(o => o.Customer)
-            .Include(o => o.SlipEntity)
-            .Include(o => o.VesselEntity)
-            .Where(o => !o.IsDeleted);
-            
-        return await ExecutePagedQueryAsync(query, pagingParameters);
+        return await ExecutePagedQueryAsync(Query, pagingParameters);
     }
 
     #endregion

@@ -22,9 +22,8 @@ public class BusinessCustomerRepository : CustomerRepository<BusinessCustomerEnt
     // Override SearchCustomersAsync to include BusinessName in search
     public override async Task<IEnumerable<BusinessCustomerEntity>> SearchCustomersAsync(string searchTerm)
     {
-        return await Context.Customers
-            .OfType<BusinessCustomerEntity>()
-            .Where(c => !c.IsDeleted && 
+        return await Query
+            .Where(c =>
                 (c.Name.Contains(searchTerm) || 
                  c.AccountNumber.Contains(searchTerm) ||
                  c.BusinessName.Contains(searchTerm)))
@@ -33,25 +32,21 @@ public class BusinessCustomerRepository : CustomerRepository<BusinessCustomerEnt
 
     public virtual async Task<IEnumerable<BusinessCustomerEntity>> GetBusinessCustomersByNameAsync(string businessName)
     {
-        return await Context.Customers
-            .OfType<BusinessCustomerEntity>()
-            .Where(b => b.BusinessName.Contains(businessName) && !b.IsDeleted)
+        return await Query
+            .Where(b => b.BusinessName.Contains(businessName))
             .ToListAsync();
     }
 
     public virtual async Task<BusinessCustomerEntity?> GetByTaxIdAsync(string taxId)
     {
-        return await Context.Customers
-            .OfType<BusinessCustomerEntity>()
-            .Where(b => b.TaxId == taxId && !b.IsDeleted)
+        return await Query
+            .Where(b => b.TaxId == taxId)
             .FirstOrDefaultAsync();
     }
 
     public virtual async Task<IEnumerable<BusinessCustomerEntity>> GetBusinessCustomersWithContactsAsync()
     {
-        return await Context.Customers
-            .OfType<BusinessCustomerEntity>()
-            .Where(b => !b.IsDeleted)
+        return await Query
             .Include(b => b.BusinessCustomerContacts)
                 .ThenInclude(bc => bc.Contact)
                     .ThenInclude(c => c.Address)
