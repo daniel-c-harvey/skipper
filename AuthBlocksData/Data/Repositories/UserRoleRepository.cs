@@ -9,9 +9,9 @@ public class UserRoleRepository : Repository<AuthDbContext, ApplicationUserRole>
 {
     public UserRoleRepository(AuthDbContext context, ILogger<Repository<AuthDbContext, ApplicationUserRole>> logger) : base(context, logger) { }
 
-    protected override void UpdateModel(ApplicationUserRole target, ApplicationUserRole source)
+    protected override void UpdateEntity(ApplicationUserRole target, ApplicationUserRole source)
     {
-        base.UpdateModel(target, source);
+        base.UpdateEntity(target, source);
         target.UserId = source.UserId;
         target.RoleId = source.RoleId;
     }

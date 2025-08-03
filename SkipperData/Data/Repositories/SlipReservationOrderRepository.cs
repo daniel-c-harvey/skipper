@@ -7,37 +7,31 @@ using NetBlocks.Models;
 
 namespace SkipperData.Data.Repositories;
 
-public interface ISlipReservationOrderRepository : IOrderRepository<SlipReservationOrderEntity, VesselOwnerCustomerEntity>
-{
-    // Slip reservation specific methods
-    Task<IEnumerable<SlipReservationOrderEntity>> GetSlipReservationsAsync();
-    Task<IEnumerable<SlipReservationOrderEntity>> GetReservationsBySlipAsync(long slipId);
-    Task<IEnumerable<SlipReservationOrderEntity>> GetReservationsByVesselAsync(long vesselId);
-    Task<IEnumerable<SlipReservationOrderEntity>> GetReservationsByDateRangeAsync(DateTime startDate, DateTime endDate);
-    Task<IEnumerable<SlipReservationOrderEntity>> GetActiveReservationsAsync();
-    Task<IEnumerable<SlipReservationOrderEntity>> GetOverlappingReservationsAsync(long slipId, DateTime startDate, DateTime endDate, long? excludeOrderId = null);
-    Task<bool> IsSlipAvailableAsync(long slipId, DateTime startDate, DateTime endDate, long? excludeOrderId = null);
-    Task<decimal> GetRevenueBySlipAsync(long slipId, DateTime? startDate = null, DateTime? endDate = null);
-    Task<PagedResult<SlipReservationOrderEntity>> GetSlipReservationsPagedAsync(PagingParameters<SlipReservationOrderEntity> pagingParameters);
-}
-
-public class SlipReservationOrderRepository : OrderRepository<SlipReservationOrderEntity, VesselOwnerCustomerEntity>, ISlipReservationOrderRepository
+public class SlipReservationOrderRepository : OrderRepository<SlipReservationOrderEntity, VesselOwnerCustomerEntity>
 {
     public SlipReservationOrderRepository(SkipperContext context, ILogger<SlipReservationOrderRepository> logger) 
-        : base(context, logger)
+        : base(context, logger, s => 
+            s.Where().
     {
+    }
+    
+    protected override void UpdateEntity(SlipReservationOrderEntity target, SlipReservationOrderEntity source)
+    {
+        base.UpdateEntity(target, source);
+        target.EndDate = source.EndDate;
+        target.StartDate = source.StartDate;
+        target.Status = source.Status;
+        target.SlipId = source.SlipId;
+        target.VesselId = source.VesselId;
+        target.PriceUnit = source.PriceUnit;
+        target.PriceRate = source.PriceRate;
     }
 
     #region Slip Reservation Specific Methods
 
     public virtual async Task<IEnumerable<SlipReservationOrderEntity>> GetSlipReservationsAsync()
     {
-        return await Context.Orders
-            .OfType<SlipReservationOrderEntity>()
-            .Include(o => o.Customer)
-            .Include(o => o.SlipEntity)
-            .Include(o => o.VesselEntity)
-            .Where(o => !o.IsDeleted)
+        return await Query
             .OrderByDescending(o => o.OrderDate)
             .ToListAsync();
     }

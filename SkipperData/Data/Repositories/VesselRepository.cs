@@ -10,9 +10,9 @@ public class VesselRepository : Repository<SkipperContext, VesselEntity>
 {
     public VesselRepository(SkipperContext context, ILogger<VesselRepository> logger) : base(context, logger) { }
 
-    protected override void UpdateModel(VesselEntity target, VesselEntity source)
+    protected override void UpdateEntity(VesselEntity target, VesselEntity source)
     {
-        base.UpdateModel(target, source);
+        base.UpdateEntity(target, source);
         target.Beam = source.Beam;
         target.Length = source.Length;
         target.Name = source.Name;

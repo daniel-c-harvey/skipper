@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
 using Models.Shared.Common;
 using Models.Shared.Entities;
-using NetBlocks.Models;
 
 namespace Data.Shared.Data.Repositories;
 
@@ -12,48 +11,54 @@ public class Repository<TContext, TEntity> : RepositoryBase<TContext, TEntity>, 
 where TContext : DbContext
 where TEntity : class, IEntity
 {
-    protected readonly DbSet<TEntity> _dbSet;
+    protected DbSet<TEntity> Set { get; private init; }
+    protected IQueryable<TEntity> Query { get; init; }
 
-    public Repository(TContext context, ILogger<Repository<TContext, TEntity>> logger) : base(context, logger)
+    public Repository(TContext context, 
+                      ILogger<Repository<TContext, TEntity>> logger,
+                      Func<DbSet<TEntity>, IQueryable<TEntity>>? baseQuery = null) : base(context, logger)
     {
-        _dbSet = context.Set<TEntity>();
+        Set = context.Set<TEntity>();
+        Query = baseQuery != null 
+            ? baseQuery(Set).Where(e => !e.IsDeleted)
+            : Set.Where(e => !e.IsDeleted);
     }
 
     public virtual async Task<TEntity?> GetByIdAsync(long id)
     {
-        return await _dbSet.FirstOrDefaultAsync(e => e.Id == id && !e.IsDeleted);
+        return await Query.FirstOrDefaultAsync(e => e.Id == id );
     }
 
     public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
     {
-        return await _dbSet.Where(e => !e.IsDeleted).ToListAsync();
+        return await Query.ToListAsync();
     }
 
     public virtual async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
     {
-        return await _dbSet.Where(e => !e.IsDeleted).Where(predicate).ToListAsync();
+        return await Query.Where(predicate).ToListAsync();
     }
 
     public async Task<int> GetPageCountAsync(PagingParameters<TEntity> pagingParameters)
     {
-        return await _dbSet.CountAsync(e => !e.IsDeleted);
+        return await Query.CountAsync();
     }
     
     public async Task<int> GetPageCountAsync(Expression<Func<TEntity, bool>> predicate, PagingParameters<TEntity> pagingParameters)
     {
-        double rowCount = (double)(await _dbSet.Where(e => !e.IsDeleted).CountAsync(predicate)) / pagingParameters.PageSize;
+        double rowCount = (double)(await Query.CountAsync(predicate)) / pagingParameters.PageSize;
         return (int)Math.Ceiling(rowCount);
     }
     
     public virtual async Task<PagedResult<TEntity>> GetPagedAsync(PagingParameters<TEntity> pagingParameters)
     {
-        var query = _dbSet.Where(e => !e.IsDeleted);
+        var query = Query.Where(e => !e.IsDeleted);
         return await ExecutePagedQueryAsync(query, pagingParameters);
     }
 
     public virtual async Task<PagedResult<TEntity>> GetPagedAsync(Expression<Func<TEntity, bool>> predicate, PagingParameters<TEntity> pagingParameters)
     {
-        var query = _dbSet.Where(e => !e.IsDeleted).Where(predicate);
+        var query = Set.Where(e => !e.IsDeleted).Where(predicate);
         return await ExecutePagedQueryAsync(query, pagingParameters);
     }
 
@@ -61,9 +66,12 @@ where TEntity : class, IEntity
     {
         entity.CreatedAt = DateTime.UtcNow;
         entity.UpdatedAt = DateTime.UtcNow;
-        await _dbSet.AddAsync(entity);
+        
+        var addedEntity = await Set.AddAsync(entity);
         await SaveChangesAsync();
-        return entity;
+        
+        // Fresh entity will not have navigation properties attached, load from DB
+        return (await GetByIdAsync(addedEntity.Entity.Id))!;
     }
 
     public async Task UpdateAsync(TEntity entity)
@@ -71,15 +79,15 @@ where TEntity : class, IEntity
         entity.UpdatedAt = DateTime.UtcNow;
         
         // This method handles both tracked and untracked entities
-        var dbentity = await _dbSet.Where(e => e.Id == entity.Id).FirstOrDefaultAsync();
-        if (dbentity != null)
+        var fullEntity = await GetByIdAsync(entity.Id);
+        if (fullEntity != null)
         {
-            UpdateModel(dbentity, entity);
+            UpdateEntity(fullEntity, entity);
         }
         await SaveChangesAsync();
     }
 
-    protected virtual void UpdateModel(TEntity target, TEntity source)
+    protected virtual void UpdateEntity(TEntity target, TEntity source)
     {
         target.CreatedAt = source.CreatedAt;
         target.UpdatedAt = source.UpdatedAt;
@@ -100,6 +108,6 @@ where TEntity : class, IEntity
 
     public async Task<bool> ExistsAsync(long id)
     {
-        return await _dbSet.AnyAsync(e => e.Id == id && !e.IsDeleted);
+        return await Query.AnyAsync(e => e.Id == id);
     }
 }

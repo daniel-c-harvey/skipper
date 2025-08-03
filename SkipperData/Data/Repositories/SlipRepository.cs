@@ -12,9 +12,9 @@ public class SlipRepository : Repository<SkipperContext, SlipEntity>
     {
     }
 
-    protected override void UpdateModel(SlipEntity target, SlipEntity source)
+    protected override void UpdateEntity(SlipEntity target, SlipEntity source)
     {
-        base.UpdateModel(target, source);
+        base.UpdateEntity(target, source);
         target.LocationCode = source.LocationCode;
         target.Status = source.Status;
         target.SlipNumber = source.SlipNumber;

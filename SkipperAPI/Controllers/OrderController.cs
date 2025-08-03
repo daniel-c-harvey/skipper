@@ -9,7 +9,8 @@ using SkipperModels.Models;
 
 namespace SkipperAPI.Controllers;
 
-public class OrderController<TOrderEntity, TOrderModel, TCustomerEntity, TCustomerModel, TOrderManager, TRepository, TConverter> : ModelController<TOrderEntity, TOrderModel, TOrderManager>
+public class OrderController<TOrderEntity, TOrderModel, TCustomerEntity, TCustomerModel, TOrderManager, TRepository, TConverter> 
+    : ModelController<TOrderEntity, TOrderModel, TOrderManager>
     where TCustomerEntity : CustomerEntity, new()
     where TCustomerModel : CustomerModel, new()
     where TOrderEntity : OrderEntity, new()
@@ -23,6 +24,7 @@ public class OrderController<TOrderEntity, TOrderModel, TCustomerEntity, TCustom
     public OrderController(TOrderManager manager) : base(manager)
     {
         OrderManager = manager;
+        AddSortExpression(nameof(OrderEntity.Customer.Name), entity => entity.Customer.Name);
     }
 
     // Type-specific endpoints (only work with TOrderEntity)

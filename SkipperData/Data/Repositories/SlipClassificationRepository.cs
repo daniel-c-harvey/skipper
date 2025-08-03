@@ -9,9 +9,9 @@ public class SlipClassificationRepository : Repository<SkipperContext, SlipClass
 {
     public SlipClassificationRepository(SkipperContext context, ILogger<SlipClassificationRepository> logger) : base(context, logger) { }
     
-    protected override void UpdateModel(SlipClassificationEntity target, SlipClassificationEntity source)
+    protected override void UpdateEntity(SlipClassificationEntity target, SlipClassificationEntity source)
     {
-        base.UpdateModel(target, source);
+        base.UpdateEntity(target, source);
         target.BasePrice = source.BasePrice;
         target.Description = source.Description;
         target.MaxLength = source.MaxLength;

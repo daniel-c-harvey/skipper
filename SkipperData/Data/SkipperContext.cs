@@ -8,14 +8,14 @@ public class SkipperContext : DbContext
 {
     public SkipperContext(DbContextOptions<SkipperContext> options) : base(options) { }
 
-    public DbSet<SlipEntity> Slips { get; set; }
-    public DbSet<SlipClassificationEntity> SlipClassifications { get; set; }
-    public DbSet<VesselEntity> Vessels { get; set; }
+    // public DbSet<SlipEntity> Slips { get; set; }
+    // public DbSet<SlipClassificationEntity> SlipClassifications { get; set; }
+    // public DbSet<VesselEntity> Vessels { get; set; }
     
     // Order entities - TPH unified approach
     // Use the base generic type for the main DbSet
-    public DbSet<OrderEntity> Orders { get; set; }
-    public DbSet<SlipReservationOrderEntity> SlipReservationOrders { get; set; }
+    // public DbSet<OrderEntity> Orders { get; set; }
+    // public DbSet<SlipReservationOrderEntity> SlipReservationOrders { get; set; }
     // public DbSet<ServiceOrderEntity> ServiceOrders { get; set; }
     // public DbSet<PurchaseOrderEntity> PurchaseOrders { get; set; }
     
@@ -23,17 +23,17 @@ public class SkipperContext : DbContext
     // public DbSet<ServiceTypeEntity> ServiceTypes { get; set; }
     
     // Customer entities - TPH unified approach
-    public DbSet<CustomerEntity> Customers { get; set; }
-    public DbSet<VesselOwnerCustomerEntity> VesselOwnerCustomers { get; set; }
-    public DbSet<BusinessCustomerEntity> BusinessCustomers { get; set; }
-    public DbSet<IndividualCustomerEntity> IndividualCustomers { get; set; }
-    public DbSet<MemberCustomerEntity> MemberCustomers { get; set; }
+    // public DbSet<CustomerEntity> Customers { get; set; }
+    // public DbSet<VesselOwnerCustomerEntity> VesselOwnerCustomers { get; set; }
+    // public DbSet<BusinessCustomerEntity> BusinessCustomers { get; set; }
+    // public DbSet<IndividualCustomerEntity> IndividualCustomers { get; set; }
+    // public DbSet<MemberCustomerEntity> MemberCustomers { get; set; }
     
     // Supporting entities  
-    public DbSet<ContactEntity> Contacts { get; set; }
-    public DbSet<AddressEntity> Addresses { get; set; }
-    public DbSet<VesselOwnerVesselEntity> VesselOwnerVessels { get; set; }
-    public DbSet<BusinessCustomerContactsEntity> BusinessCustomerContacts { get; set; }
+    // public DbSet<ContactEntity> Contacts { get; set; }
+    // public DbSet<AddressEntity> Addresses { get; set; }
+    // public DbSet<VesselOwnerVesselEntity> VesselOwnerVessels { get; set; }
+    // public DbSet<BusinessCustomerContactsEntity> BusinessCustomerContacts { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

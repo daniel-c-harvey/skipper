@@ -9,12 +9,12 @@ namespace Data.Shared.Data.Repositories;
 
 public abstract class RepositoryBase<TContext, TEntity> where TContext : DbContext where TEntity : class, IKeyed
 {
-    protected TContext Context;
+    private TContext _context;
     protected ILogger<RepositoryBase<TContext,TEntity>> Logger;
 
     protected RepositoryBase(TContext context, ILogger<RepositoryBase<TContext,TEntity>> logger)
     {
-        Context = context;
+        _context = context;
         Logger = logger;
     }
     
@@ -49,12 +49,12 @@ public abstract class RepositoryBase<TContext, TEntity> where TContext : DbConte
     {
         try
         {
-            await Context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return Result.CreatePassResult();
         }
         catch (Exception ex)
         {
-            Context.ChangeTracker.Clear();
+            _context.ChangeTracker.Clear();
             LoggerExtensions.LogError(Logger, ex, ex.Message);
             return Result.CreateFailResult("A database error occured while saving changes.");
         }

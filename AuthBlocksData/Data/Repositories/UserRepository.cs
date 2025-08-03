@@ -11,9 +11,9 @@ public class UserRepository : Repository<AuthDbContext, ApplicationUser>, IUserR
     {
     }
 
-    protected override void UpdateModel(ApplicationUser target, ApplicationUser source)
+    protected override void UpdateEntity(ApplicationUser target, ApplicationUser source)
     {
-        base.UpdateModel(target, source);
+        base.UpdateEntity(target, source);
         target.IsDeactivated = source.IsDeactivated;
         target.UserName = source.UserName;
         target.Email = source.Email;

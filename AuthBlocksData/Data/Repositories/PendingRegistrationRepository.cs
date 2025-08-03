@@ -10,9 +10,9 @@ public class PendingRegistrationRepository : Repository<AuthDbContext, PendingRe
 {
     public PendingRegistrationRepository(AuthDbContext context, ILogger<Repository<AuthDbContext, PendingRegistration>> logger) : base(context, logger) { }
     
-    protected override void UpdateModel(PendingRegistration target, PendingRegistration source)
+    protected override void UpdateEntity(PendingRegistration target, PendingRegistration source)
     {
-        base.UpdateModel(target, source);
+        base.UpdateEntity(target, source);
         target.IsConsumed = source.IsConsumed;
         target.ConsumedAt = source.ConsumedAt;
         target.ExpiresAt = source.ExpiresAt;

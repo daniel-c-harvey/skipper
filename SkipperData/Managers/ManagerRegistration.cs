@@ -13,7 +13,6 @@ public static class ManagerRegistration
         services.AddScoped<VesselManager>();
         services.AddScoped<SlipManager>();
         services.AddScoped<SlipClassificationManager>();
-        services.AddScoped<SlipReservationManager>();
         services.AddScoped<SlipReservationOrderManager>();
         
         // Customer managers (TPH)

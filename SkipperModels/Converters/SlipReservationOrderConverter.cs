@@ -16,7 +16,7 @@ public class SlipReservationOrderConverter : IEntityToModelConverter<SlipReserva
         model.Vessel = VesselEntityToModelConverter.Convert(entity.VesselEntity);
         model.StartDate = entity.StartDate;
         model.EndDate = entity.EndDate;
-        model.PriceRate = entity.PriceRate;
+        model.PriceRate = entity.PriceRate / 100M;
         model.PriceUnit = entity.PriceUnit;
         model.RentalStatus = entity.RentalStatus;
         
@@ -33,7 +33,7 @@ public class SlipReservationOrderConverter : IEntityToModelConverter<SlipReserva
         entity.VesselId = model.Vessel.Id;
         entity.StartDate = model.StartDate;
         entity.EndDate = model.EndDate;
-        entity.PriceRate = model.PriceRate;
+        entity.PriceRate = (int)model.PriceRate;
         entity.PriceUnit = model.PriceUnit;
         entity.RentalStatus = model.RentalStatus;
         

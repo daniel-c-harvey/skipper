@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Linq.Expressions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SkipperData.Data.Repositories;
 using SkipperData.Managers;
 using SkipperModels.Converters;
@@ -16,6 +18,14 @@ public class SlipReservationOrderController : OrderController<SlipReservationOrd
     public SlipReservationOrderController(SlipReservationOrderManager manager) : base(manager)
     {
         _manager = manager;
+        AddSortExpression(nameof(SlipReservationOrderEntity.SlipEntity.SlipNumber), e => e.SlipEntity.SlipNumber);
+        AddSortExpression(nameof(SlipReservationOrderEntity.VesselEntity.RegistrationNumber), e => e.VesselEntity.RegistrationNumber);
+        AddSortExpression(nameof(SlipReservationOrderEntity.VesselEntity.Name), e => e.VesselEntity.Name);
+        AddSortExpression(nameof(SlipReservationOrderEntity.StartDate), e => e.StartDate);
+        AddSortExpression(nameof(SlipReservationOrderEntity.EndDate), e => e.EndDate);
+        AddSortExpression(nameof(SlipReservationOrderEntity.PriceRate), e => e.PriceRate);
+        AddSortExpression(nameof(SlipReservationOrderEntity.PriceUnit), e => e.PriceUnit);
+        AddSortExpression(nameof(SlipReservationOrderEntity.Status), e => e.Status);
     }
 
     // Slip-specific endpoints
@@ -74,4 +84,12 @@ public class SlipReservationOrderController : OrderController<SlipReservationOrd
     //     var results = await _manager.GetOverlappingReservationsAsync(slipId, startDate, endDate, excludeOrderId);
     //     return Ok(results);
     // }
+    
+    protected override Expression<Func<SlipReservationOrderEntity, bool>> BuildSearchPredicate(string? search)
+        => string.IsNullOrEmpty(search)
+            ? s => true
+            : s => EF.Functions.Like(s.SlipEntity.SlipNumber, $"%{search}%") ||
+                   EF.Functions.Like(s.VesselEntity.RegistrationNumber, $"%{search}%") ||
+                   EF.Functions.Like(s.VesselEntity.Name, $"%{search}%") ||
+                   EF.Functions.Like(s.Status.ToString(), $"%{search}%");
 }

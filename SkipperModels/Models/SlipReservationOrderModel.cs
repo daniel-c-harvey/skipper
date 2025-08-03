@@ -9,7 +9,7 @@ namespace SkipperModels.Models
         public VesselModel Vessel { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public int PriceRate { get; set; }
+        public decimal PriceRate { get; set; }
         public PriceUnit PriceUnit { get; set; }
         public RentalStatus RentalStatus { get; set; }
     }
