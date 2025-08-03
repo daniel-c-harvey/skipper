@@ -47,7 +47,8 @@ where TEntity : class, IEntity
 
     public async Task<int> GetPageCountAsync(PagingParameters<TEntity> pagingParameters)
     {
-        return await Query.CountAsync();
+        double rowCount = (double)(await Query.CountAsync()) / pagingParameters.PageSize;
+        return (int)Math.Ceiling(rowCount);
     }
     
     public async Task<int> GetPageCountAsync(Expression<Func<TEntity, bool>> predicate, PagingParameters<TEntity> pagingParameters)

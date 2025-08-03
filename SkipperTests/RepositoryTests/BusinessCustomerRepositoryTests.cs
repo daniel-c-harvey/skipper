@@ -289,7 +289,7 @@ public class BusinessCustomerRepositoryTests : RepositoryTestBase<BusinessCustom
         };
 
         // Act
-        var result = await _repository.GetPagedAsync(null, pagingParameters);
+        var result = await _repository.GetPagedAsync(pagingParameters);
 
         // Assert
         Assert.That(result.Items.Count(), Is.EqualTo(2));
@@ -313,7 +313,7 @@ public class BusinessCustomerRepositoryTests : RepositoryTestBase<BusinessCustom
         };
 
         // Act
-        var result = await _repository.GetPageCountAsync(null, pagingParameters);
+        var result = await _repository.GetPageCountAsync(pagingParameters);
 
         // Assert
         Assert.That(result, Is.EqualTo(2)); // 3 items with page size 2 = 2 pages
