@@ -16,6 +16,9 @@ namespace SkipperModels.Converters
             model.LicenseNumber = entity.LicenseNumber;
             model.LicenseExpiryDate = entity.LicenseExpiryDate;
             
+            model.Contact = ContactEntityToModelConverter.Convert(entity.Contact);
+            model.Vessels = entity.VesselOwnerVessels.Select(v => VesselEntityToModelConverter.Convert(v.Vessel)).ToList();
+            
             return model;
         }
 

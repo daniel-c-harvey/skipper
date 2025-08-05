@@ -1,7 +1,6 @@
 using Data.Shared.Managers;
 using Models.Shared.Converters;
 using SkipperData.Data.Repositories;
-using SkipperModels;
 using SkipperModels.Entities;
 using SkipperModels.Models;
 

@@ -18,14 +18,14 @@
            ModelDisplayName="Slip Reservation"
            Placeholder="Search for slip reservations...">
     <Columns>
-        <PropertyColumn Property="x => x.Slip.SlipNumber" Title="Slip Number"/>
-        <PropertyColumn Property="x => x.Vessel.RegistrationNumber" Title="Vessel Reg. No."/>
-        <PropertyColumn Property="x => x.Vessel.Name" Title="Vessel Name"/>
+        <PropertyColumn Property="x => x.Slip!.SlipNumber" Title="Slip Number"/>
+        <PropertyColumn Property="x => x.Vessel!.RegistrationNumber" Title="Vessel Reg. No."/>
+        <PropertyColumn Property="x => x.Vessel!.Name" Title="Vessel Name"/>
         <PropertyColumn Property="x => x.StartDate" Title="Start Date"/>
         <PropertyColumn Property="x => x.EndDate" Title="End Date"/>
         <PropertyColumn Property="@(x => x.PriceRate.ToString("C"))" Title="Price"/>
-        <PropertyColumn Property="x => x.PriceUnit.DisplayName" Title="Unit"/>
-        <PropertyColumn Property="x => x.Status.DisplayName" Title="Status"/>
+        <PropertyColumn Property="x => x.PriceUnit!.DisplayName" Title="Unit"/>
+        <PropertyColumn Property="x => x.Status!.DisplayName" Title="Status"/>
     </Columns>
 
 </ModelView> 

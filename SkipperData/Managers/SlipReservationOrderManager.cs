@@ -1,4 +1,5 @@
 ﻿using Models.Shared.Common;
+using NetBlocks.Models;
 using SkipperData.Data.Repositories;
 using SkipperModels.Converters;
 using SkipperModels.Entities;
@@ -9,10 +10,25 @@ namespace SkipperData.Managers;
 public class SlipReservationOrderManager : OrderManager<SlipReservationOrderEntity, SlipReservationOrderModel, VesselOwnerCustomerEntity, VesselOwnerCustomerModel, SlipReservationOrderRepository, SlipReservationOrderConverter>
 {
     private readonly SlipReservationOrderRepository _repository;
+    private readonly VesselOwnerCustomerManager _customerManager;
 
-    public SlipReservationOrderManager(SlipReservationOrderRepository repository) : base(repository)
+    public SlipReservationOrderManager(SlipReservationOrderRepository repository, VesselOwnerCustomerManager customerManager) : base(repository)
     {
         _repository = repository;
+        _customerManager = customerManager;
+    }
+
+    public override async Task<ResultContainer<SlipReservationOrderModel>> Add(SlipReservationOrderModel entity)
+    {
+        if (await _customerManager.Exists(entity.Customer) is { Value: false })
+        {
+            var newCustomerResult = await _customerManager.Add(entity.Customer);
+            if (newCustomerResult is { Success: true, Value: VesselOwnerCustomerModel customer})
+            {
+                entity.Customer = customer;
+            }
+        }
+        return await base.Add(entity);
     }
 
     // Slip reservation specific business logic methods

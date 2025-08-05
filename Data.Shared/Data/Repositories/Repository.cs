@@ -150,7 +150,7 @@ where TEntity : class, IEntity
     {
         try
         {
-            await _context.SaveChangesAsync();
+            var x = await _context.SaveChangesAsync();
             return Result.CreatePassResult();
         }
         catch (Exception ex)

@@ -9,9 +9,9 @@ namespace SkipperModels.Models
         public DateTime? LicenseExpiryDate { get; set; }
         
         // Contact relationship
-        public ContactModel? Contact { get; set; }
+        public ContactModel Contact { get; set; }
         
         // Vessel relationships
-        public ICollection<VesselModel>? Vessels { get; set; }
+        public ICollection<VesselModel> Vessels { get; set; }
     }
 } 
