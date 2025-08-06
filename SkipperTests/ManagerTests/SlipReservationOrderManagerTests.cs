@@ -7,6 +7,7 @@ using SkipperModels.Models;
 using SkipperModels;
 using Models.Shared.Common;
 using NetBlocks.Models;
+using NSubstitute;
 
 namespace SkipperTests.ManagerTests;
 
@@ -16,6 +17,8 @@ public class SlipReservationOrderManagerTests
     private SkipperContext _context;
     private SlipReservationOrderManager _manager;
     private VesselOwnerCustomerManager _customerManager;
+    private SlipManager _slipManager;
+    private SlipClassificationManager _slipClassificationManager;
 
     [SetUp]
     public void SetUp()
@@ -32,12 +35,24 @@ public class SlipReservationOrderManagerTests
                     new AddressManager(
                         new AddressRepository(
                             _context,
-                            TestSetup.CreateLogger<AddressRepository>()))));
+                            TestSetup.CreateLogger<AddressRepository>()))),
+            new VesselManager(
+                new VesselRepository(
+                    _context,
+                    TestSetup.CreateLogger<VesselRepository>())));
         _manager = new SlipReservationOrderManager(
             new SlipReservationOrderRepository(
                 _context, 
                 TestSetup.CreateLogger<SlipReservationOrderRepository>()),
             _customerManager);
+        _slipManager = new SlipManager(
+            new SlipRepository(
+                _context,
+                TestSetup.CreateLogger<SlipRepository>()));
+        _slipClassificationManager = new SlipClassificationManager(
+            new SlipClassificationRepository(
+                _context,
+                TestSetup.CreateLogger<SlipClassificationRepository>()));
     }
 
     [TearDown]
@@ -68,6 +83,8 @@ public class SlipReservationOrderManagerTests
         var slip = new SlipModel
         {
             SlipNumber = "1234567890",
+            LocationCode = "LOC-1",
+            Status = SlipStatus.Available,
             SlipClassification = new SlipClassificationModel
             {
                 Name = "Test Classification",
@@ -93,6 +110,7 @@ public class SlipReservationOrderManagerTests
         
         var order =  new SlipReservationOrderModel
         {
+            OrderNumber = "00001",
             Customer = customer,
             Slip = slip,
             Vessel = vessel,
@@ -115,6 +133,8 @@ public class SlipReservationOrderManagerTests
         var customer = new VesselOwnerCustomerModel
         {
             Name = "Test McTester",
+            AccountNumber = "1234567890",
+            LicenseNumber = "1234567890",
             CustomerProfileType = CustomerProfileType.VesselOwnerProfile,
             Contact = new ContactModel
             {
@@ -157,16 +177,26 @@ public class SlipReservationOrderManagerTests
 
         // Act - Create
         var createdCustomer = await _customerManager.Add(customerModel);
+        var createdVessel = await _customerManager.AddVesselToOwner(createdCustomer.Value!, vesselModel);
+        orderModel.Customer = createdCustomer.Value!;
+        orderModel.Vessel = createdVessel.Value!;
+        
+        var createdSlipClassification = await _slipClassificationManager.Add(slipModel.SlipClassification);
+        slipModel.SlipClassification = createdSlipClassification.Value!;
+        
+        var createdSlip = await _slipManager.Add(slipModel);
+        orderModel.Slip = createdSlip.Value!;
+        
         var createdOrder = await _manager.Add(orderModel);
         Assert.That(createdOrder.Success, Is.True);
         Assert.That(createdOrder.Value, Is.Not.Null);
         Assert.That(createdOrder.Value.Id, Is.GreaterThan(0));
 
         // Arrange - Update
-        orderModel.Status = OrderStatus.Confirmed;
+        createdOrder.Value.Status = OrderStatus.Confirmed;
         
         // Act - Update
-        var updateResult = await _manager.Update(orderModel);
+        var updateResult = await _manager.Update(createdOrder.Value);
         Assert.That(updateResult.Success, Is.True);
         
         var updated = await _manager.GetById(createdOrder.Value.Id);

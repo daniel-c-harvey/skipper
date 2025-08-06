@@ -26,8 +26,7 @@ public class SlipEntityToModelConverter : IEntityToModelConverter<SlipEntity, Sl
         return new SlipEntity()
         {
             Id = model.Id,
-            SlipClassificationId = model.SlipClassification?.Id ?? 0,
-            // SlipClassificationEntity = SlipClassificationModel.CreateEntity(model.SlipClassification),
+            SlipClassificationId = model.SlipClassification.Id,
             SlipNumber = model.SlipNumber,
             LocationCode = model.LocationCode,
             Status = model.Status,

@@ -31,6 +31,8 @@ namespace SkipperModels.Converters
             entity.LicenseNumber = model.LicenseNumber;
             entity.LicenseExpiryDate = model.LicenseExpiryDate;
             
+            entity.ContactId = model.Contact.Id;
+            
             return entity;
         }
     }

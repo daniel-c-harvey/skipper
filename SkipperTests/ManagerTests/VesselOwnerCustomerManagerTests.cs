@@ -1,3 +1,4 @@
+using Data.Shared.Managers;
 using Microsoft.Extensions.Logging;
 using SkipperData.Data;
 using SkipperData.Data.Repositories;
@@ -12,8 +13,9 @@ namespace SkipperTests.ManagerTests;
 public class VesselOwnerCustomerManagerTests
 {
     private SkipperContext _context;
-    private VesselOwnerCustomerRepository _repository;
     private VesselOwnerCustomerManager _manager;
+    private ContactManager _contactManager;
+    private VesselManager _vesselManager;
     private ILogger<VesselOwnerCustomerRepository> _logger;
 
     [SetUp]
@@ -21,8 +23,24 @@ public class VesselOwnerCustomerManagerTests
     {
         _context = TestSetup.CreateContext();
         _logger = TestSetup.CreateLogger<VesselOwnerCustomerRepository>();
-        _repository = new VesselOwnerCustomerRepository(_context, _logger);
-        _manager = new VesselOwnerCustomerManager(_repository);
+        
+        // Create managers with their dependencies
+        _contactManager = new ContactManager(
+            new ContactRepository(_context, TestSetup.CreateLogger<ContactRepository>()),
+            new AddressManager(
+                new AddressRepository(_context, TestSetup.CreateLogger<AddressRepository>())
+            )
+        );
+        
+        _vesselManager = new VesselManager(
+            new VesselRepository(_context, TestSetup.CreateLogger<VesselRepository>())
+        );
+        
+        _manager = new VesselOwnerCustomerManager(
+            new VesselOwnerCustomerRepository(_context, _logger),
+            _contactManager,
+            _vesselManager
+        );
     }
 
     [TearDown]
@@ -33,32 +51,7 @@ public class VesselOwnerCustomerManagerTests
 
     #region Helper Methods
 
-    private VesselOwnerCustomerEntity CreateVesselOwnerCustomerEntity(
-        long id,
-        string accountNumber = "ACC-001",
-        string name = "John Doe",
-        string licenseNumber = "LIC-123456",
-        DateTime? licenseExpiryDate = null,
-        bool isDeleted = false)
-    {
-        var now = DateTime.UtcNow;
-        return new VesselOwnerCustomerEntity
-        {
-            Id = id,
-            AccountNumber = accountNumber,
-            Name = name,
-            CustomerProfileType = CustomerProfileType.VesselOwnerProfile,
-            LicenseNumber = licenseNumber,
-            LicenseExpiryDate = licenseExpiryDate ?? now.AddYears(1),
-            ContactId = 1,
-            CreatedAt = now,
-            UpdatedAt = now,
-            IsDeleted = isDeleted
-        };
-    }
-
     private VesselOwnerCustomerModel CreateVesselOwnerCustomerModel(
-        long id,
         string accountNumber = "ACC-001",
         string name = "John Doe",
         string licenseNumber = "LIC-123456",
@@ -67,15 +60,107 @@ public class VesselOwnerCustomerManagerTests
         var now = DateTime.UtcNow;
         return new VesselOwnerCustomerModel
         {
-            Id = id,
+            // Id is NOT set - let the database auto-generate it
             AccountNumber = accountNumber,
             Name = name,
             CustomerProfileType = CustomerProfileType.VesselOwnerProfile,
             LicenseNumber = licenseNumber,
             LicenseExpiryDate = licenseExpiryDate ?? now.AddYears(1),
+            Contact = CreateContactModel("John", "Doe"), // The manager will handle contact creation
             CreatedAt = now,
             UpdatedAt = now
         };
+    }
+
+    private ContactModel CreateContactModel(string firstName, string lastName)
+    {
+        var now = DateTime.UtcNow;
+        return new ContactModel
+        {
+            // Id is NOT set - let the database auto-generate it
+            FirstName = firstName,
+            LastName = lastName,
+            Email = firstName.ToLower() + "." + lastName.ToLower() + "@test.com",
+            PhoneNumber = "41041041010",
+            Address = CreateAddressModel(), // The contact manager will handle address creation
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+    }
+
+    private AddressModel CreateAddressModel(
+        string street = "123 Test St",
+        string city = "Test City",
+        string state = "TS",
+        string zipCode = "12345")
+    {
+        var now = DateTime.UtcNow;
+        return new AddressModel
+        {
+            // Id is NOT set - let the database auto-generate it
+            Address1 = street,
+            City = city,
+            State = state,
+            ZipCode = zipCode,
+            Country = "US",
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+    }
+
+    private VesselModel CreateVesselModel(
+        string name = "Test Vessel",
+        string registrationNumber = "REG-123456",
+        VesselType vesselType = VesselType.Sailboat,
+        decimal length = 30.0m,
+        decimal beam = 10.0m)
+    {
+        var now = DateTime.UtcNow;
+        return new VesselModel
+        {
+            // Id is NOT set - let the database auto-generate it
+            Name = name,
+            RegistrationNumber = registrationNumber,
+            VesselType = vesselType,
+            Length = length,
+            Beam = beam,
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+    }
+
+    // Helper method to create and add vessel owner customers using the manager
+    private async Task<List<VesselOwnerCustomerModel>> CreateVesselOwnerCustomersAsync(params VesselOwnerCustomerModel[] models)
+    {
+        var custs = new List<VesselOwnerCustomerModel>();
+        
+        foreach (var model in models)
+        {
+            var result = await _manager.Add(model);
+            if (result.Success && result.Value != null)
+            {
+                custs.Add(result.Value); // Get the auto-generated ID
+            }
+        }
+        
+        return custs;
+    }
+
+    // Helper method to create and add vessels using the vessel manager
+    private async Task<List<long>> CreateVesselsAsync(params VesselModel[] models)
+    {
+        var ids = new List<long>();
+        
+        foreach (var model in models)
+        {
+            var result = await _vesselManager.Add(model);
+            if (result.Success && result.Value != null)
+            {
+                ids.Add(result.Value.Id); // Get the auto-generated ID
+            }
+        }
+        
+        return ids;
     }
 
     #endregion
@@ -87,33 +172,35 @@ public class VesselOwnerCustomerManagerTests
     {
         // Arrange
         var licenseNumber = "LIC-123456";
-        var entities = new[]
+        
+        var models = new[]
         {
-            CreateVesselOwnerCustomerEntity(1, licenseNumber: licenseNumber),
-            CreateVesselOwnerCustomerEntity(2, licenseNumber: licenseNumber)
+            CreateVesselOwnerCustomerModel(licenseNumber: licenseNumber),
+            CreateVesselOwnerCustomerModel(licenseNumber: licenseNumber)
         };
 
-        foreach (var entity in entities)
-        {
-            await _repository.AddAsync(entity);
-        }
+        // Use the manager to add entities (this will auto-create contacts and addresses)
+        var customerIds = await CreateVesselOwnerCustomersAsync(models);
 
         // Act
         var result = await _manager.GetVesselOwnersByLicenseAsync(licenseNumber);
 
         // Assert
-        var models = result.ToList();
-        Assert.That(models, Has.Count.EqualTo(2));
-        Assert.That(models.All(m => m.LicenseNumber == licenseNumber), Is.True);
-        Assert.That(models.All(m => m.CustomerProfileType == CustomerProfileType.VesselOwnerProfile), Is.True);
+        var resultModels = result.ToList();
+        Assert.That(resultModels, Has.Count.EqualTo(2));
+        Assert.That(resultModels.All(m => m.LicenseNumber == licenseNumber), Is.True);
+        Assert.That(resultModels.All(m => m.CustomerProfileType == CustomerProfileType.VesselOwnerProfile), Is.True);
+        
+        // Verify that the returned models have the auto-generated IDs
+        Assert.That(resultModels.Select(m => m.Id), Is.EquivalentTo(customerIds));
     }
 
     [Test]
     public async Task GetVesselOwnersByLicenseAsync_EmptyResult_ReturnsEmptyCollection()
     {
         // Arrange
-        var entity = CreateVesselOwnerCustomerEntity(1, licenseNumber: "LIC-123456");
-        await _repository.AddAsync(entity);
+        var model = CreateVesselOwnerCustomerModel(licenseNumber: "LIC-123456");
+        await _manager.Add(model);
 
         // Act
         var result = await _manager.GetVesselOwnersByLicenseAsync("LIC-999999");
@@ -131,25 +218,24 @@ public class VesselOwnerCustomerManagerTests
     {
         // Arrange
         var now = DateTime.UtcNow;
-        var entities = new[]
+        
+        var models = new[]
         {
-            CreateVesselOwnerCustomerEntity(1, licenseExpiryDate: now.AddDays(-30)),
-            CreateVesselOwnerCustomerEntity(2, licenseExpiryDate: now.AddDays(-10))
+            CreateVesselOwnerCustomerModel(licenseExpiryDate: now.AddDays(-30)),
+            CreateVesselOwnerCustomerModel(licenseExpiryDate: now.AddDays(-10))
         };
 
-        foreach (var entity in entities)
-        {
-            await _repository.AddAsync(entity);
-        }
+        var customerIds = await CreateVesselOwnerCustomersAsync(models);
 
         // Act
         var result = await _manager.GetVesselOwnersWithExpiredLicensesAsync();
 
         // Assert
-        var models = result.ToList();
-        Assert.That(models, Has.Count.EqualTo(2));
-        Assert.That(models.All(m => m.LicenseExpiryDate < now), Is.True);
-        Assert.That(models.All(m => m.CustomerProfileType == CustomerProfileType.VesselOwnerProfile), Is.True);
+        var resultModels = result.ToList();
+        Assert.That(resultModels, Has.Count.EqualTo(2));
+        Assert.That(resultModels.All(m => m.LicenseExpiryDate < now), Is.True);
+        Assert.That(resultModels.All(m => m.CustomerProfileType == CustomerProfileType.VesselOwnerProfile), Is.True);
+        Assert.That(resultModels.Select(m => m.Id), Is.EquivalentTo(customerIds));
     }
 
     [Test]
@@ -157,8 +243,8 @@ public class VesselOwnerCustomerManagerTests
     {
         // Arrange
         var now = DateTime.UtcNow;
-        var entity = CreateVesselOwnerCustomerEntity(1, licenseExpiryDate: now.AddDays(30));
-        await _repository.AddAsync(entity);
+        var model = CreateVesselOwnerCustomerModel(licenseExpiryDate: now.AddDays(30));
+        await _manager.Add(model);
 
         // Act
         var result = await _manager.GetVesselOwnersWithExpiredLicensesAsync();
@@ -175,33 +261,33 @@ public class VesselOwnerCustomerManagerTests
     public async Task GetVesselOwnersWithVesselsAsync_WithVessels_ReturnsConvertedModels()
     {
         // Arrange
-        var entities = new[]
+        var vesselOwnerModels = new[]
         {
-            CreateVesselOwnerCustomerEntity(1, name: "Owner with Vessels 1"),
-            CreateVesselOwnerCustomerEntity(2, name: "Owner with Vessels 2")
+            CreateVesselOwnerCustomerModel(name: "Owner with Vessels 1"),
+            CreateVesselOwnerCustomerModel(name: "Owner with Vessels 2")
         };
 
-        foreach (var entity in entities)
+        // Create vessel owners first
+        var customers = await CreateVesselOwnerCustomersAsync(vesselOwnerModels);
+
+        // Create vessels using the vessel manager
+        var vesselModels = new[]
         {
-            // Create a vessel for this vessel owner
-            var vessel = new VesselEntity { Id = entity.Id, Name = $"Vessel{entity.Id}", RegistrationNumber = $"REG{entity.Id}", IsDeleted = false };
-            entity.VesselOwnerVessels.Add(new VesselOwnerVesselEntity 
-            { 
-                VesselOwnerCustomerId = entity.Id, 
-                VesselId = vessel.Id, 
-                Vessel = vessel 
-            });
-            
-            await _repository.AddAsync(entity);
-        }
+            CreateVesselModel(name: "Vessel 1", registrationNumber: "REG001"),
+            CreateVesselModel(name: "Vessel 2", registrationNumber: "REG002")
+        };
+
+        await _manager.AddVesselToOwner(customers[0], vesselModels[0]);
+        await _manager.AddVesselToOwner(customers[1], vesselModels[1]);
 
         // Act
         var result = await _manager.GetVesselOwnersWithVesselsAsync();
 
         // Assert
-        var models = result.ToList();
-        Assert.That(models, Has.Count.EqualTo(2));
-        Assert.That(models.All(m => m.CustomerProfileType == CustomerProfileType.VesselOwnerProfile), Is.True);
+        var resultModels = result.ToList();
+        Assert.That(resultModels, Has.Count.EqualTo(2));
+        Assert.That(resultModels.All(m => m.CustomerProfileType == CustomerProfileType.VesselOwnerProfile), Is.True);
+        Assert.That(resultModels.Select(m => m.Id), Is.EquivalentTo(customers.Select(c => c.Id)));
     }
 
     #endregion
@@ -212,34 +298,35 @@ public class VesselOwnerCustomerManagerTests
     public async Task SearchCustomersAsync_ValidSearchTerm_ReturnsConvertedModels()
     {
         // Arrange
-        var entities = new[]
+        var models = new[]
         {
-            CreateVesselOwnerCustomerEntity(1, name: "John Doe"),
-            CreateVesselOwnerCustomerEntity(2, name: "John Smith"),
-            CreateVesselOwnerCustomerEntity(3, name: "Jane Doe")
+            CreateVesselOwnerCustomerModel(name: "John Doe"),
+            CreateVesselOwnerCustomerModel(name: "John Smith"),
+            CreateVesselOwnerCustomerModel(name: "Jane Doe")
         };
 
-        foreach (var entity in entities)
-        {
-            await _repository.AddAsync(entity);
-        }
+        var customerIds = await CreateVesselOwnerCustomersAsync(models);
 
         // Act
         var result = await _manager.SearchCustomersAsync("John");
 
         // Assert
-        var models = result.ToList();
-        Assert.That(models, Has.Count.EqualTo(2));
-        Assert.That(models.All(m => m.Name.Contains("John")), Is.True);
-        Assert.That(models.All(m => m.CustomerProfileType == CustomerProfileType.VesselOwnerProfile), Is.True);
+        var resultModels = result.ToList();
+        Assert.That(resultModels, Has.Count.EqualTo(2));
+        Assert.That(resultModels.All(m => m.Name.Contains("John")), Is.True);
+        Assert.That(resultModels.All(m => m.CustomerProfileType == CustomerProfileType.VesselOwnerProfile), Is.True);
+        
+        // Verify we get the correct IDs for customers with "John" in their name
+        var expectedIds = customerIds.Where((id, index) => models[index].Name.Contains("John")).ToList();
+        Assert.That(resultModels.Select(m => m.Id), Is.EquivalentTo(expectedIds));
     }
 
     [Test]
     public async Task SearchCustomersAsync_NoMatches_ReturnsEmptyCollection()
     {
         // Arrange
-        var entity = CreateVesselOwnerCustomerEntity(1, name: "John Doe");
-        await _repository.AddAsync(entity);
+        var model = CreateVesselOwnerCustomerModel(name: "John Doe");
+        await _manager.Add(model);
 
         // Act
         var result = await _manager.SearchCustomersAsync("NonExistent");

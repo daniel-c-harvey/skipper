@@ -24,7 +24,18 @@ public class CustomerConverterTests
             CustomerProfileType = CustomerProfileType.VesselOwnerProfile,
             LicenseNumber = "LIC-123456",
             LicenseExpiryDate = now.AddYears(1),
-            ContactId = 100,
+            Contact = new ContactEntity
+            {
+                Id = 100,
+                Address = new AddressEntity
+                {
+                    Address1 = "123 Main St",
+                    City = "New York",
+                    State = "NY",
+                    ZipCode = "10001",
+                    Country = "USA"
+                }
+            },
             CreatedAt = now,
             UpdatedAt = now
         };
@@ -153,7 +164,18 @@ public class CustomerConverterTests
             CustomerProfileType = CustomerProfileType.VesselOwnerProfile,
             LicenseNumber = "LIC-123456",
             LicenseExpiryDate = now.AddYears(1),
-            ContactId = 100,
+            Contact = new ContactEntity
+            {
+                Id = 100,
+                Address = new AddressEntity
+                {
+                    Address1 = "123 Main St",
+                    City = "New York",
+                    State = "NY",
+                    ZipCode = "10001",
+                    Country = "USA"
+                }
+            },
             CreatedAt = now,
             UpdatedAt = now
         };

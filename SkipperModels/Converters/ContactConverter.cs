@@ -31,7 +31,7 @@ namespace SkipperModels.Converters
                 LastName = model.LastName,
                 Email = model.Email,
                 PhoneNumber = model.PhoneNumber,
-                Address = AddressEntityToModelConverter.Convert(model.Address),
+                AddressId = model.Address.Id,
                 CreatedAt = model.CreatedAt,
                 UpdatedAt = model.UpdatedAt,
             };
