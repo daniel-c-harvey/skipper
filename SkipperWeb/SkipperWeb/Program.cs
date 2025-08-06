@@ -11,6 +11,7 @@ using AuthBlocksWeb.ApiClients;
 using AuthBlocksWeb.Components.Pages.UserAdmin;
 using Microsoft.AspNetCore.HttpOverrides;
 using SkipperModels.Models;
+using SkipperWeb.Components.Pages.Maintenance.Customers.VesselOwners;
 using SkipperWeb.Components.Pages.Maintenance.SlipReservations;
 using SkipperWeb.Components.Pages.Maintenance.SlipClassifications;
 using SkipperWeb.Components.Pages.Maintenance.Slips;
@@ -143,8 +144,8 @@ public class Program
         builderServices.AddScoped<SlipClassificationsViewModel>();
 
         // Slip Reservation Client
-        builderServices.AddSingleton(new SlipReservationClientConfig(skipperEndpoint.ApiUrl));
-builderServices.AddScoped<SlipReservationClient>();
-builderServices.AddScoped<SlipReservationsViewModel>();
+        builderServices.AddSingleton(new VesselOwnerCustomerClientConfig(skipperEndpoint.ApiUrl));
+        builderServices.AddScoped<VesselOwnerCustomerClient>();
+        builderServices.AddScoped<VesselOwnerCustomersViewModel>();
     }
 }

@@ -10,7 +10,7 @@ public class BusinessCustomerConverter : IEntityToModelConverter<BusinessCustome
     public static BusinessCustomerModel Convert(BusinessCustomerEntity entity)
     {
         // Use the generic base converter to set base properties, then add specific properties
-        var model = CustomerConverter<BusinessCustomerEntity, BusinessCustomerModel>.Convert(entity);
+        var model = CustomerEntityToModelConverter<BusinessCustomerEntity, BusinessCustomerModel>.Convert(entity);
         
         // Set Business-specific properties
         model.BusinessName = entity.BusinessName;
@@ -22,7 +22,7 @@ public class BusinessCustomerConverter : IEntityToModelConverter<BusinessCustome
     public static BusinessCustomerEntity Convert(BusinessCustomerModel model)
     {
         // Use the generic base converter to set base properties, then add specific properties
-        var entity = CustomerConverter<BusinessCustomerEntity, BusinessCustomerModel>.Convert(model);
+        var entity = CustomerEntityToModelConverter<BusinessCustomerEntity, BusinessCustomerModel>.Convert(model);
         
         // Set Business-specific properties
         entity.BusinessName = model.BusinessName;

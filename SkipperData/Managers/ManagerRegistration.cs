@@ -18,6 +18,9 @@ public static class ManagerRegistration
         // Customer managers (TPH)
         services.AddScoped<VesselOwnerCustomerManager>();
         services.AddScoped<BusinessCustomerManager>();
+        services.AddScoped<ContactManager>();
+        services.AddScoped<AddressManager>();
+        
         
         return services;
     }

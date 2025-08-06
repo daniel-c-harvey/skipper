@@ -1,0 +1,24 @@
+﻿@using SkipperModels.InputModels
+
+<MudGrid Spacing="3">
+    <MudItem xs="12" sm="3">
+        <MudTextField Label="Account Number"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Outlined.AccountBox"
+                      @bind-Value="Input.AccountNumber"
+                      For="() => Input.AccountNumber"
+                      Variant="Variant.Outlined"/>
+        
+    </MudItem>
+    <MudItem xs="12" sm="9">
+        <MudTextField Label="Name"
+                      @bind-Value="Input.Name"
+                      For="() => Input.Name"
+                      Variant="Variant.Outlined"/>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter]
+    public required CustomerInputModel Input { get; set; }
+}

@@ -10,7 +10,7 @@ namespace SkipperModels.Converters
         public static VesselOwnerCustomerModel Convert(VesselOwnerCustomerEntity entity)
         {
             // Use the generic base converter to set base properties, then add specific properties
-            var model = CustomerConverter<VesselOwnerCustomerEntity, VesselOwnerCustomerModel>.Convert(entity);
+            var model = CustomerEntityToModelConverter<VesselOwnerCustomerEntity, VesselOwnerCustomerModel>.Convert(entity);
             
             // Set VesselOwner-specific properties
             model.LicenseNumber = entity.LicenseNumber;
@@ -25,7 +25,7 @@ namespace SkipperModels.Converters
         public static VesselOwnerCustomerEntity Convert(VesselOwnerCustomerModel model)
         {
             // Use the generic base converter to set base properties, then add specific properties
-            var entity = CustomerConverter<VesselOwnerCustomerEntity, VesselOwnerCustomerModel>.Convert(model);
+            var entity = CustomerEntityToModelConverter<VesselOwnerCustomerEntity, VesselOwnerCustomerModel>.Convert(model);
             
             // Set VesselOwner-specific properties
             entity.LicenseNumber = model.LicenseNumber;
@@ -37,17 +37,32 @@ namespace SkipperModels.Converters
         }
     }
 
-    // public class VesselOwnerCustomerModelToInputConverter 
-    //     : IModelToInputConverter<VesselOwnerCustomerModel, VesselOwnerCustomerInputModel>
-    // {
-    //     public static VesselOwnerCustomerInputModel Convert(VesselOwnerCustomerModel model)
-    //     {
-    //         var input = CustomerConverter
-    //     }
-    //
-    //     public static VesselOwnerCustomerModel Convert(VesselOwnerCustomerInputModel input)
-    //     {
-    //         throw new NotImplementedException();
-    //     }
-    // }
+    public class VesselOwnerCustomerModelToInputConverter : IModelToInputConverter<VesselOwnerCustomerModel, VesselOwnerCustomerInputModel>
+    {
+        public static VesselOwnerCustomerInputModel Convert(VesselOwnerCustomerModel model)
+        {
+            var input = CustomerModelToInputConverter<VesselOwnerCustomerModel, VesselOwnerCustomerInputModel>.Convert(model);
+            
+            input.LicenseNumber = model.LicenseNumber;
+            input.LicenseExpiryDate = model.LicenseExpiryDate;
+            
+            input.Contact = ContactModelToInputConverter.Convert(model.Contact);
+            input.Vessels = model.Vessels.Select(VesselModelToInputConverter.Convert).ToList();
+            
+            return input;
+        }
+    
+        public static VesselOwnerCustomerModel Convert(VesselOwnerCustomerInputModel input)
+        {
+            var model = CustomerModelToInputConverter<VesselOwnerCustomerModel, VesselOwnerCustomerInputModel>.Convert(input);
+            
+            model.LicenseNumber = input.LicenseNumber;
+            model.LicenseExpiryDate = input.LicenseExpiryDate;
+            
+            model.Contact = ContactModelToInputConverter.Convert(input.Contact);
+            model.Vessels = input.Vessels.Select(VesselModelToInputConverter.Convert).ToList();
+            
+            return model;
+        }
+    }
 } 

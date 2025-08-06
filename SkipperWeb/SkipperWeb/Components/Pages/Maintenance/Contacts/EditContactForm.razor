@@ -1,0 +1,36 @@
+﻿@using SkipperModels.InputModels
+@using SkipperWeb.Components.Pages.Maintenance.Addresses
+
+<MudGrid Spacing="3">
+    <MudItem xs="12" sm="6">
+        <MudTextField Label="First Name"
+                      @bind-Value="@Input.FirstName"
+                      For="() => Input.FirstName" 
+                      Variant="Variant.Outlined"/>
+    </MudItem>
+    <MudItem xs="12" sm="6">
+        <MudTextField Label="Last Name"
+                      @bind-Value="@Input.LastName"
+                      For="() => Input.LastName" 
+                      Variant="Variant.Outlined"/>
+    </MudItem>
+    <MudItem xs="12" sm="6">
+        <MudTextField Label="Email Address"
+                      @bind-Value="@Input.Email"
+                      For="() => Input.Email" 
+                      Variant="Variant.Outlined"/>
+    </MudItem>
+    <MudItem xs="12" sm="6">
+        <MudTextField Label="Phone Number"
+                      @bind-Value="@Input.PhoneNumber"
+                      For="() => Input.PhoneNumber" 
+                      Variant="Variant.Outlined"/>
+    </MudItem>
+</MudGrid>
+
+<EditAddressForm Input="Input.Address" />
+
+@code {
+    [Parameter]
+    public required ContactInputModel Input { get; set; }
+}

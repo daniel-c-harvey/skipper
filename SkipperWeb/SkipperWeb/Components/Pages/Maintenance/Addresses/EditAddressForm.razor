@@ -1,0 +1,33 @@
+﻿@using SkipperModels.InputModels
+
+<MudStack Spacing="3">
+    <MudTextField Label="Address Line 1" 
+                  @bind-Value="@Input.Address1"
+                  For="() => Input.Address1"
+                  Variant="Variant.Outlined"/>
+    <MudTextField Label="Address Line 2" 
+                  @bind-Value="@Input.Address2"
+                  For="() => Input.Address2"
+                  Variant="Variant.Outlined"/>
+    <MudTextField Label="City" 
+                  @bind-Value="@Input.City" 
+                  For="() => Input.City"
+                  Variant="Variant.Outlined"/>
+    <MudTextField Label="State" 
+                  @bind-Value="@Input.State" 
+                  For="() => Input.State"
+                  Variant="Variant.Outlined"/>
+    <MudTextField Label="Zip Code" 
+                  @bind-Value="@Input.ZipCode" 
+                  For="() => Input.ZipCode"
+                  Variant="Variant.Outlined"/>
+    <MudTextField Label="Country" 
+                  @bind-Value="@Input.Country" 
+                  For="() => Input.Country"
+                  Variant="Variant.Outlined"/>
+</MudStack>
+
+@code {
+    [Parameter]
+    public required AddressInputModel Input { get; set; }
+}

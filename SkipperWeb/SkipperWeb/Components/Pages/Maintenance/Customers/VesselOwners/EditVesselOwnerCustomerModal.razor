@@ -1,0 +1,14 @@
+﻿@using SkipperModels.InputModels
+@using Web.Shared.Maintenance.Entities
+
+@implements Web.Shared.Maintenance.Entities.IEditModal<VesselOwnerCustomerInputModel>
+
+<EditModelModal TModel="VesselOwnerCustomerInputModel"
+                Model="Model">
+    <EditVesselOwnerCustomerForm Vessel="Model" />
+</EditModelModal>
+
+@code {
+    [Parameter]
+    public required VesselOwnerCustomerInputModel Model { get; set; }
+}

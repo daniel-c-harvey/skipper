@@ -19,6 +19,8 @@ public static class RepositoryRegistration
         // Customer repositories (TPH)
         services.AddScoped<IVesselOwnerCustomerRepository, VesselOwnerCustomerRepository>();
         services.AddScoped<IBusinessCustomerRepository, BusinessCustomerRepository>();
+        services.AddScoped<ContactRepository>();
+        services.AddScoped<AddressRepository>();
         
         return services;
     }

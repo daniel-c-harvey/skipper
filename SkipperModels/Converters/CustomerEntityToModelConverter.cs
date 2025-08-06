@@ -5,8 +5,7 @@ using SkipperModels.Models;
 
 namespace SkipperModels.Converters
 {
-    // Generic base converter for CustomerEntity and its derived types
-    public class CustomerConverter<TCustomerEntity, TCustomerModel> : IEntityToModelConverter<TCustomerEntity, TCustomerModel>
+    public class CustomerEntityToModelConverter<TCustomerEntity, TCustomerModel> : IEntityToModelConverter<TCustomerEntity, TCustomerModel>
         where TCustomerEntity : CustomerEntity, new()
         where TCustomerModel : CustomerModel, new()
     {
@@ -40,6 +39,37 @@ namespace SkipperModels.Converters
                 UpdatedAt = model.UpdatedAt,
             };
             return entity;
+        }
+    }
+    
+    public class CustomerModelToInputConverter<TCustomerModel, TCustomerInput> : IModelToInputConverter<TCustomerModel, TCustomerInput>
+        where TCustomerModel : CustomerModel, new()
+        where TCustomerInput : CustomerInputModel, new()
+    {
+        public static TCustomerModel Convert(TCustomerInput input)
+        {
+            return new TCustomerModel
+            {
+                Id = input.Id,
+                AccountNumber = input.AccountNumber,
+                Name = input.Name,
+                CustomerProfileType = input.CustomerProfileType,
+                CreatedAt = input.CreatedAt,
+                UpdatedAt = input.UpdatedAt
+            };
+        }
+
+        public static TCustomerInput Convert(TCustomerModel model)
+        {
+            return new TCustomerInput
+            {
+                Id = model.Id,
+                AccountNumber = model.AccountNumber,
+                Name = model.Name,
+                CustomerProfileType = model.CustomerProfileType,
+                CreatedAt = model.CreatedAt,
+                UpdatedAt = model.UpdatedAt
+            };
         }
     }
 }

@@ -1,0 +1,18 @@
+﻿@using SkipperModels.Converters
+@using SkipperModels.Models
+@using SkipperModels.InputModels
+@using SkipperWeb.ApiClients
+@using Web.Shared.Maintenance.Entities.New
+
+@attribute [HierarchicalRoleAuthorize]
+@page "/maintenance/vesselownercustomers/new"
+
+<NewModelView TInputModel="VesselOwnerCustomerInputModel"
+              TModel="VesselOwnerCustomerModel"
+              TClient="VesselOwnerCustomerClient"
+              TClientConfig="VesselOwnerCustomerClientConfig"
+              TConverter="VesselOwnerCustomerModelToInputConverter"
+              ModelDisplayName="Customer"
+              PageRoute="maintenance/vesselownercustomers">
+    <EditVesselOwnerCustomerForm Input="context"/>
+</NewModelView>

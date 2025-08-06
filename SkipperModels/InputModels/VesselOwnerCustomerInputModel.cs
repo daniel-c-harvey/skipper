@@ -1,12 +1,13 @@
+using System.ComponentModel.DataAnnotations;
 using Models.Shared.InputModels;
 
 namespace SkipperModels.InputModels
 {
-    public class VesselOwnerCustomerInputModel : InputModelBase
+    public class VesselOwnerCustomerInputModel : CustomerInputModel
     {
         public string? LicenseNumber { get; set; }
         public DateTime? LicenseExpiryDate { get; set; }
-        public ContactInputModel Contact { get; set; }
-        public ICollection<VesselInputModel> Vessels { get; set; }
+        [Required] public ContactInputModel Contact { get; set; } = new();
+        [Required] public ICollection<VesselInputModel> Vessels { get; set; } = new List<VesselInputModel>();
     }
 } 
