@@ -73,7 +73,7 @@ public class CustomerConverterTests
         };
 
         // Act
-        var result = CustomerConverter<VesselOwnerCustomerEntity, VesselOwnerCustomerModel>.Convert(model);
+        var result = CustomerEntityToModelConverter<VesselOwnerCustomerEntity, VesselOwnerCustomerModel>.Convert(model);
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -135,7 +135,7 @@ public class CustomerConverterTests
         };
 
         // Act
-        var result = CustomerConverter<BusinessCustomerEntity, BusinessCustomerModel>.Convert(model);
+        var result = CustomerEntityToModelConverter<BusinessCustomerEntity, BusinessCustomerModel>.Convert(model);
 
         // Assert
         Assert.That(result, Is.Not.Null);

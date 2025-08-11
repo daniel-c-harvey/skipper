@@ -22,4 +22,9 @@
       <ProjectReference Include="..\SkipperModels\SkipperModels.csproj" />
       <ProjectReference Include="C:\lib\NetBlocks\NetBlocks.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Data\Migrations\" />
+      <Folder Include="Migrations\" />
+    </ItemGroup>
 </Project>

@@ -11,5 +11,8 @@ namespace SkipperModels.InputModels
         [Required]
         public string Name { get; set; }
         public CustomerProfileType CustomerProfileType { get; set; }
+        
+        public virtual bool IsValid => !string.IsNullOrWhiteSpace(AccountNumber) &&
+                                       !string.IsNullOrWhiteSpace(Name);
     }
 } 

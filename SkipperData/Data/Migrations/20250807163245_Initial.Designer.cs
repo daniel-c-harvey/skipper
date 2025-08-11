@@ -9,11 +9,11 @@ using SkipperData.Data;
 
 #nullable disable
 
-namespace SkipperData.Migrations
+namespace SkipperData.Data.Migrations
 {
     [DbContext(typeof(SkipperContext))]
-    [Migration("20250806155535_Orders-Customers-TPH")]
-    partial class OrdersCustomersTPH
+    [Migration("20250807163245_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

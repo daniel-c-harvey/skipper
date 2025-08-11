@@ -14,7 +14,9 @@ namespace SkipperModels.InputModels
         [Required]
         public string LastName { get; set; }
         [Required]
+        [EmailAddress]
         public string Email { get; set; }
+        [Phone]
         public string? PhoneNumber { get; set; }
         [Required] public AddressInputModel Address { get; set; } = new();
     }

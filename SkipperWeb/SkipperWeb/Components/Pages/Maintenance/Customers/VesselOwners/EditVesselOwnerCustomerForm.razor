@@ -1,28 +1,87 @@
 ﻿@using SkipperModels.InputModels
 @using SkipperWeb.Components.Pages.Maintenance.Contacts
+@using Web.Shared.Utilities
 
-<EditCustomerForm Input="Input"/>
-
-<MudGrid Spacing="3">
-    <MudItem xs="12" sm="6">
-        <MudTextField Label="License Number"
-                      @bind-Value="Input.LicenseNumber"
-                      For="() => Input.LicenseNumber" 
-                      Variant="Variant.Outlined"/>
-    </MudItem>
-    <MudItem xs="12" sm="6">
-        <MudDatePicker Label="License Expiration"
-                       @bind-Date="Input.LicenseExpiryDate"
-                       For="() => Input.LicenseExpiryDate" 
-                       Variant="Variant.Outlined"/>
-    </MudItem>
-</MudGrid>
-
-<EditContactForm Input="Input.Contact"/>
+<MudExpansionPanels>
+    <MudExpansionPanel Expanded>
+        <TitleContent>
+            <MudStack Row>
+                @if (IsCustomerSectionValid())
+                { <MudIcon Icon="@Icons.Material.Outlined.Close" Color="Color.Error"/> }
+                else
+                { <MudIcon Icon="@Icons.Material.Outlined.Check" Color="Color.Success"/> }
+                <MudText Typo="Typo.h5" Color="Color.Primary">Customer</MudText>
+            </MudStack>
+        </TitleContent>
+        <ChildContent>
+            <EditCustomerForm Input="Input"/>
+            <MudGrid Spacing="3">
+                <MudItem xs="12" sm="6">
+                    <MudTextField Label="License Number"
+                                  @bind-Value="Input.LicenseNumber"
+                                  For="() => Input.LicenseNumber" 
+                                  Variant="Variant.Outlined"/>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudDatePicker Label="License Expiration"
+                                   @bind-Date="Input.LicenseExpiryDate"
+                                   For="() => Input.LicenseExpiryDate" 
+                                   Variant="Variant.Outlined"/>
+                </MudItem>
+            </MudGrid>
+        </ChildContent>
+    </MudExpansionPanel>
+    <MudExpansionPanel>
+        <TitleContent>
+            <MudStack Row>
+                @if (IsContactSectionValid())
+                { <MudIcon Icon="@Icons.Material.Outlined.Check" Color="Color.Success"/> }
+                else
+                { <MudIcon Icon="@Icons.Material.Outlined.Close" Color="Color.Error"/> }
+                <MudText Typo="Typo.h5" Color="Color.Primary">Contact Details</MudText>
+            </MudStack>
+        </TitleContent>
+        <ChildContent>
+            <EditContactForm Input="Input.Contact"/>
+        </ChildContent>
+    </MudExpansionPanel>
+</MudExpansionPanels>
 
 @code {
-
+    [Inject]
+    public required IServiceProvider Provider { get; set; }
     [Parameter]
     public required VesselOwnerCustomerInputModel Input { get; set; }
+
+    private ModelValidator<VesselOwnerCustomerInputModel>? _validator = null;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        _validator ??= new(Provider, Input);
+    }
+
+    private bool IsCustomerSectionValid()
+    {
+        return _validator is not null && _validator.ValidateFields(
+            c => c.Name,
+            c => c.AccountNumber,
+            c => c.LicenseNumber);
+    }
+
+    private bool IsContactSectionValid()
+    {
+        return _validator is not null && _validator.ValidateFields(
+            c => c.Contact.FirstName,
+            c => c.Contact.LastName,
+            c => c.Contact.Email,
+            c => c.Contact.PhoneNumber,
+            c => c.Contact.Address.Address1,
+            c => c.Contact.Address.Address2,
+            c => c.Contact.Address.City,
+            c => c.Contact.Address.State,
+            c => c.Contact.Address.ZipCode,
+            c => c.Contact.Address.Country);
+    }
 
 }

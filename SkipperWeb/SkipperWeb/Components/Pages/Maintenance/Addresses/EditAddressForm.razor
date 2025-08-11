@@ -1,6 +1,9 @@
 ﻿@using SkipperModels.InputModels
 
-<MudStack Spacing="3">
+<MudGrid Spacing="3">
+<MudItem>
+    
+</MudItem>
     <MudTextField Label="Address Line 1" 
                   @bind-Value="@Input.Address1"
                   For="() => Input.Address1"
@@ -25,7 +28,7 @@
                   @bind-Value="@Input.Country" 
                   For="() => Input.Country"
                   Variant="Variant.Outlined"/>
-</MudStack>
+</MudGrid>
 
 @code {
     [Parameter]
