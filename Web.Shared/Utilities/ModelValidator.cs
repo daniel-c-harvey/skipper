@@ -1,6 +1,8 @@
 ﻿// C#
 
+using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
+using System.Reflection;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace Web.Shared.Utilities
@@ -18,76 +20,75 @@ namespace Web.Shared.Utilities
         public TModel Model => (TModel)_editContext.Model;
         public EditContext EditContext => _editContext;
 
-        // Validates the entire model using DataAnnotations
-        public bool ValidateAll(out IReadOnlyDictionary<string, string[]> errors)
+        public bool AreValid(params Expression<Func<TModel, object?>>[] fields)
         {
-            var isValid = _editContext.Validate();
-            errors = CollectAllMessages();
-            return isValid;
+            return ValidateFields(fields).Count == 0;
         }
-
-        public bool ValidateAll() => _editContext.Validate();
-
-        // Validates only the provided fields (supports nested properties)
-        public bool ValidateFields(params Expression<Func<TModel, object?>>[] fields) =>
-            ValidateFields(out _, fields);
-
-        public bool ValidateFields(out IReadOnlyDictionary<string, string[]> errors,
-                                   params Expression<Func<TModel, object?>>[] fields)
+        
+        public Dictionary<string, string[]> ValidateFields(params Expression<Func<TModel, object?>>[] fields)
         {
-            if (fields == null || fields.Length == 0)
-            {
-                // If no fields provided, default to full validation
-                return ValidateAll(out errors);
-            }
-
-            // Fire field-level validation for each requested field
-            foreach (var accessor in fields)
-            {
-                var fieldId = new FieldIdentifier(_editContext.Model, GetPath(accessor));
-                _editContext.NotifyFieldChanged(fieldId);
-            }
-
-            // Collect messages only for the requested fields
+            var messageStore = new ValidationMessageStore(_editContext);
             var dict = new Dictionary<string, string[]>(StringComparer.Ordinal);
+    
             foreach (var accessor in fields)
             {
-                var path = GetPath(accessor);
-                var fieldId = new FieldIdentifier(_editContext.Model, path);
-                var messages = _editContext.GetValidationMessages(fieldId).ToArray();
-                if (messages.Length > 0)
-                    dict[path] = messages;
-            }
-
-            errors = dict;
-            return errors.Count == 0;
-        }
-
-        private IReadOnlyDictionary<string, string[]> CollectAllMessages()
-        {
-            // Group messages by a stable "path" key similar to x => x.Prop or x => x.Nested.Prop
-            var allMessages = new Dictionary<string, List<string>>(StringComparer.Ordinal);
-
-            // Note: EditContext doesn’t expose all FieldIdentifiers; we rely on the
-            // message enumeration and build a best-effort map keyed by field name.
-            // For programmatic uses (like section checks), this is typically sufficient.
-            foreach (var message in _editContext.GetValidationMessages())
-            {
-                // Without a direct FieldIdentifier here, we just bucket by message text occurrence.
-                // If you need strict per-field aggregation, prefer ValidateFields(...) for targeted checks.
-                const string catchAllKey = "__all__";
-                if (!allMessages.TryGetValue(catchAllKey, out var list))
+                var pathPackage = GetPath(accessor);
+                var fieldId = new FieldIdentifier(_editContext.Model, pathPackage.FullPath);
+        
+                // Clear existing messages for this field
+                messageStore.Clear(fieldId);
+        
+                // Get the property value
+                var root = _editContext.Model.GetType();
+                var value = _editContext.Model;
+                object? parent = null;
+                foreach (var propertyName in pathPackage.Parts)
                 {
-                    list = new List<string>();
-                    allMessages[catchAllKey] = list;
+                    var property = root.GetProperty(propertyName);
+                    root = property?.PropertyType ?? root;
+                    parent = value;
+                    value = property?.GetValue(value);
                 }
-                list.Add(message);
+        
+                if (parent is null) throw new InvalidOperationException("Unable to find parent object.");
+                
+                // Validate just this property
+                var validationContext = new ValidationContext(parent) 
+                { 
+                    MemberName = pathPackage.Parts.Last(), 
+                };
+                var results = new List<ValidationResult>();
+        
+                Validator.TryValidateProperty(value, validationContext, results);
+        
+                // Add any validation errors to the message store
+                var messages = new List<string>();
+                foreach (var result in results)
+                {
+                    var message = result.ErrorMessage;
+                    if (message is null) continue;
+                    
+                    messageStore.Add(fieldId, message);
+                    messages.Add(message);
+                }
+        
+                if (messages.Count > 0)
+                    dict[pathPackage.FullPath] = messages.ToArray();
             }
-
-            return allMessages.ToDictionary(k => k.Key, v => v.Value.ToArray(), StringComparer.Ordinal);
+    
+            // Notify EditContext that validation state changed
+            _editContext.NotifyValidationStateChanged();
+    
+            return dict;
         }
 
-        private static string GetPath(Expression<Func<TModel, object?>> expression)
+        private class PathPackage
+        {
+            public required string FullPath { get; set; }
+            public required IEnumerable<string> Parts { get; set; }
+        }
+        
+        private static PathPackage GetPath(Expression<Func<TModel, object?>> expression)
         {
             // Build a "dotted" path from the expression, e.g., x => x.Contact.Name => "Contact.Name"
             Expression body = expression.Body;
@@ -102,7 +103,11 @@ namespace Web.Shared.Utilities
                 current = current.Expression as MemberExpression;
             }
 
-            return string.Join(".", parts);
+            return new PathPackage
+            {
+                FullPath = string.Join(".", parts),
+                Parts = parts
+            };
         }
     }
 }

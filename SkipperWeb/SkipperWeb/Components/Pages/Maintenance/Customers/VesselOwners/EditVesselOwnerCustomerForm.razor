@@ -5,11 +5,11 @@
 <MudExpansionPanels>
     <MudExpansionPanel Expanded>
         <TitleContent>
-            <MudStack Row>
+            <MudStack Row AlignItems="AlignItems.Center">
                 @if (IsCustomerSectionValid())
-                { <MudIcon Icon="@Icons.Material.Outlined.Close" Color="Color.Error"/> }
-                else
                 { <MudIcon Icon="@Icons.Material.Outlined.Check" Color="Color.Success"/> }
+                else
+                { <MudIcon Icon="@Icons.Material.Outlined.Close" Color="Color.Error"/> }
                 <MudText Typo="Typo.h5" Color="Color.Primary">Customer</MudText>
             </MudStack>
         </TitleContent>
@@ -33,7 +33,7 @@
     </MudExpansionPanel>
     <MudExpansionPanel>
         <TitleContent>
-            <MudStack Row>
+            <MudStack Row AlignItems="AlignItems.Center">
                 @if (IsContactSectionValid())
                 { <MudIcon Icon="@Icons.Material.Outlined.Check" Color="Color.Success"/> }
                 else
@@ -63,7 +63,7 @@
 
     private bool IsCustomerSectionValid()
     {
-        return _validator is not null && _validator.ValidateFields(
+        return _validator is not null && _validator.AreValid(
             c => c.Name,
             c => c.AccountNumber,
             c => c.LicenseNumber);
@@ -71,7 +71,7 @@
 
     private bool IsContactSectionValid()
     {
-        return _validator is not null && _validator.ValidateFields(
+        return _validator is not null && _validator.AreValid(
             c => c.Contact.FirstName,
             c => c.Contact.LastName,
             c => c.Contact.Email,
